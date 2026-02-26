@@ -78,9 +78,10 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                     <div className="flex items-center justify-between pt-4">
                         <a
                             href="#"
-                            className="inline-flex items-center justify-center bg-center w-[100px] h-[40px] bg-cover rounded"
-                            style={{ backgroundImage: `url(${logoUrl})` }}
-                        />
+                            className="inline-flex items-center justify-center h-[40px] rounded text-white font-bold text-lg tracking-wide font-sans"
+                        >
+                            WEB4TG STUDIO
+                        </a>
 
                         <nav className="hidden md:flex items-center gap-2">
                             <div className="flex items-center gap-1 rounded-full bg-white/5 px-1 py-1 ring-1 ring-white/10 backdrop-blur">
