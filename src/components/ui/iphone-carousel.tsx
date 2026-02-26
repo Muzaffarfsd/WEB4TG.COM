@@ -209,13 +209,13 @@ export const VideoCarousel = () => {
         <>
             <div className="flex items-center">
                 {hightlightsSlides.map((list, i) => (
-                    <div key={list.id} id="slider" className="sm:pr-20 pr-10">
-                        <div className="relative sm:w-[70vw] w-[88vw] md:h-[70vh] sm:h-[50vh] h-[35vh]">
-                            <div className="w-full h-full flex items-center justify-center rounded-3xl overflow-hidden bg-black">
+                    <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20">
+                        <div className="relative w-[85vw] sm:w-[70vw] h-[40vh] sm:h-[50vh] md:h-[70vh]">
+                            <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black">
                                 <video
                                     id="video"
                                     playsInline={true}
-                                    className={`${list.id === 2 && "translate-x-44"} pointer-events-none`}
+                                    className={`${list.id === 2 ? "translate-x-20 sm:translate-x-44" : ""} pointer-events-none w-full h-full object-cover`}
                                     preload="metadata"
                                     muted
                                     crossOrigin="anonymous"
@@ -236,9 +236,9 @@ export const VideoCarousel = () => {
                                 </video>
                             </div>
 
-                            <div className="absolute top-12 left-[5%] z-10">
+                            <div className="absolute top-6 sm:top-12 left-[5%] z-10">
                                 {list.textLists.map((text, i) => (
-                                    <p key={i} className="text-xl max-sm:text-sm font-medium text-white">
+                                    <p key={i} className="text-sm sm:text-xl font-medium text-white">
                                         {text}
                                     </p>
                                 ))}
@@ -248,12 +248,12 @@ export const VideoCarousel = () => {
                 ))}
             </div>
 
-            <div className="relative flex items-center justify-center mt-10">
-                <div className="flex items-center justify-center py-5 px-7 bg-input backdrop-blur rounded-full">
+            <div className="relative flex items-center justify-center mt-6 sm:mt-10">
+                <div className="flex items-center justify-center py-3 px-5 sm:py-5 sm:px-7 bg-input backdrop-blur rounded-full">
                     {videoRef.current.map((_, i) => (
                         <span
                             key={i}
-                            className="mx-2 w-3 h-3 bg-muted-foreground/30 rounded-full relative cursor-pointer"
+                            className="mx-1.5 sm:mx-2 w-3 h-3 bg-muted-foreground/30 rounded-full relative cursor-pointer"
                             ref={(el) => {
                                 videoDivRef.current[i] = el;
                             }}
@@ -269,7 +269,7 @@ export const VideoCarousel = () => {
                 </div>
 
                 <button
-                    className="ml-4 p-4 rounded-full bg-input backdrop-blur flex items-center justify-center"
+                    className="ml-3 sm:ml-4 p-3 sm:p-4 rounded-full bg-input backdrop-blur flex items-center justify-center min-w-[44px] min-h-[44px] active:bg-white/20 transition-colors"
                     onClick={
                         isLastVideo
                             ? () => handleProcess("video-reset")
@@ -279,11 +279,11 @@ export const VideoCarousel = () => {
                     }
                 >
                     {isLastVideo ? (
-                        <RotateCcw className="w-6 h-6 text-foreground" />
+                        <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
                     ) : !isPlaying ? (
-                        <Play className="w-6 h-6 text-foreground" />
+                        <Play className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
                     ) : (
-                        <Pause className="w-6 h-6 text-foreground" />
+                        <Pause className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
                     )}
                 </button>
 
@@ -299,21 +299,21 @@ export const IphoneCarousel = () => {
     }, []);
 
     return (
-        <section id='highlights' className='w-screen overflow-x-hidden sm:py-32 py-20 sm:px-10 px-5 bg-background h-screen'>
+        <section id='highlights' className='w-full overflow-x-hidden py-12 sm:py-20 md:py-32 px-4 sm:px-10 bg-background min-h-[100svh]'>
             <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
-                <div className='mb-12 w-full md:flex items-end justify-between'>
-                    <h1 id='title' className='text-foreground lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20'>
+                <div className='mb-8 sm:mb-12 w-full md:flex items-end justify-between'>
+                    <h1 id='title' className='text-foreground text-2xl sm:text-3xl md:text-5xl lg:text-6xl lg:mb-0 mb-4 sm:mb-5 font-medium opacity-0 translate-y-20'>
                         Get the highlights.
                     </h1>
 
-                    <div className="flex flex-wrap items-end gap-5">
-                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20'>
+                    <div className="flex flex-wrap items-end gap-3 sm:gap-5">
+                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20'>
                             Watch the film
-                            <PlayCircle className='ml-2 w-5 h-5' />
+                            <PlayCircle className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
                         </p>
-                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20'>
+                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20'>
                             Watch the event
-                            <ArrowRight className='ml-2 w-5 h-5' />
+                            <ArrowRight className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
                         </p>
                     </div>
                 </div>
