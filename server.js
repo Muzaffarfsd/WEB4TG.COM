@@ -14,6 +14,18 @@ app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught exception:', err);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled rejection:', err);
+});
+
+server.on('error', (err) => {
+    console.error('Server error:', err);
 });
