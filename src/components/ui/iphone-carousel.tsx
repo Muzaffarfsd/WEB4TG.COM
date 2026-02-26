@@ -1,0 +1,325 @@
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/all";
+gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useRef, useState } from "react";
+import { Play, Pause, RotateCcw, PlayCircle, ArrowRight } from "lucide-react";
+
+interface HighlightSlide {
+  id: number;
+  textLists: string[];
+  video: string;
+  videoDuration: number;
+}
+
+interface VideoState {
+  isEnd: boolean;
+  startPlay: boolean;
+  videoId: number;
+  isLastVideo: boolean;
+  isPlaying: boolean;
+}
+
+type ProcessType = "video-end" | "video-last" | "video-reset" | "pause" | "play";
+
+export const hightlightsSlides: HighlightSlide[] = [
+  {
+    id: 1,
+    textLists: [
+      "Enter A17 Pro.",
+      "Game-changing chip.",
+      "Groundbreaking performance.",
+    ],
+    video:
+      "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010712/highlight-first_dukqys.mp4",
+    videoDuration: 4,
+  },
+  {
+    id: 2,
+    textLists: ["Titanium.", "So strong. So light. So Pro."],
+    video:
+      "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010712/hightlight-third_xquibo.mp4",
+    videoDuration: 5,
+  },
+  {
+    id: 3,
+    textLists: [
+      "iPhone 15 Pro Max has the",
+      "longest optical zoom in",
+      "iPhone ever. Far out.",
+    ],
+    video:
+      "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010700/hightlight-sec_qtf7tq.mp4",
+    videoDuration: 2,
+  },
+  {
+    id: 4,
+    textLists: ["All-new Action button.", "What will yours do?"],
+    video:
+      "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010704/hightlight-fourth_iooitu.mp4",
+    videoDuration: 3.6,
+  },
+];
+
+export const VideoCarousel = () => {
+    const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
+    const videoSpanRef = useRef<(HTMLSpanElement | null)[]>([]);
+    const videoDivRef = useRef<(HTMLSpanElement | null)[]>([]);
+
+    const [video, setVideo] = useState<VideoState>({
+        isEnd: false,
+        startPlay: false,
+        videoId: 0,
+        isLastVideo: false,
+        isPlaying: false,
+    });
+
+    const [loadedData, setLoadedData] = useState<Event[]>([]);
+    const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
+
+    useGSAP(() => {
+        gsap.to("#slider", {
+            transform: `translateX(${-100 * videoId}%)`,
+            duration: 2,
+            ease: "power2.inOut",
+        });
+
+        gsap.to("#video", {
+            scrollTrigger: {
+                trigger: "#video",
+                toggleActions: "restart none none none",
+            },
+            onComplete: () => {
+                setVideo((pre) => ({
+                    ...pre,
+                    startPlay: true,
+                    isPlaying: true,
+                }));
+            },
+        });
+    }, [isEnd, videoId]);
+
+    useEffect(() => {
+        let currentProgress = 0;
+        const span = videoSpanRef.current;
+
+        if (span[videoId]) {
+            const anim = gsap.to(span[videoId], {
+                onUpdate: () => {
+                    const progress = Math.ceil(anim.progress() * 100);
+
+                    if (progress != currentProgress) {
+                        currentProgress = progress;
+
+                        gsap.to(videoDivRef.current[videoId], {
+                            width:
+                                window.innerWidth < 760
+                                    ? "10vw"
+                                    : window.innerWidth < 1200
+                                        ? "10vw"
+                                        : "4vw",
+                        });
+
+                        gsap.to(span[videoId], {
+                            width: `${currentProgress}%`,
+                            backgroundColor: "white",
+                        });
+                    }
+                },
+
+                onComplete: () => {
+                    if (isPlaying) {
+                        gsap.to(videoDivRef.current[videoId], {
+                            width: "12px",
+                        });
+                        gsap.to(span[videoId], {
+                            backgroundColor: "#afafaf",
+                        });
+                    }
+                },
+            });
+
+            if (videoId == 0) {
+                anim.restart();
+            }
+
+            const animUpdate = () => {
+                const currentVideo = videoRef.current[videoId];
+                if (currentVideo) {
+                    anim.progress(
+                        currentVideo.currentTime /
+                        hightlightsSlides[videoId].videoDuration
+                    );
+                }
+            };
+
+            if (isPlaying) {
+                gsap.ticker.add(animUpdate);
+            } else {
+                gsap.ticker.remove(animUpdate);
+            }
+        }
+    }, [videoId, startPlay]);
+
+    useEffect(() => {
+        if (loadedData.length > 3) {
+            const currentVideo = videoRef.current[videoId];
+            if (currentVideo) {
+                if (!isPlaying) {
+                    currentVideo.pause();
+                } else {
+                    startPlay && currentVideo.play();
+                }
+            }
+        }
+    }, [startPlay, videoId, isPlaying, loadedData]);
+
+    const handleProcess = (type: ProcessType, i?: number) => {
+        switch (type) {
+            case "video-end":
+                setVideo((pre) => ({ ...pre, isEnd: true, videoId: i! + 1 }));
+                break;
+
+            case "video-last":
+                setVideo((pre) => ({ ...pre, isLastVideo: true }));
+                break;
+
+            case "video-reset":
+                setVideo((pre) => ({ ...pre, videoId: 0, isLastVideo: false }));
+                break;
+
+            case "pause":
+                setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
+                break;
+
+            case "play":
+                setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
+                break;
+
+            default:
+                return video;
+        }
+    };
+
+    const handleLoadedMetaData = (_i: number, e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+        setLoadedData((pre) => [...pre, e.nativeEvent]);
+    };
+
+    return (
+        <>
+            <div className="flex items-center">
+                {hightlightsSlides.map((list, i) => (
+                    <div key={list.id} id="slider" className="sm:pr-20 pr-10">
+                        <div className="relative sm:w-[70vw] w-[88vw] md:h-[70vh] sm:h-[50vh] h-[35vh]">
+                            <div className="w-full h-full flex items-center justify-center rounded-3xl overflow-hidden bg-black">
+                                <video
+                                    id="video"
+                                    playsInline={true}
+                                    className={`${list.id === 2 && "translate-x-44"} pointer-events-none`}
+                                    preload="metadata"
+                                    muted
+                                    crossOrigin="anonymous"
+                                    ref={(el) => {
+                                        videoRef.current[i] = el;
+                                    }}
+                                    onEnded={() =>
+                                        i !== 3
+                                            ? handleProcess("video-end", i)
+                                            : handleProcess("video-last")
+                                    }
+                                    onPlay={() =>
+                                        setVideo((pre) => ({ ...pre, isPlaying: true }))
+                                    }
+                                    onLoadedMetadata={(e) => handleLoadedMetaData(i, e)}
+                                >
+                                    <source src={list.video} type="video/mp4" />
+                                </video>
+                            </div>
+
+                            <div className="absolute top-12 left-[5%] z-10">
+                                {list.textLists.map((text, i) => (
+                                    <p key={i} className="text-xl max-sm:text-sm font-medium text-white">
+                                        {text}
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="relative flex items-center justify-center mt-10">
+                <div className="flex items-center justify-center py-5 px-7 bg-input backdrop-blur rounded-full">
+                    {videoRef.current.map((_, i) => (
+                        <span
+                            key={i}
+                            className="mx-2 w-3 h-3 bg-muted-foreground/30 rounded-full relative cursor-pointer"
+                            ref={(el) => {
+                                videoDivRef.current[i] = el;
+                            }}
+                        >
+                            <span
+                                className="absolute h-full w-full rounded-full"
+                                ref={(el) => {
+                                    videoSpanRef.current[i] = el;
+                                }}
+                            />
+                        </span>
+                    ))}
+                </div>
+
+                <button
+                    className="ml-4 p-4 rounded-full bg-input backdrop-blur flex items-center justify-center"
+                    onClick={
+                        isLastVideo
+                            ? () => handleProcess("video-reset")
+                            : !isPlaying
+                                ? () => handleProcess("play")
+                                : () => handleProcess("pause")
+                    }
+                >
+                    {isLastVideo ? (
+                        <RotateCcw className="w-6 h-6 text-foreground" />
+                    ) : !isPlaying ? (
+                        <Play className="w-6 h-6 text-foreground" />
+                    ) : (
+                        <Pause className="w-6 h-6 text-foreground" />
+                    )}
+                </button>
+
+            </div>
+        </>
+    );
+};
+
+export const IphoneCarousel = () => {
+    useGSAP(() => {
+        gsap.to('#title', { opacity: 1, y: 0 });
+        gsap.to('.link', { opacity: 1, y: 0, duration: 1, stagger: 0.25 });
+    }, []);
+
+    return (
+        <section id='highlights' className='w-screen overflow-x-hidden sm:py-32 py-20 sm:px-10 px-5 bg-background h-screen'>
+            <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
+                <div className='mb-12 w-full md:flex items-end justify-between'>
+                    <h1 id='title' className='text-foreground lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20'>
+                        Get the highlights.
+                    </h1>
+
+                    <div className="flex flex-wrap items-end gap-5">
+                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20'>
+                            Watch the film
+                            <PlayCircle className='ml-2 w-5 h-5' />
+                        </p>
+                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20'>
+                            Watch the event
+                            <ArrowRight className='ml-2 w-5 h-5' />
+                        </p>
+                    </div>
+                </div>
+
+                <VideoCarousel />
+            </div>
+        </section>
+    );
+};

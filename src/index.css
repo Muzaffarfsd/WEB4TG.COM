@@ -6,6 +6,8 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --color-background: var(--bg-0);
   --color-foreground: var(--text-100);
+  --color-input: var(--bg-200);
+  --color-muted-foreground: var(--text-400);
 }
 
 :root {
