@@ -7,10 +7,7 @@ const StripeIcon = () => (
 );
 
 const YookassaIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-    <circle cx="12" cy="12" r="11" stroke="#4285F4" strokeWidth="2"/>
-    <path d="M8 12h8M12 8v8" stroke="#4285F4" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
+  <img src="/yukassa-logo.png" alt="ЮKassa" className="w-5 h-5 object-contain rounded-sm" />
 );
 
 const ApplePayIcon = () => (
