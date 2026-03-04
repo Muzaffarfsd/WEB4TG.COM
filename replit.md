@@ -39,7 +39,7 @@ src/
       case-studies.tsx               - 3 case study cards with animated count-up metrics (IntersectionObserver) + hover effects
       testimonials-section.tsx       - 3 review cards with verified badges, result metrics, gradient avatars, company info
       comparison-table.tsx           - 4-column comparison table with mobile scroll snap + animated hint arrow
-      pricing-section.tsx            - Development cost block (от 150 000₽) + 3 subscription plans
+      pricing-section.tsx            - Bento pricing grid: 5 blocks (Разработка от 150К, 3 subscriptions, AI-Агент от 200К with green accent)
       guarantees-section.tsx         - Bento grid (first card spans 2 cols) with gradient top borders + icon hover animations
       faq-section.tsx                - Accordion FAQ (5 items, one open at a time)
       integrations-marquee.tsx       - Scrolling integration badges with emoji prefixes
