@@ -60,7 +60,7 @@ export const ProcessSection = () => {
                             </div>
 
                             <div className="relative">
-                                <h3 className="text-lg sm:text-xl font-normal text-white/85 font-instrument-serif tracking-tight">
+                                <h3 className="text-lg sm:text-xl font-normal text-white font-instrument-serif tracking-tight">
                                     {step.title}
                                 </h3>
                                 <span className="text-[10px] sm:text-[11px] text-[#8B5CF6]/60 font-sans font-medium uppercase tracking-wider">
@@ -69,7 +69,7 @@ export const ProcessSection = () => {
 
                                 <ul className="mt-5 sm:mt-6 space-y-2.5 sm:space-y-3">
                                     {step.items.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2.5 text-[13px] sm:text-[14px] text-white/35 font-sans font-light">
+                                        <li key={i} className="flex items-center gap-2.5 text-[13px] sm:text-[14px] text-white/80 font-sans font-light">
                                             <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B5CF6]/50 shrink-0" />
                                             {item}
                                         </li>
@@ -77,7 +77,7 @@ export const ProcessSection = () => {
                                 </ul>
 
                                 <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.03]">
-                                    <span className="text-[10px] sm:text-[11px] text-white/15 font-sans uppercase tracking-wider">{step.duration}</span>
+                                    <span className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-wider">{step.duration}</span>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +86,7 @@ export const ProcessSection = () => {
 
                 <div ref={marqueeRef} className="relative overflow-hidden">
                     <div data-reveal className="section-divider mb-8 sm:mb-10" />
-                    <p data-reveal className="text-[10px] sm:text-[11px] text-white/15 font-sans uppercase tracking-[0.15em] mb-5 sm:mb-6 text-center">
+                    <p data-reveal className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-[0.15em] mb-5 sm:mb-6 text-center">
                         Стек технологий
                     </p>
                     <div data-reveal className="relative overflow-hidden">
@@ -96,7 +96,7 @@ export const ProcessSection = () => {
                             {[...techItems, ...techItems].map((tech, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/25 bg-[#08080c]/60 backdrop-blur-[32px] border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
+                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/70 bg-[#08080c]/60 backdrop-blur-[32px] border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
                                 >
                                     {tech}
                                 </span>

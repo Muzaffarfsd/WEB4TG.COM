@@ -308,11 +308,11 @@ export const IphoneCarousel = () => {
                     </div>
 
                     <div className="flex items-end gap-4 sm:gap-6">
-                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/70 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Демо
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/70 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Все проекты
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>

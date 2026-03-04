@@ -40,10 +40,10 @@ export const FeaturesSection = () => {
                             className="bg-[#08080c]/60 backdrop-blur-[32px] p-5 sm:p-6 md:p-7 group hover:bg-[#0c0a14]/65 transition-all duration-500"
                         >
                             <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]/40 mb-4 sm:mb-5 group-hover:text-[#8B5CF6] transition-colors duration-500" />
-                            <h3 className="text-[13px] sm:text-[14px] font-medium text-white/75 font-sans mb-1.5 tracking-tight">
+                            <h3 className="text-[13px] sm:text-[14px] font-medium text-white font-sans mb-1.5 tracking-tight">
                                 {feature.title}
                             </h3>
-                            <p className="text-[11px] sm:text-[12px] text-white/20 font-sans leading-relaxed font-light">
+                            <p className="text-[11px] sm:text-[12px] text-white/70 font-sans leading-relaxed font-light">
                                 {feature.desc}
                             </p>
                         </div>

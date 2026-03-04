@@ -13,16 +13,16 @@ interface Tube {
 }
 
 const TUBES: Omit<Tube, 'baseY'>[] = [
-  { speed: 0.0004, color: 'rgba(139, 92, 246, 0.25)', glowColor: 'rgba(139, 92, 246, 0.12)', width: 1.5, offset: 0, amplitude: 80, wavesCount: 2.5, vertical: false },
-  { speed: 0.0006, color: 'rgba(124, 58, 237, 0.20)', glowColor: 'rgba(124, 58, 237, 0.10)', width: 2, offset: 1.2, amplitude: 100, wavesCount: 2, vertical: false },
-  { speed: 0.0003, color: 'rgba(167, 139, 250, 0.18)', glowColor: 'rgba(167, 139, 250, 0.08)', width: 2.5, offset: 2.5, amplitude: 120, wavesCount: 1.8, vertical: false },
-  { speed: 0.0005, color: 'rgba(139, 92, 246, 0.20)', glowColor: 'rgba(139, 92, 246, 0.09)', width: 1.8, offset: 3.8, amplitude: 90, wavesCount: 3, vertical: false },
-  { speed: 0.00035, color: 'rgba(109, 40, 217, 0.15)', glowColor: 'rgba(109, 40, 217, 0.07)', width: 3, offset: 5, amplitude: 140, wavesCount: 1.5, vertical: false },
-  { speed: 0.00045, color: 'rgba(139, 92, 246, 0.14)', glowColor: 'rgba(139, 92, 246, 0.06)', width: 2, offset: 0.8, amplitude: 100, wavesCount: 2.2, vertical: false },
-  { speed: 0.0005, color: 'rgba(167, 139, 250, 0.16)', glowColor: 'rgba(167, 139, 250, 0.07)', width: 1.5, offset: 4.2, amplitude: 70, wavesCount: 2.8, vertical: false },
-  { speed: 0.0004, color: 'rgba(124, 58, 237, 0.18)', glowColor: 'rgba(124, 58, 237, 0.08)', width: 2.2, offset: 1.8, amplitude: 110, wavesCount: 2, vertical: true },
-  { speed: 0.00055, color: 'rgba(139, 92, 246, 0.14)', glowColor: 'rgba(139, 92, 246, 0.06)', width: 1.8, offset: 3, amplitude: 90, wavesCount: 2.5, vertical: true },
-  { speed: 0.0003, color: 'rgba(109, 40, 217, 0.12)', glowColor: 'rgba(109, 40, 217, 0.05)', width: 2.8, offset: 5.5, amplitude: 130, wavesCount: 1.6, vertical: true },
+  { speed: 0.0004, color: 'rgba(139, 92, 246, 0.12)', glowColor: 'rgba(139, 92, 246, 0.06)', width: 1.5, offset: 0, amplitude: 80, wavesCount: 2.5, vertical: false },
+  { speed: 0.0006, color: 'rgba(124, 58, 237, 0.10)', glowColor: 'rgba(124, 58, 237, 0.05)', width: 2, offset: 1.2, amplitude: 100, wavesCount: 2, vertical: false },
+  { speed: 0.0003, color: 'rgba(167, 139, 250, 0.08)', glowColor: 'rgba(167, 139, 250, 0.04)', width: 2.5, offset: 2.5, amplitude: 120, wavesCount: 1.8, vertical: false },
+  { speed: 0.0005, color: 'rgba(139, 92, 246, 0.09)', glowColor: 'rgba(139, 92, 246, 0.045)', width: 1.8, offset: 3.8, amplitude: 90, wavesCount: 3, vertical: false },
+  { speed: 0.00035, color: 'rgba(109, 40, 217, 0.07)', glowColor: 'rgba(109, 40, 217, 0.035)', width: 3, offset: 5, amplitude: 140, wavesCount: 1.5, vertical: false },
+  { speed: 0.00045, color: 'rgba(139, 92, 246, 0.06)', glowColor: 'rgba(139, 92, 246, 0.03)', width: 2, offset: 0.8, amplitude: 100, wavesCount: 2.2, vertical: false },
+  { speed: 0.0005, color: 'rgba(167, 139, 250, 0.07)', glowColor: 'rgba(167, 139, 250, 0.035)', width: 1.5, offset: 4.2, amplitude: 70, wavesCount: 2.8, vertical: false },
+  { speed: 0.0004, color: 'rgba(124, 58, 237, 0.08)', glowColor: 'rgba(124, 58, 237, 0.04)', width: 2.2, offset: 1.8, amplitude: 110, wavesCount: 2, vertical: true },
+  { speed: 0.00055, color: 'rgba(139, 92, 246, 0.06)', glowColor: 'rgba(139, 92, 246, 0.03)', width: 1.8, offset: 3, amplitude: 90, wavesCount: 2.5, vertical: true },
+  { speed: 0.0003, color: 'rgba(109, 40, 217, 0.05)', glowColor: 'rgba(109, 40, 217, 0.025)', width: 2.8, offset: 5.5, amplitude: 130, wavesCount: 1.6, vertical: true },
 ];
 
 export function TubesBackground() {
@@ -76,7 +76,7 @@ export function TubesBackground() {
     };
 
     const drawTube = (tube: Tube) => {
-      ctx.shadowBlur = 20;
+      ctx.shadowBlur = 15;
       ctx.shadowColor = tube.glowColor;
       ctx.strokeStyle = tube.color;
       ctx.lineWidth = tube.width;

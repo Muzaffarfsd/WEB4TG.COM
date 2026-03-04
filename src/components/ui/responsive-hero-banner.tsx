@@ -43,7 +43,7 @@ const StickyHeader = () => {
                                 <a
                                     key={index}
                                     href={link.href}
-                                    className="px-4 py-2 text-[13px] font-medium text-white/50 hover:text-white rounded-full hover:bg-white/[0.05] transition-all duration-300 font-sans"
+                                    className="px-4 py-2 text-[13px] font-medium text-white/80 hover:text-white rounded-full hover:bg-white/[0.05] transition-all duration-300 font-sans"
                                 >
                                     {link.label}
                                 </a>
@@ -85,7 +85,7 @@ const StickyHeader = () => {
                                 <a
                                     key={index}
                                     href={link.href}
-                                    className="px-4 py-3.5 text-[15px] font-medium rounded-xl font-sans transition-colors active:bg-white/[0.05] text-white/70"
+                                    className="px-4 py-3.5 text-[15px] font-medium rounded-xl font-sans transition-colors active:bg-white/[0.05] text-white/90"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     {link.label}
@@ -116,7 +116,7 @@ const StatItem = ({ value, label }: { value: string; label: string }) => {
             <div className="text-xl sm:text-2xl md:text-3xl font-semibold gradient-text font-sans tracking-tight">
                 {display}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-white/25 font-sans mt-1.5 uppercase tracking-[0.12em] leading-tight">
+            <div className="text-[10px] sm:text-[11px] text-white/60 font-sans mt-1.5 uppercase tracking-[0.12em] leading-tight">
                 {label}
             </div>
         </div>
@@ -159,7 +159,7 @@ const ResponsiveHeroBanner = () => {
                                     <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     24-48ч
                                 </span>
-                                <span className="text-[11px] sm:text-[13px] font-medium text-white/40 font-sans">
+                                <span className="text-[11px] sm:text-[13px] font-medium text-white/80 font-sans">
                                     от заявки до запуска
                                 </span>
                             </div>
@@ -179,9 +179,9 @@ const ResponsiveHeroBanner = () => {
                                 </div>
                             </h1>
 
-                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/35 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
+                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
                                 Telegram Mini Apps мирового класса.
-                                <span className="text-white/55"> Ваш бренд, ваши продажи — без комиссий.</span>
+                                <span className="text-white/90"> Ваш бренд, ваши продажи — без комиссий.</span>
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4">

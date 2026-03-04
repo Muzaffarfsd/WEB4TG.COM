@@ -55,20 +55,20 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
                 </span>
             )}
 
-            <h3 className="text-[14px] sm:text-base font-medium text-white/60 font-sans tracking-tight">
+            <h3 className="text-[14px] sm:text-base font-medium text-white/90 font-sans tracking-tight">
                 {plan.name}
             </h3>
 
             <div className="mt-4 sm:mt-5 mb-6 sm:mb-7">
                 <div className="flex items-baseline gap-1">
                     <span className="text-2xl sm:text-3xl md:text-4xl font-semibold gradient-text-white font-sans tracking-tight">{plan.price}</span>
-                    <span className="text-[12px] sm:text-sm text-white/15 font-sans font-light">₽/мес</span>
+                    <span className="text-[12px] sm:text-sm text-white/60 font-sans font-light">₽/мес</span>
                 </div>
             </div>
 
             <ul className="space-y-3 mb-7 sm:mb-8">
                 {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2.5 text-[12px] sm:text-[13px] text-white/35 font-sans font-light">
+                    <li key={i} className="flex items-center gap-2.5 text-[12px] sm:text-[13px] text-white/80 font-sans font-light">
                         <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B5CF6]/40 shrink-0" />
                         {feature}
                     </li>
@@ -109,7 +109,7 @@ export const PricingSection = () => {
                         <br />
                         <span className="italic gradient-text">запуска</span>
                     </h2>
-                    <p className="text-[13px] sm:text-sm text-white/25 mt-4 sm:mt-5 font-sans font-light">
+                    <p className="text-[13px] sm:text-sm text-white/70 mt-4 sm:mt-5 font-sans font-light">
                         Годовая оплата — скидка 20%
                     </p>
                 </div>

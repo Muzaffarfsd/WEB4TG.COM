@@ -19,7 +19,7 @@ export const FooterSection = () => {
                         <span className="italic gradient-text">запустить?</span>
                     </h2>
 
-                    <p data-reveal className="text-[clamp(0.8125rem,1.5vw,1rem)] text-white/25 max-w-sm mx-auto font-sans font-light mt-5 sm:mt-7 leading-relaxed">
+                    <p data-reveal className="text-[clamp(0.8125rem,1.5vw,1rem)] text-white/70 max-w-sm mx-auto font-sans font-light mt-5 sm:mt-7 leading-relaxed">
                         Напишите — обсудим проект и рассчитаем стоимость.
                         <br className="hidden sm:block" />
                         Средний срок запуска — 14 дней.
@@ -47,19 +47,19 @@ export const FooterSection = () => {
                         <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
                             <span className="text-white font-bold text-[8px] sm:text-[9px] font-sans">W4</span>
                         </div>
-                        <span className="text-white/40 text-[12px] sm:text-[13px] font-sans font-medium">WEB4TG Studio</span>
+                        <span className="text-white/80 text-[12px] sm:text-[13px] font-sans font-medium">WEB4TG Studio</span>
                     </div>
 
                     <div className="flex items-center gap-4 sm:gap-6">
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[11px] sm:text-[12px] text-white/20 hover:text-white/40 font-sans transition-colors duration-300">
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[11px] sm:text-[12px] text-white/60 hover:text-white font-sans transition-colors duration-300">
                             @w4tg_bot
                         </a>
-                        <span className="text-[11px] sm:text-[12px] text-white/10 font-sans">
+                        <span className="text-[11px] sm:text-[12px] text-white/50 font-sans">
                             Пн-Пт 10:00-19:00
                         </span>
                     </div>
 
-                    <p className="text-[10px] sm:text-[11px] text-white/10 font-sans">
+                    <p className="text-[10px] sm:text-[11px] text-white/50 font-sans">
                         © 2025 WEB4TG Studio
                     </p>
                 </div>

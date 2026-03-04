@@ -28,7 +28,7 @@ export const ServicesSection = () => {
                         <br />
                         <span className="italic gradient-text">для любого бизнеса</span>
                     </h2>
-                    <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/30 mt-4 sm:mt-5 font-sans font-light leading-relaxed">
+                    <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/70 mt-4 sm:mt-5 font-sans font-light leading-relaxed">
                         Приложения премиум-класса, которые выглядят как нативные — но без скачивания из App Store.
                     </p>
                 </div>
@@ -49,10 +49,10 @@ export const ServicesSection = () => {
                                     </div>
                                     <ArrowUpRight className="w-4 h-4 text-white/[0.06] group-hover:text-[#8B5CF6]/40 transition-colors duration-500" />
                                 </div>
-                                <h3 className="text-[14px] sm:text-[15px] font-medium text-white/85 font-sans mb-1.5 tracking-tight">
+                                <h3 className="text-[14px] sm:text-[15px] font-medium text-white font-sans mb-1.5 tracking-tight">
                                     {service.title}
                                 </h3>
-                                <p className="text-[12px] sm:text-[13px] text-white/25 font-sans leading-relaxed font-light">
+                                <p className="text-[12px] sm:text-[13px] text-white/70 font-sans leading-relaxed font-light">
                                     {service.desc}
                                 </p>
                             </div>
