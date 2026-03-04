@@ -32,7 +32,7 @@ src/
       magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
       client-logos.tsx               - Two-row client logos marquee (opposite directions)
       services-section.tsx           - Bento grid services (8 glassmorphic cards)
-      ai-agent-section.tsx           - Interactive AI agent demo (6-stage auto-playing chat simulation with metrics, inventory, and payment panels)
+      ai-agent-section.tsx           - Interactive AI agent "Alex" demo (6-stage SPIN sales simulation: context builder, objection handling, BANT qualification, ElevenLabs voice, function calling, KP generation)
       iphone-carousel.tsx            - GSAP video carousel (portfolio)
       process-section.tsx            - 3-step process glassmorphic cards
       features-section.tsx           - Glass features grid (8 cells)

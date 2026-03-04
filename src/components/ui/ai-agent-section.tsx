@@ -1,16 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useScrollReveal } from '../../hooks/use-animations';
 import {
-    Bot, User, Search, Package, CreditCard, CheckCircle, TrendingUp,
-    Brain, ShoppingCart, Sparkles, MessageSquare, Clock, ArrowRight,
-    Zap, Eye, Heart, BarChart3, Shield, Globe
+    Bot, User, Search, CreditCard, CheckCircle, TrendingUp,
+    Brain, Sparkles, MessageSquare, Clock, ArrowRight,
+    Zap, Eye, BarChart3, Shield, Globe, Mic, Volume2,
+    Target, Users, FileText, Gauge, Activity, ArrowUpRight
 } from 'lucide-react';
 
 interface ChatMessage {
     id: number;
-    sender: 'user' | 'ai';
+    sender: 'user' | 'alex';
     text: string;
-    typing?: boolean;
+    isVoice?: boolean;
 }
 
 interface AgentInsight {
@@ -27,127 +28,122 @@ interface StageData {
     insights: AgentInsight[];
     technique: string;
     techniqueDesc: string;
-    sidePanel: 'analysis' | 'inventory' | 'recommendation' | 'cart' | 'payment' | 'complete';
+    sidePanel: 'context' | 'spin' | 'objection' | 'funnel' | 'voice' | 'closing';
 }
 
 const stages: StageData[] = [
     {
-        title: "Приветствие и квалификация",
-        subtitle: "AI определяет намерение клиента",
+        title: "Первый контакт",
+        subtitle: "29 сигналов контекста за 0.3 сек",
         messages: [
-            { id: 1, sender: 'user', text: 'Привет! Ищу кроссовки для бега, бюджет до 15 000₽' },
-            { id: 2, sender: 'ai', text: 'Здравствуйте! 🏃 Отличный выбор. Подскажите, по какому покрытию планируете бегать — асфальт, трейл или беговая дорожка?' },
+            { id: 1, sender: 'user', text: 'Привет, у меня ресторан в Москве, думаю над приложением для заказов' },
+            { id: 2, sender: 'alex', text: 'Смотрите, ресторан — это как раз та ниша, где Mini App окупается быстрее всего. Доставка через Telegram без комиссий агрегаторов — это сразу +25% маржи)\n\nА сейчас заказы через агрегаторы идут или напрямую?' },
         ],
         insights: [
-            { icon: Brain, label: 'Намерение', value: 'Покупка • 94%', color: '#22c55e' },
-            { icon: User, label: 'Сегмент', value: 'Спорт / Бег', color: '#8B5CF6' },
-            { icon: TrendingUp, label: 'Бюджет', value: '10–15 000 ₽', color: '#f59e0b' },
-            { icon: Globe, label: 'Язык', value: 'Русский', color: '#3b82f6' },
+            { icon: Brain, label: 'Модель', value: 'Gemini Flash • 0.3', color: '#3b82f6' },
+            { icon: Target, label: 'Воронка', value: 'Awareness', color: '#f59e0b' },
+            { icon: Gauge, label: 'Propensity', value: '32 / 100', color: '#8B5CF6' },
+            { icon: Globe, label: 'Стиль', value: 'RU • Тёплый', color: '#22c55e' },
         ],
-        technique: 'SPIN-квалификация',
-        techniqueDesc: 'AI задаёт уточняющий вопрос о ситуации клиента, чтобы сузить выборку и повысить точность рекомендации',
-        sidePanel: 'analysis',
+        technique: 'SPIN: Situation',
+        techniqueDesc: 'Алекс не спрашивает «чем помочь?». Он сразу даёт ценность (Value First по Чалдини) и задаёт S-вопрос о текущей ситуации, чтобы начать квалификацию',
+        sidePanel: 'context',
     },
     {
-        title: "Поиск по каталогу",
-        subtitle: "Проверка наличия и подбор товаров",
+        title: "Выявление боли",
+        subtitle: "SPIN Selling — Problem & Implication",
         messages: [
-            { id: 3, sender: 'user', text: 'В основном асфальт, бегаю 3-4 раза в неделю' },
-            { id: 4, sender: 'ai', text: '🔍 Проверяю каталог... Нашёл 3 идеальные модели для асфальта в вашем бюджете. Все в наличии!' },
+            { id: 3, sender: 'user', text: 'Да, в основном Яндекс Еда и Деливери. Комиссия бешеная, 35% забирают' },
+            { id: 4, sender: 'alex', text: 'Так, давайте прикинем. 35% комиссии — если у вас оборот хотя бы 500к в месяц через агрегаторы, это 175 тысяч ежемесячно. За полгода — больше миллиона. И это деньги, которые вы уже теряете)\n\nА свою базу клиентов в Telegram ведёте?' },
         ],
         insights: [
-            { icon: Search, label: 'Запрос', value: 'Бег / Асфальт / ≤15к', color: '#8B5CF6' },
-            { icon: Package, label: 'Найдено', value: '47 → 3 модели', color: '#22c55e' },
-            { icon: Clock, label: 'Время поиска', value: '0.3 сек', color: '#3b82f6' },
-            { icon: BarChart3, label: 'Релевантность', value: '97%', color: '#f59e0b' },
+            { icon: Brain, label: 'Модель', value: 'Gemini Pro • 0.45', color: '#ef4444' },
+            { icon: Target, label: 'Воронка', value: 'Interest ↑', color: '#f59e0b' },
+            { icon: Gauge, label: 'Propensity', value: '48 → 58', color: '#8B5CF6' },
+            { icon: Activity, label: 'Настроение', value: '↗ Улучшается', color: '#22c55e' },
         ],
-        technique: 'Умная фильтрация',
-        techniqueDesc: 'AI анализирует 47 товаров по 12 параметрам за 0.3 секунды и выбирает 3 лучших совпадения',
-        sidePanel: 'inventory',
+        technique: 'Язык потерь (Канеман)',
+        techniqueDesc: 'Люди боятся потерять в 2.5× сильнее, чем хотят приобрести. Алекс говорит «вы теряете 175к», а не «вы заработаете 175к» — это вызывает в 2.5 раза более сильную реакцию',
+        sidePanel: 'spin',
     },
     {
-        title: "Персональная рекомендация",
-        subtitle: "AI предлагает лучший вариант",
+        title: "Работа с возражениями",
+        subtitle: "Challenger Mindset + социальное доказательство",
         messages: [
-            { id: 5, sender: 'ai', text: '⭐ Рекомендую Nike Pegasus 41 — 12 990₽\n\n✅ Амортизация Zoom Air\n✅ Рейтинг 4.8 из 5\n✅ Идеально для 3-4 пробежек/нед\n\nТакже есть Asics Gel-Nimbus (14 500₽) и New Balance 1080 (13 900₽)' },
-            { id: 6, sender: 'user', text: 'Nike Pegasus интересно, а какой размер посоветуете?' },
+            { id: 5, sender: 'user', text: 'Ну это всё понятно, но разработка приложений — это дорого и долго. У нас фрилансер делал сайт полгода' },
+            { id: 6, sender: 'alex', text: 'Знаете что, это самое частое заблуждение) Telegram Mini App — это не мобильное приложение. Не нужен App Store, не нужна модерация.\n\nВот кейс: DeluxeDine — ресторан похожего формата. Запустились за 10 дней, заказы через Mini App выросли на 40% за первый месяц. Без единой комиссии агрегатору.\n\nПоказать их кейс подробнее?' },
         ],
         insights: [
-            { icon: Heart, label: 'Топ-выбор', value: 'Nike Pegasus 41', color: '#ef4444' },
-            { icon: Sparkles, label: 'Персонализация', value: 'По профилю', color: '#8B5CF6' },
-            { icon: TrendingUp, label: 'Конверсия', value: '+34% с AI', color: '#22c55e' },
-            { icon: Eye, label: 'Просмотры модели', value: '2.4k / мес', color: '#3b82f6' },
+            { icon: Brain, label: 'Модель', value: 'Pro + Thinking', color: '#ef4444' },
+            { icon: Target, label: 'Воронка', value: 'Consideration', color: '#f59e0b' },
+            { icon: Gauge, label: 'Propensity', value: '58 → 71', color: '#8B5CF6' },
+            { icon: Users, label: 'BANT', value: 'B: ? A: ✓ N: ✓ T: ?', color: '#3b82f6' },
         ],
-        technique: 'Якорь + социальное доказательство',
-        techniqueDesc: 'AI начинает с лучшего варианта (якорь), добавляет рейтинг и статистику для подтверждения выбора',
-        sidePanel: 'recommendation',
+        technique: 'Challenger + Чалдини #3',
+        techniqueDesc: 'Алекс бросает вызов устаревшему представлению («это дорого и долго»), даёт конкретный кейс как социальное доказательство, и использует function call get_case_study для персонализации',
+        sidePanel: 'objection',
     },
     {
-        title: "Оформление заказа",
-        subtitle: "Быстрое добавление в корзину",
+        title: "Квалификация и демо",
+        subtitle: "BANT + Function Calling",
         messages: [
-            { id: 7, sender: 'ai', text: 'По данным покупателей с похожей стопой — размер 43 (US 10). 📦 Есть в наличии 4 пары!\n\nДобавить в корзину?' },
-            { id: 8, sender: 'user', text: 'Да, добавляйте!' },
-            { id: 9, sender: 'ai', text: '✅ Добавлено! К Nike Pegasus отлично подойдут спортивные носки Stance Run (590₽) — 87% клиентов берут вместе. Добавить?' },
+            { id: 7, sender: 'user', text: 'Да, покажите. А сколько это стоит вообще?' },
+            { id: 8, sender: 'alex', text: 'Шаблон «Ресторан» — 180 000₽. Это меню, корзина, оплата, трекинг курьера, push-уведомления.\n\n35% предоплата (63к), остаток после приёмки. Правки 14 дней бесплатно.\n\nЕсли ваш оборот 500к/мес — приложение окупается за 1 месяц, потому что 175к комиссий остаются у вас)\n\nКогда планируете запуск?' },
         ],
         insights: [
-            { icon: ShoppingCart, label: 'Корзина', value: '1 товар • 12 990₽', color: '#8B5CF6' },
-            { icon: Zap, label: 'Апсейл', value: 'Носки +590₽', color: '#f59e0b' },
-            { icon: TrendingUp, label: 'Средний чек', value: '+18% с допродажей', color: '#22c55e' },
-            { icon: Shield, label: 'Гарантия', value: '30 дней возврат', color: '#3b82f6' },
+            { icon: Brain, label: 'Модель', value: 'Pro + Thinking', color: '#ef4444' },
+            { icon: Target, label: 'Воронка', value: 'Decision', color: '#22c55e' },
+            { icon: Gauge, label: 'Propensity', value: '71 → 82', color: '#8B5CF6' },
+            { icon: Users, label: 'BANT', value: 'B: ✓ A: ✓ N: ✓ T: ?', color: '#22c55e' },
         ],
-        technique: 'Кросс-селл + срочность',
-        techniqueDesc: 'AI предлагает сопутствующий товар на основе паттернов покупок, увеличивая средний чек на 18%',
-        sidePanel: 'cart',
+        technique: 'Рефрейминг цены + BANT',
+        techniqueDesc: 'Алекс не просто называет цену — он сразу рефреймит через ROI (окупаемость за 1 месяц). Параллельно завершает BANT-квалификацию через вопрос о сроках',
+        sidePanel: 'funnel',
     },
     {
-        title: "Оплата",
-        subtitle: "Безопасная оплата в 1 клик",
+        title: "Голосовое + закрытие",
+        subtitle: "ElevenLabs v3 + техника закрытия",
         messages: [
-            { id: 10, sender: 'user', text: 'Давайте с носками!' },
-            { id: 11, sender: 'ai', text: '🧾 Ваш заказ:\n\n• Nike Pegasus 41 — 12 990₽\n• Stance Run носки — 590₽\n━━━━━━━━━━━\nИтого: 13 580₽\n\n💳 Выберите способ оплаты:' },
+            { id: 9, sender: 'user', text: 'Хочу до нового года успеть. Но надо ещё с партнёром обсудить' },
+            { id: 10, sender: 'alex', text: 'Вот что скажу — ближайшие слоты в декабре уже заполняются. Если начать на этой неделе, к новому году уже будете принимать заказы)\n\nДавайте я подготовлю КП с вашими цифрами — покажете партнёру конкретику, а не просто идею. Готовлю?' },
+            { id: 11, sender: 'alex', text: '🎤 Голосовое сообщение — 0:12', isVoice: true },
         ],
         insights: [
-            { icon: CreditCard, label: 'Методы', value: '6 способов', color: '#8B5CF6' },
-            { icon: Shield, label: 'Шифрование', value: 'AES-256', color: '#22c55e' },
-            { icon: Clock, label: 'Обработка', value: '< 2 сек', color: '#3b82f6' },
-            { icon: CheckCircle, label: 'Конверсия', value: '96.8%', color: '#f59e0b' },
+            { icon: Mic, label: 'Голос', value: 'whisper • bridge', color: '#f59e0b' },
+            { icon: Target, label: 'Воронка', value: 'Decision → Action', color: '#22c55e' },
+            { icon: Gauge, label: 'Propensity', value: '82 → 91', color: '#8B5CF6' },
+            { icon: Volume2, label: 'Профиль', value: 'ElevenLabs v3', color: '#3b82f6' },
         ],
-        technique: 'Бесшовный чекаут',
-        techniqueDesc: 'Оплата прямо в чате без перехода на внешний сайт — конверсия в оплату 96.8% против 34% у обычных магазинов',
-        sidePanel: 'payment',
+        technique: 'Дефицит + снятие риска',
+        techniqueDesc: 'Алекс использует реальный дефицит слотов (Чалдини #5), снимает барьер «надо обсудить» через КП, и отправляет голосовое в доверительном whisper-профиле для усиления эмпатии',
+        sidePanel: 'voice',
     },
     {
-        title: "Заказ оформлен!",
-        subtitle: "Полный цикл за 2 минуты",
+        title: "Сделка закрыта",
+        subtitle: "От первого сообщения до КП за 3 минуты",
         messages: [
-            { id: 12, sender: 'ai', text: '✅ Оплата прошла успешно!\n\n📦 Заказ #TG-48291\n🚚 Доставка: завтра, 12:00–18:00\n📍 Трекинг появится в этом чате\n\nСпасибо за покупку! Хорошей пробежки! 🏃' },
+            { id: 12, sender: 'user', text: 'Да, готовьте КП!' },
+            { id: 13, sender: 'alex', text: 'Отлично) Формирую коммерческое предложение с вашими данными.\n\n📄 КП_Ресторан_Москва.pdf\n\nТам внутри: ваш ROI, сроки, этапы, примеры. Если партнёр одобрит — бронирую слот и начинаем на этой неделе.\n\nБудут вопросы — пишите, я на связи)' },
         ],
         insights: [
-            { icon: CheckCircle, label: 'Статус', value: 'Оплачено', color: '#22c55e' },
-            { icon: Package, label: 'Доставка', value: 'Завтра', color: '#8B5CF6' },
-            { icon: MessageSquare, label: 'Сообщений', value: '12 за 2 мин', color: '#3b82f6' },
-            { icon: TrendingUp, label: 'Чек +18%', value: 'Допродажа', color: '#f59e0b' },
+            { icon: CheckCircle, label: 'Статус', value: 'КП отправлено', color: '#22c55e' },
+            { icon: FileText, label: 'Инструмент', value: 'generate_kp', color: '#8B5CF6' },
+            { icon: MessageSquare, label: 'Сообщений', value: '13 за 3 мин', color: '#3b82f6' },
+            { icon: Gauge, label: 'Propensity', value: '91 → 95', color: '#22c55e' },
         ],
-        technique: 'Пост-продажный сервис',
-        techniqueDesc: 'AI автоматически отправит трекинг, напомнит оставить отзыв и предложит аксессуары через 7 дней',
-        sidePanel: 'complete',
+        technique: 'Следующий шаг + единство',
+        techniqueDesc: 'Алекс использует function call generate_kp, создаёт конкретный следующий шаг (показать партнёру), и оставляет дверь открытой. Диалог сохраняется в RAG-базу как успешный кейс',
+        sidePanel: 'closing',
     },
 ];
 
-const paymentMethods = [
-    { name: 'Apple Pay', icon: '🍏' },
-    { name: 'Google Pay', icon: '🟢' },
-    { name: 'СБП', icon: '⚡' },
-    { name: 'Карта', icon: '💳' },
-    { name: 'ЮKassa', icon: '🟣' },
-    { name: 'Crypto', icon: '₿' },
-];
-
-const inventoryItems = [
-    { name: 'Nike Pegasus 41', sizes: [41, 42, 43, 44, 45], stock: 4, price: '12 990₽', match: 97 },
-    { name: 'Asics Gel-Nimbus', sizes: [42, 43, 44], stock: 2, price: '14 500₽', match: 89 },
-    { name: 'New Balance 1080', sizes: [41, 43, 44, 45], stock: 6, price: '13 900₽', match: 85 },
+const functionTools = [
+    { name: 'get_pricing', status: 'called', result: 'Ресторан: 180 000₽' },
+    { name: 'get_case_study', status: 'called', result: 'DeluxeDine: +40%' },
+    { name: 'calculate_project_cost', status: 'called', result: '180к + AI-агент' },
+    { name: 'save_client_info', status: 'called', result: 'Ресторан, Москва' },
+    { name: 'generate_kp', status: 'pending', result: 'Формируется...' },
+    { name: 'check_availability', status: 'called', result: 'Декабрь: 2 слота' },
 ];
 
 const TypingIndicator = () => (
@@ -166,193 +162,224 @@ const TypingIndicator = () => (
     </div>
 );
 
-const SidePanelContent = ({ type, active }: { type: string; active: boolean }) => {
-    if (!active) return null;
+const VoiceMessage = () => (
+    <div className="flex items-center gap-2 px-1">
+        <div className="w-7 h-7 rounded-full bg-[#8B5CF6]/20 flex items-center justify-center flex-shrink-0">
+            <Mic className="w-3.5 h-3.5 text-[#8B5CF6]" />
+        </div>
+        <div className="flex-1 flex items-center gap-0.5">
+            {Array.from({ length: 24 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="w-[3px] rounded-full bg-[#8B5CF6]/50"
+                    style={{
+                        height: `${6 + Math.sin(i * 0.8) * 8 + Math.random() * 6}px`,
+                        animation: `typingBounce 2s ease-in-out ${i * 0.08}s infinite`,
+                    }}
+                />
+            ))}
+        </div>
+        <span className="text-[10px] text-white/40 flex-shrink-0">0:12</span>
+    </div>
+);
 
+const SidePanelContent = ({ type }: { type: string }) => {
     switch (type) {
-        case 'analysis':
+        case 'context':
             return (
                 <div className="space-y-3">
-                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">NLP Анализ</div>
-                    {['Определение языка', 'Извлечение сущностей', 'Анализ намерения', 'Классификация сегмента'].map((step, i) => (
-                        <div key={i} className="flex items-center gap-2.5" style={{ animation: `fadeSlideIn 0.4s ease-out ${i * 0.15}s both` }}>
+                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">29 сигналов контекста</div>
+                    {[
+                        { label: 'Определение языка', value: 'RU', done: true },
+                        { label: 'Детекция воронки', value: 'Awareness', done: true },
+                        { label: 'BANT-квалификация', value: 'N: ресторан', done: true },
+                        { label: 'Зеркало клиента', value: 'Разговорный', done: true },
+                        { label: 'Роутинг модели', value: 'Flash → 0.3', done: true },
+                    ].map((step, i) => (
+                        <div key={i} className="flex items-center gap-2.5" style={{ animation: `fadeSlideIn 0.4s ease-out ${i * 0.12}s both` }}>
                             <div className="w-5 h-5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/30 flex items-center justify-center flex-shrink-0">
                                 <CheckCircle className="w-3 h-3 text-[#22c55e]" />
                             </div>
-                            <span className="text-[12px] text-white/70">{step}</span>
+                            <span className="text-[12px] text-white/60 flex-1">{step.label}</span>
+                            <span className="text-[10px] text-[#8B5CF6]">{step.value}</span>
                         </div>
                     ))}
-                    <div className="mt-4 p-3 rounded-lg bg-[#8B5CF6]/5 border border-[#8B5CF6]/10">
-                        <div className="text-[10px] text-[#8B5CF6]/60 uppercase tracking-wider mb-2">Контекст</div>
-                        <div className="text-[11px] text-white/50 leading-relaxed">
-                            intent: <span className="text-[#22c55e]">purchase</span><br />
-                            category: <span className="text-[#8B5CF6]">running_shoes</span><br />
-                            budget_max: <span className="text-[#f59e0b]">15000</span><br />
-                            confidence: <span className="text-[#22c55e]">0.94</span>
+                    <div className="mt-4 p-3 rounded-lg bg-[#8B5CF6]/5 border border-[#8B5CF6]/10" style={{ animation: 'fadeSlideIn 0.4s ease-out 0.6s both' }}>
+                        <div className="text-[10px] text-[#8B5CF6]/60 uppercase tracking-wider mb-2">Контекст-билдер</div>
+                        <div className="text-[11px] text-white/50 leading-relaxed font-mono">
+                            funnel: <span className="text-[#f59e0b]">awareness</span><br />
+                            niche: <span className="text-[#8B5CF6]">restaurant</span><br />
+                            city: <span className="text-[#22c55e]">moscow</span><br />
+                            propensity: <span className="text-[#f59e0b]">32</span><br />
+                            model: <span className="text-[#3b82f6]">flash_preview</span>
                         </div>
                     </div>
                 </div>
             );
-        case 'inventory':
+        case 'spin':
             return (
-                <div className="space-y-2.5">
-                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Каталог / Наличие</div>
-                    {inventoryItems.map((item, i) => (
+                <div className="space-y-3">
+                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">SPIN Selling</div>
+                    {[
+                        { stage: 'S', name: 'Situation', desc: 'Ресторан, Москва, агрегаторы', active: true, done: true },
+                        { stage: 'P', name: 'Problem', desc: 'Комиссия 35%, потеря маржи', active: true, done: true },
+                        { stage: 'I', name: 'Implication', desc: '175к/мес потерь → 1М за полгода', active: true, done: false },
+                        { stage: 'N', name: 'Need-Payoff', desc: 'Ожидание...', active: false, done: false },
+                    ].map((s, i) => (
                         <div
                             key={i}
-                            className={`p-3 rounded-lg border transition-all duration-300 ${i === 0
-                                ? 'bg-[#8B5CF6]/8 border-[#8B5CF6]/20'
-                                : 'bg-white/[0.02] border-white/[0.05]'
-                                }`}
-                            style={{ animation: `fadeSlideIn 0.4s ease-out ${i * 0.12}s both` }}
+                            className={`p-2.5 rounded-lg border ${s.active
+                                ? s.done ? 'bg-[#22c55e]/5 border-[#22c55e]/15' : 'bg-[#8B5CF6]/5 border-[#8B5CF6]/20'
+                                : 'bg-white/[0.01] border-white/[0.04]'}`}
+                            style={{ animation: `fadeSlideIn 0.3s ease-out ${i * 0.1}s both` }}
                         >
-                            <div className="flex justify-between items-start mb-1.5">
-                                <span className="text-[12px] text-white/90 font-medium">{item.name}</span>
-                                <span className="text-[11px] text-[#8B5CF6]">{item.price}</span>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className={`w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center ${s.done
+                                    ? 'bg-[#22c55e]/20 text-[#22c55e]'
+                                    : s.active ? 'bg-[#8B5CF6]/20 text-[#8B5CF6]' : 'bg-white/[0.05] text-white/20'}`}>
+                                    {s.stage}
+                                </span>
+                                <span className={`text-[12px] font-medium ${s.active ? 'text-white/80' : 'text-white/30'}`}>{s.name}</span>
                             </div>
-                            <div className="flex gap-1 mb-2">
-                                {item.sizes.map(s => (
-                                    <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] text-white/50">
-                                        {s}
-                                    </span>
-                                ))}
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-[10px] text-white/40">Склад: {item.stock} шт</span>
-                                <div className="flex items-center gap-1">
-                                    <div className="h-1 w-12 rounded-full bg-white/[0.05] overflow-hidden">
-                                        <div
-                                            className="h-full rounded-full bg-[#22c55e]"
-                                            style={{ width: `${item.match}%` }}
-                                        />
-                                    </div>
-                                    <span className="text-[10px] text-[#22c55e]">{item.match}%</span>
-                                </div>
-                            </div>
+                            <div className={`text-[10px] ml-7 ${s.active ? 'text-white/50' : 'text-white/20'}`}>{s.desc}</div>
                         </div>
                     ))}
-                </div>
-            );
-        case 'recommendation':
-            return (
-                <div className="space-y-3">
-                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">AI Ранжирование</div>
-                    <div className="p-3 rounded-lg bg-[#8B5CF6]/8 border border-[#8B5CF6]/20" style={{ animation: 'fadeSlideIn 0.4s ease-out both' }}>
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                            <span className="text-[12px] text-white/90 font-medium">Факторы выбора</span>
-                        </div>
-                        {[
-                            { name: 'Соответствие профилю', score: 97 },
-                            { name: 'Цена / качество', score: 92 },
-                            { name: 'Популярность', score: 88 },
-                            { name: 'Отзывы', score: 96 },
-                        ].map((factor, i) => (
-                            <div key={i} className="flex items-center gap-2 mb-2" style={{ animation: `fadeSlideIn 0.3s ease-out ${0.1 + i * 0.1}s both` }}>
-                                <span className="text-[11px] text-white/50 w-28 flex-shrink-0">{factor.name}</span>
-                                <div className="flex-1 h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
-                                    <div
-                                        className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA]"
-                                        style={{
-                                            width: `${factor.score}%`,
-                                            animation: `barGrow 0.6s ease-out ${0.3 + i * 0.1}s both`,
-                                        }}
-                                    />
-                                </div>
-                                <span className="text-[10px] text-[#8B5CF6] w-8 text-right">{factor.score}%</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]" style={{ animation: 'fadeSlideIn 0.4s ease-out 0.3s both' }}>
-                        <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Стратегия</div>
-                        <div className="text-[11px] text-white/60 leading-relaxed">
-                            Применены техники: <span className="text-[#8B5CF6]">якорный эффект</span>, <span className="text-[#22c55e]">социальное доказательство</span>, <span className="text-[#f59e0b]">ограничение выбора до 3</span>
-                        </div>
-                    </div>
-                </div>
-            );
-        case 'cart':
-            return (
-                <div className="space-y-3">
-                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Корзина</div>
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]" style={{ animation: 'fadeSlideIn 0.3s ease-out both' }}>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-[12px] text-white/80">Nike Pegasus 41</span>
-                            <span className="text-[12px] text-white/90">12 990₽</span>
-                        </div>
-                        <span className="text-[10px] text-white/40">Размер 43 • Чёрный</span>
-                    </div>
-                    <div className="p-3 rounded-lg bg-[#f59e0b]/5 border border-[#f59e0b]/15 border-dashed" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.15s both' }}>
+                    <div className="p-2.5 rounded-lg bg-[#f59e0b]/5 border border-[#f59e0b]/15 mt-2" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.5s both' }}>
                         <div className="flex items-center gap-1.5 mb-1">
                             <Zap className="w-3 h-3 text-[#f59e0b]" />
-                            <span className="text-[10px] text-[#f59e0b] uppercase tracking-wider">Допродажа</span>
+                            <span className="text-[10px] text-[#f59e0b]">Канеман: Язык потерь</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-[12px] text-white/70">Stance Run носки</span>
-                            <span className="text-[12px] text-white/80">590₽</span>
-                        </div>
-                        <div className="text-[10px] text-white/40 mt-1">87% клиентов берут вместе</div>
-                    </div>
-                    <div className="h-px bg-white/[0.06] my-2" />
-                    <div className="flex justify-between items-center" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.3s both' }}>
-                        <span className="text-[13px] text-white/60">Итого</span>
-                        <span className="text-[15px] text-white font-medium">13 580₽</span>
-                    </div>
-                    <div className="mt-3 p-2.5 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/15" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.4s both' }}>
-                        <div className="text-[10px] text-[#22c55e] text-center">Средний чек увеличен на +4.5% через допродажу</div>
+                        <div className="text-[10px] text-white/40">«Вы теряете 175к/мес» вместо «вы заработаете 175к/мес» — реакция в 2.5× сильнее</div>
                     </div>
                 </div>
             );
-        case 'payment':
+        case 'objection':
             return (
                 <div className="space-y-3">
-                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Платёжный шлюз</div>
-                    <div className="grid grid-cols-2 gap-2">
-                        {paymentMethods.map((method, i) => (
+                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Работа с возражениями</div>
+                    <div className="p-3 rounded-lg bg-[#ef4444]/5 border border-[#ef4444]/15" style={{ animation: 'fadeSlideIn 0.3s ease-out both' }}>
+                        <div className="text-[10px] text-[#ef4444] uppercase tracking-wider mb-1.5">Возражение</div>
+                        <div className="text-[12px] text-white/70">«Дорого и долго, фрилансер делал сайт полгода»</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/15" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.15s both' }}>
+                        <div className="text-[10px] text-[#22c55e] uppercase tracking-wider mb-1.5">Стратегия</div>
+                        <div className="space-y-1.5">
+                            {[
+                                'Challenger: разрушить заблуждение',
+                                'Сравнение: Mini App ≠ мобильное приложение',
+                                'Кейс: DeluxeDine, +40% заказов',
+                                'Чалдини #3: социальное доказательство',
+                            ].map((s, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <ArrowUpRight className="w-3 h-3 text-[#22c55e] flex-shrink-0" />
+                                    <span className="text-[11px] text-white/60">{s}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.3s both' }}>
+                        <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Function Call</div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                            <span className="text-[11px] text-white/50 font-mono">get_case_study(</span>
+                            <span className="text-[11px] text-[#8B5CF6] font-mono">"restaurant"</span>
+                            <span className="text-[11px] text-white/50 font-mono">)</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        case 'funnel':
+            return (
+                <div className="space-y-3">
+                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">17 инструментов</div>
+                    <div className="space-y-1.5">
+                        {functionTools.map((tool, i) => (
                             <div
                                 key={i}
-                                className={`p-2.5 rounded-lg border text-center cursor-default transition-all duration-300 ${i === 0
-                                    ? 'bg-[#8B5CF6]/10 border-[#8B5CF6]/25 ring-1 ring-[#8B5CF6]/20'
-                                    : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]'
-                                    }`}
-                                style={{ animation: `fadeSlideIn 0.3s ease-out ${i * 0.07}s both` }}
+                                className={`flex items-center gap-2 p-2 rounded-lg ${tool.status === 'pending' ? 'bg-[#f59e0b]/5 border border-[#f59e0b]/15' : 'bg-white/[0.02] border border-white/[0.04]'}`}
+                                style={{ animation: `fadeSlideIn 0.3s ease-out ${i * 0.08}s both` }}
                             >
-                                <div className="text-lg mb-0.5">{method.icon}</div>
-                                <div className="text-[10px] text-white/60">{method.name}</div>
+                                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${tool.status === 'pending' ? 'bg-[#f59e0b] animate-pulse' : 'bg-[#22c55e]'}`} />
+                                <span className="text-[10px] text-white/50 font-mono flex-1 truncate">{tool.name}</span>
+                                <span className={`text-[9px] truncate max-w-[80px] ${tool.status === 'pending' ? 'text-[#f59e0b]' : 'text-white/30'}`}>{tool.result}</span>
                             </div>
                         ))}
                     </div>
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] mt-2" style={{ animation: 'fadeSlideIn 0.4s ease-out 0.5s both' }}>
-                        <div className="flex items-center gap-2 mb-2">
-                            <Shield className="w-3.5 h-3.5 text-[#22c55e]" />
-                            <span className="text-[11px] text-white/70">Безопасность</span>
-                        </div>
-                        <div className="text-[10px] text-white/40 leading-relaxed">
-                            PCI DSS Level 1 • 3D Secure • Токенизация • Данные карт не хранятся
+                    <div className="p-3 rounded-lg bg-[#8B5CF6]/5 border border-[#8B5CF6]/10 mt-2" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.5s both' }}>
+                        <div className="text-[10px] text-[#8B5CF6]/60 uppercase tracking-wider mb-2">BANT-квалификация</div>
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { letter: 'B', name: 'Budget', value: '~180к ✓', done: true },
+                                { letter: 'A', name: 'Authority', value: '+партнёр', done: true },
+                                { letter: 'N', name: 'Need', value: 'Комиссии ✓', done: true },
+                                { letter: 'T', name: 'Timeline', value: 'До НГ', done: true },
+                            ].map((b, i) => (
+                                <div key={i} className="flex items-center gap-1.5">
+                                    <span className={`text-[10px] font-bold ${b.done ? 'text-[#22c55e]' : 'text-white/20'}`}>{b.letter}</span>
+                                    <span className="text-[10px] text-white/40">{b.value}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             );
-        case 'complete':
+        case 'voice':
+            return (
+                <div className="space-y-3">
+                    <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Голосовая система</div>
+                    <div className="p-3 rounded-lg bg-[#8B5CF6]/5 border border-[#8B5CF6]/20" style={{ animation: 'fadeSlideIn 0.3s ease-out both' }}>
+                        <div className="flex items-center gap-2 mb-3">
+                            <Volume2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                            <span className="text-[12px] text-white/80 font-medium">ElevenLabs v3</span>
+                        </div>
+                        {[
+                            { name: 'Триггер', value: 'Closing (100)', color: '#ef4444' },
+                            { name: 'Профиль', value: 'whisper', color: '#8B5CF6' },
+                            { name: 'Режим', value: 'bridge (>500 симв)', color: '#f59e0b' },
+                            { name: 'Формат', value: 'mp3_44100_128', color: '#3b82f6' },
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center justify-between mb-2" style={{ animation: `fadeSlideIn 0.3s ease-out ${0.1 + i * 0.1}s both` }}>
+                                <span className="text-[11px] text-white/40">{item.name}</span>
+                                <span className="text-[10px] font-medium" style={{ color: item.color }}>{item.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.4s both' }}>
+                        <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">7 голосовых профилей</div>
+                        <div className="flex flex-wrap gap-1">
+                            {['greeting', 'empathy', 'factual', 'excited', 'whisper', 'playful', 'default'].map((p, i) => (
+                                <span key={i} className={`text-[9px] px-1.5 py-0.5 rounded ${p === 'whisper' ? 'bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/20' : 'bg-white/[0.04] text-white/30'}`}>
+                                    {p}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/15" style={{ animation: 'fadeSlideIn 0.3s ease-out 0.5s both' }}>
+                        <div className="text-[10px] text-[#22c55e] text-center">Голос повышает конверсию закрытия на +23%</div>
+                    </div>
+                </div>
+            );
+        case 'closing':
             return (
                 <div className="space-y-3">
                     <div className="text-[11px] text-white/40 uppercase tracking-wider mb-3">Результат</div>
                     <div className="p-4 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/15 text-center" style={{ animation: 'fadeSlideIn 0.4s ease-out both' }}>
                         <CheckCircle className="w-8 h-8 text-[#22c55e] mx-auto mb-2" />
-                        <div className="text-[14px] text-white/90 font-medium mb-1">Заказ оформлен</div>
-                        <div className="text-[11px] text-white/50">12 сообщений • 2 минуты</div>
+                        <div className="text-[14px] text-white/90 font-medium mb-1">КП отправлено</div>
+                        <div className="text-[11px] text-white/50">13 сообщений — 3 минуты</div>
                     </div>
                     <div className="space-y-2 mt-3">
                         {[
-                            { label: 'Без участия оператора', icon: Bot },
-                            { label: 'Допродажа +590₽', icon: TrendingUp },
-                            { label: 'Конверсия 96.8%', icon: BarChart3 },
-                            { label: 'Работает 24/7 / 150+ языков', icon: Globe },
+                            { label: 'Без участия менеджера', icon: Bot },
+                            { label: 'Propensity 32 → 95', icon: TrendingUp },
+                            { label: '6 инструментов вызвано', icon: Zap },
+                            { label: 'Диалог → RAG-база', icon: Brain },
+                            { label: 'Следующий шаг назначен', icon: ArrowUpRight },
                         ].map((stat, i) => (
                             <div
                                 key={i}
                                 className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]"
-                                style={{ animation: `fadeSlideIn 0.3s ease-out ${0.15 + i * 0.1}s both` }}
+                                style={{ animation: `fadeSlideIn 0.3s ease-out ${0.15 + i * 0.08}s both` }}
                             >
                                 <stat.icon className="w-3.5 h-3.5 text-[#8B5CF6] flex-shrink-0" />
                                 <span className="text-[11px] text-white/60">{stat.label}</span>
@@ -433,7 +460,7 @@ export const AiAgentSection = () => {
 
             const msg = currentMessages[msgIndex];
             const reduced = prefersReducedMotion.current;
-            if (msg.sender === 'ai') {
+            if (msg.sender === 'alex') {
                 setIsTyping(true);
                 timerRef.current = setTimeout(() => {
                     setIsTyping(false);
@@ -470,6 +497,23 @@ export const AiAgentSection = () => {
 
     const stage = stages[currentStage];
 
+    const renderMessage = (msg: ChatMessage, animated: boolean, animIndex?: number) => (
+        <div
+            key={msg.id}
+            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            style={animated ? { animation: `messageAppear 0.35s ease-out ${(animIndex || 0) * 0.05}s both` } : undefined}
+        >
+            <div
+                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
+                    ? 'bg-[#8B5CF6] text-white rounded-br-md'
+                    : 'bg-white/[0.06] text-white/80 rounded-bl-md'
+                    }`}
+            >
+                {msg.isVoice ? <VoiceMessage /> : msg.text}
+            </div>
+        </div>
+    );
+
     return (
         <section ref={sectionRef} id="ai-agent" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8 overflow-hidden">
             <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.03] blur-[100px] top-[20%] right-[-10%] pointer-events-none" />
@@ -479,16 +523,16 @@ export const AiAgentSection = () => {
                 <div data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
-                        AI-Агент
+                        AI-Агент «Алекс»
                         <span className="w-8 h-px bg-[#8B5CF6]/40 ml-3" />
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
-                        Продавец, который
+                        Не чат-бот —
                         <br />
-                        <span className="italic gradient-text">никогда не спит</span>
+                        <span className="italic gradient-text">живой эксперт</span>
                     </h2>
                     <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/70 mt-4 sm:mt-5 font-sans font-light leading-relaxed max-w-2xl mx-auto">
-                        AI-консультант обрабатывает заказы от первого сообщения до оплаты. Без операторов, без задержек — 24/7 на 150+ языках.
+                        Алекс ведёт клиента от первого сообщения до оплаты. SPIN-продажи, 7 принципов Чалдини, голосовые сообщения, 17 инструментов — и клиент даже не понимает, что говорит с AI.
                     </p>
                 </div>
 
@@ -533,7 +577,7 @@ export const AiAgentSection = () => {
                                 <div className="w-6 h-6 rounded-lg bg-[#8B5CF6]/10 flex items-center justify-center">
                                     <Brain className="w-3.5 h-3.5 text-[#8B5CF6]" />
                                 </div>
-                                <span className="text-[12px] text-white/60 font-sans">Метрики AI</span>
+                                <span className="text-[12px] text-white/60 font-sans">Мозг Алекса</span>
                             </div>
                             <div className="space-y-3">
                                 {stage.insights.map((insight, i) => (
@@ -615,7 +659,7 @@ export const AiAgentSection = () => {
                                                 <Bot className="w-4.5 h-4.5 text-white" />
                                             </div>
                                             <div className="flex-1">
-                                                <div className="text-[13px] text-white/90 font-medium font-sans">AI Консультант</div>
+                                                <div className="text-[13px] text-white/90 font-medium font-sans">Алекс</div>
                                                 <div className="flex items-center gap-1">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
                                                     <span className="text-[10px] text-[#22c55e]/80">онлайн</span>
@@ -628,37 +672,9 @@ export const AiAgentSection = () => {
                                         <div className="h-px bg-white/[0.06]" />
                                     </div>
 
-                                    <div ref={chatRef} className="h-[420px] sm:h-[460px] overflow-y-auto px-3 py-3 space-y-2 scroll-smooth ai-agent-chat-scroll" role="log" aria-label="Демонстрация чата с AI-агентом" aria-live="polite">
-                                        {allPreviousMessages.map(msg => (
-                                            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                <div
-                                                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
-                                                        ? 'bg-[#8B5CF6] text-white rounded-br-md'
-                                                        : 'bg-white/[0.06] text-white/80 rounded-bl-md'
-                                                        }`}
-                                                >
-                                                    {msg.text}
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        {visibleMessages.map((msg, i) => (
-                                            <div
-                                                key={msg.id}
-                                                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                                                style={{ animation: `messageAppear 0.35s ease-out ${i * 0.05}s both` }}
-                                            >
-                                                <div
-                                                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
-                                                        ? 'bg-[#8B5CF6] text-white rounded-br-md'
-                                                        : 'bg-white/[0.06] text-white/80 rounded-bl-md'
-                                                        }`}
-                                                >
-                                                    {msg.text}
-                                                </div>
-                                            </div>
-                                        ))}
-
+                                    <div ref={chatRef} className="h-[420px] sm:h-[460px] overflow-y-auto px-3 py-3 space-y-2 scroll-smooth ai-agent-chat-scroll" role="log" aria-label="Демонстрация чата с Алексом" aria-live="polite">
+                                        {allPreviousMessages.map(msg => renderMessage(msg, false))}
+                                        {visibleMessages.map((msg, i) => renderMessage(msg, true, i))}
                                         {isTyping && (
                                             <div className="flex justify-start">
                                                 <div className="bg-white/[0.06] rounded-2xl rounded-bl-md">
@@ -694,17 +710,17 @@ export const AiAgentSection = () => {
                             </div>
                             <div className="text-[13px] text-white/80 font-medium font-sans mb-1">{stage.title}</div>
                             <div className="text-[11px] text-white/40 font-sans mb-4">{stage.subtitle}</div>
-                            <SidePanelContent key={sidePanelKey} type={stage.sidePanel} active={true} />
+                            <SidePanelContent key={sidePanelKey} type={stage.sidePanel} />
                         </div>
                     </div>
                 </div>
 
                 <div data-reveal className="mt-10 sm:mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
                     {[
-                        { value: '2 мин', label: 'От запроса до оплаты', icon: Clock },
-                        { value: '96.8%', label: 'Конверсия в оплату', icon: TrendingUp },
-                        { value: '24/7', label: 'Без выходных', icon: Zap },
+                        { value: '29', label: 'Сигналов контекста', icon: Brain },
+                        { value: '17', label: 'Инструментов AI', icon: Zap },
                         { value: '150+', label: 'Языков поддержки', icon: Globe },
+                        { value: '24/7', label: 'Без выходных', icon: Clock },
                     ].map((stat, i) => (
                         <div
                             key={i}
