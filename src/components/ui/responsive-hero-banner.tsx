@@ -25,7 +25,7 @@ const StickyHeader = () => {
     }, [mobileMenuOpen]);
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-white/[0.03] backdrop-blur-2xl border-b border-white/[0.08]' : ''}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#050505]/90 backdrop-blur-2xl border-b border-white/[0.06]' : ''}`}>
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
                     <a href="#" className="flex items-center gap-1.5 group shrink-0">
@@ -38,7 +38,7 @@ const StickyHeader = () => {
                     </a>
 
                     <nav className="hidden lg:flex items-center gap-1">
-                        <div className="flex items-center gap-0.5 rounded-full bg-white/[0.04] px-1.5 py-1.5 border border-white/[0.08] backdrop-blur-2xl">
+                        <div className="flex items-center gap-0.5 rounded-full bg-[#0a0a0c]/80 px-1.5 py-1.5 border border-white/[0.06]">
                             {navLinks.map((link, index) => (
                                 <a
                                     key={index}
@@ -133,32 +133,6 @@ const GradientMesh = () => {
     );
 };
 
-const HeroMouseGlow = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-
-    useEffect(() => {
-        if (isTouch || !containerRef.current) return;
-        const el = containerRef.current;
-        const handleMouse = (e: MouseEvent) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            el.style.setProperty('--mx', `${x}%`);
-            el.style.setProperty('--my', `${y}%`);
-        };
-        window.addEventListener('mousemove', handleMouse, { passive: true });
-        return () => window.removeEventListener('mousemove', handleMouse);
-    }, [isTouch]);
-
-    if (isTouch) return null;
-
-    return (
-        <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.03] blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
-        </div>
-    );
-};
-
 const stats = [
     { value: "50+", label: "проектов" },
     { value: "127%", label: "рост продаж" },
@@ -176,7 +150,6 @@ const ResponsiveHeroBanner = () => {
 
             <section className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
                 <GradientMesh />
-                <HeroMouseGlow />
 
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">

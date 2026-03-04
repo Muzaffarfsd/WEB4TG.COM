@@ -96,7 +96,7 @@ export const ProcessSection = () => {
                             {[...techItems, ...techItems].map((tech, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/25 bg-white/[0.03] border border-white/[0.06] rounded-full font-sans whitespace-nowrap backdrop-blur-sm"
+                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/25 bg-[#0a0a0c]/80 border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
                                 >
                                     {tech}
                                 </span>
