@@ -37,7 +37,7 @@ export const TelegramFab = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Написать в Telegram"
-            className={`fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full bg-gradient-to-br from-[#2AABEE] to-[#229ED9] shadow-[0_0_20px_-5px_rgba(42,171,238,0.5)] transition-all duration-500 hover:scale-110 hover:shadow-[0_0_30px_-5px_rgba(42,171,238,0.7)] w-12 h-12 sm:w-14 sm:h-14 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+            className={`fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center rounded-full bg-gradient-to-br from-[#2AABEE] to-[#229ED9] shadow-[0_0_20px_-5px_rgba(42,171,238,0.5)] transition-all duration-500 hover:scale-110 hover:shadow-[0_0_30px_-5px_rgba(42,171,238,0.7)] w-11 h-11 sm:w-14 sm:h-14 pb-safe-bottom ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         >
             <span className="absolute inset-0 rounded-full bg-[#2AABEE]/20 animate-pulse-glow" />
             <TelegramIcon className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10" />
