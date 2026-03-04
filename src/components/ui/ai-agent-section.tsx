@@ -567,74 +567,117 @@ export const AiAgentSection = () => {
                     </div>
 
                     <div className="lg:col-span-5 order-1 lg:order-2">
-                        <div className="max-w-[380px] mx-auto">
-                            <div className="relative rounded-[2rem] border border-white/[0.08] bg-[#08080c] shadow-2xl shadow-black/50 overflow-hidden">
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[26px] bg-[#08080c] rounded-b-2xl z-10" />
+                        <div className="max-w-[390px] mx-auto">
+                            <div className="relative iphone-frame">
+                                <div className="absolute -inset-[3px] rounded-[3.2rem] bg-gradient-to-b from-[#3a3a3c] via-[#2c2c2e] to-[#1c1c1e] z-0" />
 
-                                <div className="pt-8 pb-2 px-4 bg-gradient-to-b from-[#0c0a14] to-transparent">
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
-                                            <Bot className="w-4.5 h-4.5 text-white" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[13px] text-white/90 font-medium font-sans">AI Консультант</div>
+                                <div className="relative rounded-[3rem] border border-[#48484a]/60 bg-[#000000] shadow-[0_0_80px_-20px_rgba(139,92,246,0.2),0_20px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden z-[1]">
+                                    <div className="absolute top-[1px] left-1/2 -translate-x-1/2 w-[calc(100%-8px)] h-[3px] rounded-b-full bg-gradient-to-r from-transparent via-white/[0.07] to-transparent z-20 pointer-events-none" />
+
+                                    <div className="absolute right-[-3px] top-[120px] w-[3px] h-[44px] rounded-r-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
+                                    <div className="absolute left-[-3px] top-[100px] w-[3px] h-[28px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
+                                    <div className="absolute left-[-3px] top-[145px] w-[3px] h-[44px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
+                                    <div className="absolute left-[-3px] top-[200px] w-[3px] h-[44px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
+
+                                    <div className="relative px-5 pt-3 pb-0 z-10">
+                                        <div className="flex items-center justify-between text-[10px] text-white/50 font-sans font-medium mb-1">
+                                            <span>9:41</span>
+                                            <div className="absolute left-1/2 -translate-x-1/2 top-2.5">
+                                                <div className="relative w-[100px] h-[28px] bg-black rounded-full flex items-center justify-center border border-white/[0.04]">
+                                                    <div className="absolute left-[22px] w-[7px] h-[7px] rounded-full bg-[#1a1a1e] border border-white/[0.03] shadow-[inset_0_0_2px_rgba(255,255,255,0.05)]" />
+                                                </div>
+                                            </div>
                                             <div className="flex items-center gap-1">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-                                                <span className="text-[10px] text-[#22c55e]/80">онлайн</span>
+                                                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="opacity-50">
+                                                    <rect x="0" y="6" width="2.5" height="4" rx="0.5" fill="white"/>
+                                                    <rect x="3.5" y="4" width="2.5" height="6" rx="0.5" fill="white"/>
+                                                    <rect x="7" y="2" width="2.5" height="8" rx="0.5" fill="white"/>
+                                                    <rect x="10.5" y="0" width="2.5" height="10" rx="0.5" fill="white"/>
+                                                </svg>
+                                                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="opacity-50">
+                                                    <path d="M7 1C4.5 1 2.3 2 0.8 3.7L2 5C3.2 3.5 5 2.5 7 2.5C9 2.5 10.8 3.5 12 5L13.2 3.7C11.7 2 9.5 1 7 1Z" fill="white"/>
+                                                    <path d="M7 4C5.5 4 4.2 4.7 3.3 5.8L4.5 7C5.1 6.2 6 5.5 7 5.5C8 5.5 8.9 6.2 9.5 7L10.7 5.8C9.8 4.7 8.5 4 7 4Z" fill="white"/>
+                                                    <circle cx="7" cy="9" r="1.2" fill="white"/>
+                                                </svg>
+                                                <div className="flex items-center">
+                                                    <div className="w-[18px] h-[9px] rounded-[2px] border border-white/40 flex items-center p-[1px]">
+                                                        <div className="w-[10px] h-[5px] rounded-[1px] bg-white/50" />
+                                                    </div>
+                                                    <div className="w-[1.5px] h-[4px] rounded-r-sm bg-white/30 ml-[0.5px]" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="px-1">
-                                    <div className="h-px bg-white/[0.06]" />
-                                </div>
+                                    <div className="px-4 pt-1 pb-2 bg-gradient-to-b from-[#0c0a14]/90 to-transparent">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center shadow-lg shadow-[#8B5CF6]/20">
+                                                <Bot className="w-4.5 h-4.5 text-white" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="text-[13px] text-white/90 font-medium font-sans">AI Консультант</div>
+                                                <div className="flex items-center gap-1">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                                                    <span className="text-[10px] text-[#22c55e]/80">онлайн</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div ref={chatRef} className="h-[420px] sm:h-[460px] overflow-y-auto px-3 py-3 space-y-2 scroll-smooth ai-agent-chat-scroll" role="log" aria-label="Демонстрация чата с AI-агентом" aria-live="polite">
-                                    {allPreviousMessages.map(msg => (
-                                        <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className="mx-3">
+                                        <div className="h-px bg-white/[0.06]" />
+                                    </div>
+
+                                    <div ref={chatRef} className="h-[420px] sm:h-[460px] overflow-y-auto px-3 py-3 space-y-2 scroll-smooth ai-agent-chat-scroll" role="log" aria-label="Демонстрация чата с AI-агентом" aria-live="polite">
+                                        {allPreviousMessages.map(msg => (
+                                            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                <div
+                                                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
+                                                        ? 'bg-[#8B5CF6] text-white rounded-br-md'
+                                                        : 'bg-white/[0.06] text-white/80 rounded-bl-md'
+                                                        }`}
+                                                >
+                                                    {msg.text}
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {visibleMessages.map((msg, i) => (
                                             <div
-                                                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
-                                                    ? 'bg-[#8B5CF6] text-white rounded-br-md'
-                                                    : 'bg-white/[0.06] text-white/80 rounded-bl-md'
-                                                    }`}
+                                                key={msg.id}
+                                                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                                style={{ animation: `messageAppear 0.35s ease-out ${i * 0.05}s both` }}
                                             >
-                                                {msg.text}
+                                                <div
+                                                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
+                                                        ? 'bg-[#8B5CF6] text-white rounded-br-md'
+                                                        : 'bg-white/[0.06] text-white/80 rounded-bl-md'
+                                                        }`}
+                                                >
+                                                    {msg.text}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
 
-                                    {visibleMessages.map((msg, i) => (
-                                        <div
-                                            key={msg.id}
-                                            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                                            style={{ animation: `messageAppear 0.35s ease-out ${i * 0.05}s both` }}
-                                        >
-                                            <div
-                                                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user'
-                                                    ? 'bg-[#8B5CF6] text-white rounded-br-md'
-                                                    : 'bg-white/[0.06] text-white/80 rounded-bl-md'
-                                                    }`}
-                                            >
-                                                {msg.text}
+                                        {isTyping && (
+                                            <div className="flex justify-start">
+                                                <div className="bg-white/[0.06] rounded-2xl rounded-bl-md">
+                                                    <TypingIndicator />
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )}
+                                    </div>
 
-                                    {isTyping && (
-                                        <div className="flex justify-start">
-                                            <div className="bg-white/[0.06] rounded-2xl rounded-bl-md">
-                                                <TypingIndicator />
-                                            </div>
+                                    <div className="px-3 pb-3 pt-2">
+                                        <div className="flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-4 py-2.5">
+                                            <MessageSquare className="w-4 h-4 text-white/20 flex-shrink-0" />
+                                            <span className="text-[12px] text-white/20 font-sans">Написать сообщение...</span>
+                                            <ArrowRight className="w-4 h-4 text-[#8B5CF6]/40 ml-auto flex-shrink-0" />
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                <div className="px-3 pb-4 pt-2">
-                                    <div className="flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-4 py-2.5">
-                                        <MessageSquare className="w-4 h-4 text-white/20 flex-shrink-0" />
-                                        <span className="text-[12px] text-white/20 font-sans">Написать сообщение...</span>
-                                        <ArrowRight className="w-4 h-4 text-[#8B5CF6]/40 ml-auto flex-shrink-0" />
+                                    <div className="flex justify-center pb-2">
+                                        <div className="w-[120px] h-[4px] rounded-full bg-white/15" />
                                     </div>
                                 </div>
                             </div>
