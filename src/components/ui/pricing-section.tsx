@@ -114,6 +114,31 @@ export const PricingSection = () => {
                     </p>
                 </div>
 
+                <div data-reveal className="relative rounded-2xl p-6 sm:p-8 md:p-10 mb-6 glow-card border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.15)] text-center">
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8B5CF6]/40 to-transparent" />
+                    <h3 className="text-[13px] sm:text-sm font-medium text-white/60 font-sans uppercase tracking-wider mb-4">
+                        Стоимость разработки
+                    </h3>
+                    <div className="flex items-baseline justify-center gap-2 mb-3">
+                        <span className="text-3xl sm:text-4xl md:text-5xl font-semibold gradient-text font-sans tracking-tight">от 150 000₽</span>
+                    </div>
+                    <p className="text-[13px] sm:text-sm text-white/70 font-sans font-light mb-4">
+                        7-14 дней • предоплата 35% • остаток после сдачи
+                    </p>
+                    <p className="text-[12px] sm:text-[13px] text-white/50 font-sans font-light max-w-lg mx-auto mb-5">
+                        Финальная стоимость зависит от сложности проекта. Рассчитаем за 15 минут на бесплатной консультации.
+                    </p>
+                    <a
+                        href="https://t.me/w4tg_bot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[13px] sm:text-sm text-[#8B5CF6] hover:text-[#A78BFA] font-sans font-medium transition-colors duration-300"
+                    >
+                        Рассчитать стоимость
+                        <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {plans.map((plan, index) => (
                         <PricingCard key={index} plan={plan} />

@@ -71,8 +71,13 @@ export const ProcessSection = () => {
                                     ))}
                                 </ul>
 
-                                <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.03]">
+                                <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.03] flex items-center justify-between">
                                     <span className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-wider">{step.duration}</span>
+                                    {step.number === "03" && (
+                                        <a href="#pricing" className="text-[11px] sm:text-[12px] text-[#8B5CF6]/70 hover:text-[#8B5CF6] font-sans font-medium transition-colors duration-300">
+                                            Смотреть тарифы →
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -2,14 +2,14 @@ import { ShoppingBag, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, Graduati
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const services = [
-    { icon: ShoppingBag, title: "Интернет-магазины", desc: "Каталог, корзина, оплата, доставка — полноценный e-commerce внутри Telegram", large: true },
-    { icon: UtensilsCrossed, title: "Рестораны", desc: "Меню, заказы, отслеживание курьера" },
-    { icon: Scissors, title: "Бьюти", desc: "Онлайн-запись, каталог мастеров" },
-    { icon: Stethoscope, title: "Медицина", desc: "Запись к врачу, телемедицина" },
-    { icon: Dumbbell, title: "Фитнес", desc: "Абонементы, расписание, трекинг" },
-    { icon: GraduationCap, title: "Образование", desc: "Курсы, прогресс, сертификаты" },
-    { icon: Car, title: "Сервисы", desc: "Аренда, бронирование, такси" },
-    { icon: Bot, title: "AI-агент 24/7", desc: "Автоматическая поддержка, продажи и аналитика на 150+ языках — работает без выходных", large: true },
+    { icon: ShoppingBag, title: "Интернет-магазины", desc: "Каталог, корзина, оплата, доставка — полноценный e-commerce внутри Telegram", large: true, href: "#case-studies" },
+    { icon: UtensilsCrossed, title: "Рестораны", desc: "Меню, заказы, отслеживание курьера", href: "#pricing" },
+    { icon: Scissors, title: "Бьюти", desc: "Онлайн-запись, каталог мастеров", href: "#pricing" },
+    { icon: Stethoscope, title: "Медицина", desc: "Запись к врачу, телемедицина", href: "#pricing" },
+    { icon: Dumbbell, title: "Фитнес", desc: "Абонементы, расписание, трекинг", href: "#pricing" },
+    { icon: GraduationCap, title: "Образование", desc: "Курсы, прогресс, сертификаты", href: "#pricing" },
+    { icon: Car, title: "Сервисы", desc: "Аренда, бронирование, такси", href: "#pricing" },
+    { icon: Bot, title: "AI-агент 24/7", desc: "Автоматическая поддержка, продажи и аналитика на 150+ языках — работает без выходных", large: true, href: "#ai-agent" },
 ];
 
 export const ServicesSection = () => {
@@ -35,19 +35,20 @@ export const ServicesSection = () => {
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                     {services.map((service, index) => (
-                        <div
+                        <a
                             key={index}
-                            className={`${service.large ? 'col-span-2' : 'col-span-1'}`}
+                            href={service.href}
+                            className={`${service.large ? 'col-span-2' : 'col-span-1'} no-underline`}
                         >
                             <div
                                 data-reveal
-                                className="glow-card rounded-2xl p-5 sm:p-6 md:p-7 cursor-default h-full group"
+                                className="glow-card rounded-2xl p-5 sm:p-6 md:p-7 cursor-pointer h-full group"
                             >
                                 <div className="flex items-start justify-between mb-6 sm:mb-8">
                                     <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#8B5CF6]/20 to-[#8B5CF6]/5 flex items-center justify-center border border-[#8B5CF6]/10 group-hover:border-[#8B5CF6]/25 transition-colors duration-500">
                                         <service.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]" />
                                     </div>
-                                    <ArrowUpRight className="w-4 h-4 text-white/[0.06] group-hover:text-[#8B5CF6]/40 transition-colors duration-500" />
+                                    <ArrowUpRight className="w-4 h-4 text-white/0 group-hover:text-[#8B5CF6]/60 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                 </div>
                                 <h3 className="text-[14px] sm:text-[15px] font-medium text-white font-sans mb-1.5 tracking-tight">
                                     {service.title}
@@ -56,7 +57,7 @@ export const ServicesSection = () => {
                                     {service.desc}
                                 </p>
                             </div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>

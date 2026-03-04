@@ -46,19 +46,22 @@ export default function GuaranteesSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-          {guarantees.map((item) => (
+          {guarantees.map((item, index) => (
             <div
               key={item.title}
               data-reveal
-              className="glow-card rounded-2xl p-6 sm:p-8 flex flex-col gap-4"
+              className={`relative rounded-2xl overflow-hidden group ${index === 0 ? 'sm:col-span-2' : ''}`}
             >
-              <div className="w-11 h-11 rounded-xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 flex items-center justify-center">
-                <item.icon className="w-5 h-5 text-[#8B5CF6]" />
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent" />
+              <div className="glow-card rounded-2xl p-6 sm:p-8 flex flex-col gap-4 h-full transition-all duration-300 group-hover:border-[#8B5CF6]/30">
+                <div className="w-11 h-11 rounded-xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-[#8B5CF6]/20 group-hover:border-[#8B5CF6]/40">
+                  <item.icon className="w-5 h-5 text-[#8B5CF6] transition-colors duration-300 group-hover:text-[#A78BFA]" />
+                </div>
+                <h3 className="text-white font-semibold text-base sm:text-lg">{item.title}</h3>
+                <p className="text-[13px] sm:text-[14px] text-white/50 leading-relaxed">
+                  {item.description}
+                </p>
               </div>
-              <h3 className="text-white font-semibold text-base sm:text-lg">{item.title}</h3>
-              <p className="text-[13px] sm:text-[14px] text-white/50 leading-relaxed">
-                {item.description}
-              </p>
             </div>
           ))}
         </div>

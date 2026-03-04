@@ -2,14 +2,14 @@ import { CreditCard, BarChart3, MessageSquare, Bell, Heart, Star, Truck, Shield 
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const features = [
-    { icon: CreditCard, title: "Платежи", desc: "Stripe, ЮKassa, Apple Pay, Google Pay, СБП" },
-    { icon: BarChart3, title: "Аналитика", desc: "Воронки, конверсии, LTV, когорты" },
-    { icon: MessageSquare, title: "Чат", desc: "Встроенный чат, автоответы, шаблоны" },
-    { icon: Bell, title: "Push", desc: "Telegram-уведомления, 95% открываемость" },
-    { icon: Heart, title: "Избранное", desc: "Вишлисты, сравнение, AI-подборки" },
-    { icon: Star, title: "Отзывы", desc: "Рейтинги, фото, верификация покупок" },
-    { icon: Truck, title: "Доставка", desc: "Трекинг, интеграция со службами" },
-    { icon: Shield, title: "PWA", desc: "Офлайн, установка на экран" },
+    { icon: CreditCard, title: "Платежи", desc: "SDK Stripe, ЮKassa, Apple Pay, Google Pay, СБП — PCI DSS Level 1, токенизация карт" },
+    { icon: BarChart3, title: "Аналитика", desc: "Real-time дашборды: воронки, LTV, когорты, A/B-тесты через собственный event-трекинг" },
+    { icon: MessageSquare, title: "Чат-модуль", desc: "WebSocket-чат с автоответами, NLP-классификация сообщений, шаблоны на Handlebars" },
+    { icon: Bell, title: "Push-система", desc: "Telegram Bot API + Firebase FCM, сегментация аудитории, 95% deliverability" },
+    { icon: Heart, title: "Рекомендации", desc: "Collaborative filtering, персональные AI-подборки, вишлисты с синхронизацией" },
+    { icon: Star, title: "UGC-модуль", desc: "Рейтинги, фото-отзывы, верификация покупок через хэш заказа" },
+    { icon: Truck, title: "Логистика", desc: "REST API интеграции с СДЭК, Boxberry, DPD — live-трекинг и webhook-статусы" },
+    { icon: Shield, title: "PWA-движок", desc: "Service Worker, офлайн-кэш, установка на экран — Lighthouse 95+" },
 ];
 
 export const FeaturesSection = () => {
@@ -23,13 +23,13 @@ export const FeaturesSection = () => {
                 <div data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
-                        Возможности
+                        Под капотом
                         <span className="w-8 h-px bg-[#8B5CF6]/40 ml-3" />
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
-                        Всё для продаж —
+                        Технологии —
                         <br />
-                        <span className="italic gradient-text">из коробки</span>
+                        <span className="italic gradient-text">встроенные в каждый проект</span>
                     </h2>
                 </div>
 

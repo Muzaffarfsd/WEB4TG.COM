@@ -74,7 +74,12 @@ export const VideoCarousel = () => {
     });
 
     const [loadedData, setLoadedData] = useState<Event[]>([]);
+    const [videoErrors, setVideoErrors] = useState<Set<number>>(new Set());
     const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
+
+    const handleVideoError = (index: number) => {
+        setVideoErrors((prev) => new Set(prev).add(index));
+    };
 
     useGSAP(() => {
         gsap.to("#slider", {
@@ -207,28 +212,46 @@ export const VideoCarousel = () => {
                     <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20">
                         <div className="relative w-[85vw] sm:w-[70vw] h-[45vh] sm:h-[55vh] md:h-[70vh]">
                             <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black/50 border border-white/[0.04]">
-                                <video
-                                    id="video"
-                                    playsInline={true}
-                                    className={`${list.id === 2 ? "translate-x-20 sm:translate-x-44" : ""} pointer-events-none w-full h-full object-cover`}
-                                    preload="metadata"
-                                    muted
-                                    crossOrigin="anonymous"
-                                    ref={(el) => {
-                                        videoRef.current[i] = el;
-                                    }}
-                                    onEnded={() =>
-                                        i !== 3
-                                            ? handleProcess("video-end", i)
-                                            : handleProcess("video-last")
-                                    }
-                                    onPlay={() =>
-                                        setVideo((pre) => ({ ...pre, isPlaying: true }))
-                                    }
-                                    onLoadedMetadata={(e) => handleLoadedMetaData(i, e)}
-                                >
-                                    <source src={list.video} type="video/mp4" />
-                                </video>
+                                {videoErrors.has(i) ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] relative">
+                                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.15)_0%,_transparent_70%)]" />
+                                        <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center gap-3">
+                                            <div className="w-12 h-12 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mb-2">
+                                                <Play className="w-5 h-5 text-white/30" />
+                                            </div>
+                                            {list.textLists.map((text, idx) => (
+                                                <p key={idx} className="text-sm sm:text-lg md:text-xl font-medium text-white/70 font-sans tracking-tight leading-snug">
+                                                    {text}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <video
+                                        id="video"
+                                        playsInline={true}
+                                        className={`${list.id === 2 ? "translate-x-20 sm:translate-x-44" : ""} pointer-events-none w-full h-full object-cover`}
+                                        preload="metadata"
+                                        muted
+                                        crossOrigin="anonymous"
+                                        poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%230a0a10' width='1' height='1'/%3E%3C/svg%3E"
+                                        ref={(el) => {
+                                            videoRef.current[i] = el;
+                                        }}
+                                        onEnded={() =>
+                                            i !== 3
+                                                ? handleProcess("video-end", i)
+                                                : handleProcess("video-last")
+                                        }
+                                        onPlay={() =>
+                                            setVideo((pre) => ({ ...pre, isPlaying: true }))
+                                        }
+                                        onLoadedMetadata={(e) => handleLoadedMetaData(i, e)}
+                                        onError={() => handleVideoError(i)}
+                                    >
+                                        <source src={list.video} type="video/mp4" onError={() => handleVideoError(i)} />
+                                    </video>
+                                )}
                             </div>
 
                             <div className="absolute top-6 sm:top-10 left-6 sm:left-10 z-10">

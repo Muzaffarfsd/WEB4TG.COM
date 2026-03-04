@@ -1,27 +1,39 @@
-import { Star } from "lucide-react";
+import { Star, BadgeCheck, Globe } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const testimonials = [
     {
-        initials: "АК",
         name: "Алексей К.",
-        role: "CEO Flowershop.tg",
+        role: "CEO",
+        company: "Flowershop.tg",
+        companyUrl: "flowershop.tg",
         rating: 5,
         text: "Запустили магазин цветов в Telegram за 10 дней. Конверсия выросла на 40% по сравнению с сайтом.",
+        metric: "+40% конверсия",
+        gradientFrom: "#8B5CF6",
+        gradientTo: "#6D28D9",
     },
     {
-        initials: "МС",
         name: "Мария С.",
-        role: "основатель FitLife",
+        role: "основатель",
+        company: "FitLife",
+        companyUrl: "fitlife.app",
         rating: 5,
         text: "Приложение для фитнес-студии работает идеально. Клиенты записываются прямо из Telegram.",
+        metric: "×3 записи",
+        gradientFrom: "#7C3AED",
+        gradientTo: "#5B21B6",
     },
     {
-        initials: "ДР",
         name: "Дмитрий Р.",
-        role: "CTO DeliveryBot",
+        role: "CTO",
+        company: "DeliveryBot",
+        companyUrl: "deliverybot.ru",
         rating: 5,
         text: "Интеграция с ЮKassa и Stripe заняла один день. Техподдержка отвечает моментально.",
+        metric: "NPS 92",
+        gradientFrom: "#A78BFA",
+        gradientTo: "#7C3AED",
     },
 ];
 
@@ -43,18 +55,31 @@ export const TestimonialsSection = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
                     {testimonials.map((t, index) => (
-                        <div key={index} data-reveal className="glow-card rounded-2xl p-6 sm:p-7 md:p-8">
+                        <div key={index} data-reveal className="glow-card rounded-2xl p-6 sm:p-7 md:p-8 relative">
+                            <div className="absolute top-4 right-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide"
+                                style={{ background: `linear-gradient(135deg, ${t.gradientFrom}22, ${t.gradientTo}33)`, border: `1px solid ${t.gradientFrom}44` }}>
+                                <span className="text-[#A78BFA]">{t.metric}</span>
+                            </div>
+
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center text-white text-xs sm:text-sm font-semibold shrink-0">
-                                    {t.initials}
+                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white text-sm sm:text-base font-semibold shrink-0"
+                                    style={{ background: `linear-gradient(135deg, ${t.gradientFrom}, ${t.gradientTo})` }}>
+                                    {t.name.charAt(0)}
                                 </div>
                                 <div>
-                                    <p className="text-[14px] sm:text-[15px] font-medium text-white font-sans tracking-tight">
-                                        {t.name}
-                                    </p>
+                                    <div className="flex items-center gap-1.5">
+                                        <p className="text-[14px] sm:text-[15px] font-medium text-white font-sans tracking-tight">
+                                            {t.name}
+                                        </p>
+                                        <BadgeCheck className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                                    </div>
                                     <p className="text-[12px] sm:text-[13px] text-white/50 font-sans font-light">
-                                        {t.role}
+                                        {t.role}, {t.company}
                                     </p>
+                                    <div className="flex items-center gap-1 mt-0.5">
+                                        <Globe className="w-2.5 h-2.5 text-white/30" />
+                                        <span className="text-[11px] text-white/30 font-sans">{t.companyUrl}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex gap-0.5 mb-3">

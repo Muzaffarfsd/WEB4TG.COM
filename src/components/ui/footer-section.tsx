@@ -59,7 +59,7 @@ export const FooterSection = () => {
                     </div>
 
                     <p className="text-[10px] sm:text-[11px] text-white/50 font-sans">
-                        © 2025 WEB4TG Studio
+                        © 2026 WEB4TG Studio
                     </p>
                 </div>
             </div>

@@ -28,23 +28,23 @@ src/
   components/
     ui/
       tubes-background.tsx           - Iframe-isolated Three.js tubes background (CDN tubes1 + Canvas 2D fallback, 3-level input blocking)
-      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal + scroll indicator + stats 2x2 mobile
+      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal + DemandIndicator (dynamic "Ближайший старт") + stats 2x2 mobile
       magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
       client-logos.tsx               - Two-row client logos marquee (opposite directions)
-      services-section.tsx           - Bento grid services (8 glassmorphic cards)
-      ai-agent-section.tsx           - Premium multi-niche AI agent showcase (4 niches: shop[Лина]/restaurant[Марк]/beauty[Софи]/fitness[Макс], 3 stages each, 2-column layout: phone + results panel, hero metric per niche, before/after cards, business-language result cards, propensity bar, auto-play with progress bar, social proof strip, AnimatedStats, CTA "Запустить AI-агента за 14 дней")
-      iphone-carousel.tsx            - GSAP video carousel (portfolio)
-      process-section.tsx            - 3-step process glassmorphic cards
-      features-section.tsx           - Glass features grid (8 cells)
-      case-studies.tsx               - 3 case study cards with metrics badges
-      testimonials-section.tsx       - 3 review cards with star ratings
-      comparison-table.tsx           - 4-column comparison table (WEB4TG vs freelancer vs no-code vs other studios)
-      pricing-section.tsx            - 3 pricing glassmorphic cards
-      guarantees-section.tsx         - 4 guarantee cards (2x2 grid) with icons
+      services-section.tsx           - Bento grid services (8 clickable <a> cards linking to sections, ArrowUpRight visible on hover)
+      ai-agent-section.tsx           - Premium multi-niche AI agent showcase (4 niches, 3 stages, 2-column layout, iPhone 17 Pro Max mockup, before/after cards, social proof, CTA)
+      iphone-carousel.tsx            - GSAP video carousel (portfolio) with gradient fallback on video error
+      process-section.tsx            - 3-step process glassmorphic cards (step 3 links to #pricing)
+      features-section.tsx           - "Под капотом" — technical features grid (8 cells, PCI DSS, WebSocket, PWA details)
+      case-studies.tsx               - 3 case study cards with animated count-up metrics (IntersectionObserver) + hover effects
+      testimonials-section.tsx       - 3 review cards with verified badges, result metrics, gradient avatars, company info
+      comparison-table.tsx           - 4-column comparison table with mobile scroll snap + animated hint arrow
+      pricing-section.tsx            - Development cost block (от 150 000₽) + 3 subscription plans
+      guarantees-section.tsx         - Bento grid (first card spans 2 cols) with gradient top borders + icon hover animations
       faq-section.tsx                - Accordion FAQ (5 items, one open at a time)
       integrations-marquee.tsx       - Scrolling integration badges with emoji prefixes
-      cta-banner.tsx                 - Full-width CTA section with trust indicators
-      footer-section.tsx             - CTA + footer with contacts
+      cta-banner.tsx                 - Urgency-focused CTA ("конкуренты уже запустили") with capacity badge + trust indicators
+      footer-section.tsx             - Contact CTA + footer (© 2026)
       telegram-fab.tsx               - Floating Telegram button (FAB, visible after scrolling past hero)
 ```
 

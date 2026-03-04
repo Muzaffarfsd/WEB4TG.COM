@@ -1,4 +1,4 @@
-import { Check, X, Minus } from 'lucide-react';
+import { Check, X, Minus, ChevronRight } from 'lucide-react';
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const columns = ['WEB4TG Studio', 'Фрилансер', 'No-code', 'Другие студии'] as const;
@@ -116,9 +116,9 @@ export default function ComparisonTable() {
         </div>
 
         <div className="relative" data-reveal>
-          <div className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-l from-[#050505] to-transparent z-10 sm:hidden" />
-          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 scrollbar-hide">
-            <div className="glass-panel rounded-2xl overflow-hidden min-w-[640px]">
+          <div className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10 sm:hidden" style={{ background: 'linear-gradient(to left, #050505 0%, #050505cc 30%, transparent 100%)' }} />
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 scrollbar-hide" style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+            <div className="glass-panel rounded-2xl overflow-hidden min-w-[640px]" style={{ scrollSnapAlign: 'start' }}>
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
@@ -169,9 +169,12 @@ export default function ComparisonTable() {
               </table>
             </div>
           </div>
-          <p className="text-white/30 text-[11px] mt-3 text-center sm:hidden">
-            ← Прокрутите для просмотра →
-          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-3 sm:hidden">
+            <span className="text-white/40 text-[12px]">Листайте</span>
+            <span className="inline-flex animate-[scrollArrow_1.2s_ease-in-out_infinite]">
+              <ChevronRight className="w-4 h-4 text-[#A78BFA]" />
+            </span>
+          </div>
         </div>
       </div>
     </section>

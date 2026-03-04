@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Menu, X, Sparkles, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
 import { useCountUp, useStickyNav, useTextReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
@@ -141,6 +141,28 @@ const stats = [
     { value: "4.9", label: "рейтинг" },
 ];
 
+const DemandIndicator = () => {
+    const daysOut = useMemo(() => {
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+        return (dayOfYear % 4) + 2;
+    }, []);
+
+    return (
+        <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
+            <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
+                <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white/90" />
+                </span>
+                Live
+            </span>
+            <span className="text-[11px] sm:text-[13px] font-medium text-white/80 font-sans">
+                Ближайший старт: через {daysOut} дн
+            </span>
+        </div>
+    );
+};
+
 const ResponsiveHeroBanner = () => {
     const titleRef1 = useTextReveal({ delay: 0.2 });
     const titleRef2 = useTextReveal({ delay: 0.5 });
@@ -180,15 +202,7 @@ const ResponsiveHeroBanner = () => {
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
                         <div className="max-w-[820px] mx-auto text-center">
-                            <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
-                                <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
-                                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                                    24-48ч
-                                </span>
-                                <span className="text-[11px] sm:text-[13px] font-medium text-white/80 font-sans">
-                                    от заявки до запуска
-                                </span>
-                            </div>
+                            <DemandIndicator />
 
                             <h1>
                                 <div
