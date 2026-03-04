@@ -5,7 +5,7 @@ WEB4TG Studio website — premium agency for Telegram Mini Apps development. Ful
 
 ## Architecture
 - **Runtime**: Node.js 20
-- **Framework**: React 19 + Vite 6
+- **Framework**: React 19 + Vite 7 (Rolldown bundler)
 - **Styling**: Tailwind CSS 4 + tw-animate-css
 - **Animations**: GSAP + @gsap/react + ScrollTrigger, framer-motion (peer dep)
 - **Smooth Scroll**: Lenis
