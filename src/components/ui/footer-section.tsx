@@ -10,7 +10,7 @@ export const FooterSection = () => {
             <div className="section-divider max-w-6xl mx-auto" />
 
             <div className="max-w-6xl mx-auto pt-20 sm:pt-28 md:pt-36 pb-8 sm:pb-12 relative">
-                <div className="absolute w-[500px] h-[500px] rounded-full bg-[#10B981]/[0.03] blur-[120px] top-[25%] left-[35%] pointer-events-none" />
+                <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.03] blur-[120px] top-[25%] left-[35%] pointer-events-none" />
 
                 <div ref={revealRef} className="relative text-center mb-20 sm:mb-28">
                     <h2 data-reveal className="text-[clamp(2rem,6vw,4.5rem)] font-normal font-instrument-serif tracking-[-0.03em] leading-[0.95]">
@@ -44,7 +44,7 @@ export const FooterSection = () => {
 
                 <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
                             <span className="text-white font-bold text-[8px] sm:text-[9px] font-sans">W4</span>
                         </div>
                         <span className="text-white/40 text-[12px] sm:text-[13px] font-sans font-medium">WEB4TG Studio</span>

@@ -29,7 +29,7 @@ const StickyHeader = () => {
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
                     <a href="#" className="flex items-center gap-1.5 group shrink-0">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
                             <span className="text-white font-bold text-[10px] sm:text-xs font-sans">W4</span>
                         </div>
                         <span className="text-white font-semibold text-[14px] sm:text-[15px] tracking-tight font-sans">
@@ -154,7 +154,7 @@ const HeroMouseGlow = () => {
 
     return (
         <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#10B981]/[0.03] blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.03] blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
         </div>
     );
 };
@@ -183,7 +183,7 @@ const ResponsiveHeroBanner = () => {
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
                         <div className="max-w-[820px] mx-auto text-center">
                             <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
-                                <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#10B981] to-[#059669] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
+                                <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
                                     <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     24-48ч
                                 </span>

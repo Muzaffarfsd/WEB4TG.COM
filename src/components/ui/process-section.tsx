@@ -38,7 +38,7 @@ export const ProcessSection = () => {
             <div ref={revealRef} className="max-w-6xl mx-auto">
                 <div data-reveal className="max-w-xl mb-12 sm:mb-16">
                     <span className="section-label">
-                        <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                        <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Процесс
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
@@ -55,7 +55,7 @@ export const ProcessSection = () => {
                             data-reveal
                             className="glow-card rounded-2xl p-6 sm:p-7 md:p-8 relative overflow-hidden group"
                         >
-                            <div className="absolute top-5 right-5 sm:top-6 sm:right-6 text-[3.5rem] sm:text-[5rem] font-bold text-white/[0.015] font-sans leading-none select-none group-hover:text-[#10B981]/[0.04] transition-colors duration-700">
+                            <div className="absolute top-5 right-5 sm:top-6 sm:right-6 text-[3.5rem] sm:text-[5rem] font-bold text-white/[0.015] font-sans leading-none select-none group-hover:text-[#8B5CF6]/[0.04] transition-colors duration-700">
                                 {step.number}
                             </div>
 
@@ -63,14 +63,14 @@ export const ProcessSection = () => {
                                 <h3 className="text-lg sm:text-xl font-normal text-white/85 font-instrument-serif tracking-tight">
                                     {step.title}
                                 </h3>
-                                <span className="text-[10px] sm:text-[11px] text-[#10B981]/60 font-sans font-medium uppercase tracking-wider">
+                                <span className="text-[10px] sm:text-[11px] text-[#8B5CF6]/60 font-sans font-medium uppercase tracking-wider">
                                     {step.payment}
                                 </span>
 
                                 <ul className="mt-5 sm:mt-6 space-y-2.5 sm:space-y-3">
                                     {step.items.map((item, i) => (
                                         <li key={i} className="flex items-center gap-2.5 text-[13px] sm:text-[14px] text-white/35 font-sans font-light">
-                                            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#10B981]/50 shrink-0" />
+                                            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B5CF6]/50 shrink-0" />
                                             {item}
                                         </li>
                                     ))}

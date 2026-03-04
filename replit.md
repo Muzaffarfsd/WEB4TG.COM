@@ -53,13 +53,13 @@ npm start      # Express server only (requires dist/)
 
 ## Design System
 - Dark OLED: #050505 background
-- Accent: emerald gradients (#10B981 → #059669)
+- Accent: electric violet gradients (#8B5CF6 → #7C3AED)
 - Fonts: Instrument Serif (headings), Inter (body)
-- Gradient text: .gradient-text (emerald), .gradient-text-white (white fade)
+- Gradient text: .gradient-text (violet), .gradient-text-white (white fade)
 - Glow cards: .glow-card with hover border glow
 - Noise texture: .noise-overlay (z-index 1, pointer-events none)
-- Gradient mesh: animated blurred emerald blobs in hero
-- Custom cursor: emerald dot + ring, scales on hover (desktop only)
+- Gradient mesh: animated blurred violet blobs in hero
+- Custom cursor: removed (standard cursor restored)
 - Magnetic buttons: GSAP-driven elastic follow on mouse move
 - Buttons: .btn-primary (gradient + shadow), .btn-secondary (ghost)
 - Section labels: .section-label (uppercase, tracked, with line decoration)

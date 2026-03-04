@@ -50,12 +50,12 @@ export const ServicesSection = () => {
 
     return (
         <section id="services" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#10B981]/[0.025] blur-[120px] top-[20%] right-[5%] pointer-events-none" />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.025] blur-[120px] top-[20%] right-[5%] pointer-events-none" />
 
             <div ref={revealRef} className="max-w-6xl mx-auto relative">
                 <div data-reveal className="max-w-xl mb-12 sm:mb-16">
                     <span className="section-label">
-                        <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                        <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Услуги
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
@@ -79,10 +79,10 @@ export const ServicesSection = () => {
                                 className="glow-card rounded-2xl p-5 sm:p-6 md:p-7 cursor-default h-full group"
                             >
                                 <div className="flex items-start justify-between mb-6 sm:mb-8">
-                                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#10B981]/5 flex items-center justify-center border border-[#10B981]/10 group-hover:border-[#10B981]/25 transition-colors duration-500">
-                                        <service.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#10B981]" />
+                                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#8B5CF6]/20 to-[#8B5CF6]/5 flex items-center justify-center border border-[#8B5CF6]/10 group-hover:border-[#8B5CF6]/25 transition-colors duration-500">
+                                        <service.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]" />
                                     </div>
-                                    <ArrowUpRight className="w-4 h-4 text-white/[0.06] group-hover:text-[#10B981]/40 transition-colors duration-500" />
+                                    <ArrowUpRight className="w-4 h-4 text-white/[0.06] group-hover:text-[#8B5CF6]/40 transition-colors duration-500" />
                                 </div>
                                 <h3 className="text-[14px] sm:text-[15px] font-medium text-white/85 font-sans mb-1.5 tracking-tight">
                                     {service.title}

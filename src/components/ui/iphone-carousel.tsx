@@ -121,7 +121,7 @@ export const VideoCarousel = () => {
 
                         gsap.to(span[videoId], {
                             width: `${currentProgress}%`,
-                            backgroundColor: "#10B981",
+                            backgroundColor: "#8B5CF6",
                         });
                     }
                 },
@@ -299,7 +299,7 @@ export const IphoneCarousel = () => {
                 <div className='mb-8 sm:mb-14 w-full md:flex items-end justify-between'>
                     <div>
                         <span className="section-label opacity-0 translate-y-5 carousel-link">
-                            <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                            <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                             Портфолио
                         </span>
                         <h2 id='carousel-title' className='text-[clamp(1.75rem,4.5vw,3.5rem)] lg:mb-0 mb-4 font-normal opacity-0 translate-y-10 font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]'>
@@ -308,11 +308,11 @@ export const IphoneCarousel = () => {
                     </div>
 
                     <div className="flex items-end gap-4 sm:gap-6">
-                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Демо
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#8B5CF6] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Все проекты
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>

@@ -73,12 +73,12 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
             style={{ transformStyle: isTouch ? undefined : 'preserve-3d' }}
             className={`relative rounded-2xl p-6 sm:p-7 md:p-8 transition-all duration-500 ${
                 plan.popular
-                    ? 'bg-gradient-to-b from-[#10B981]/[0.06] to-[#10B981]/[0.01] border border-[#10B981]/20 shadow-[0_0_60px_-15px_rgba(16,185,129,0.12)]'
+                    ? 'bg-gradient-to-b from-[#8B5CF6]/[0.06] to-[#8B5CF6]/[0.01] border border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.12)]'
                     : 'glow-card'
             }`}
         >
             {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#10B981] to-[#059669] rounded-full py-1 px-3 font-sans uppercase tracking-wider whitespace-nowrap">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-3 font-sans uppercase tracking-wider whitespace-nowrap">
                     <Sparkles className="w-3 h-3" />
                     Популярный
                 </span>
@@ -98,7 +98,7 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
             <ul className="space-y-3 mb-7 sm:mb-8">
                 {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2.5 text-[12px] sm:text-[13px] text-white/35 font-sans font-light">
-                        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#10B981]/40 shrink-0" />
+                        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B5CF6]/40 shrink-0" />
                         {feature}
                     </li>
                 ))}
@@ -127,14 +127,14 @@ export const PricingSection = () => {
 
     return (
         <section id="pricing" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div className="absolute w-[500px] h-[500px] rounded-full bg-[#10B981]/[0.02] blur-[120px] bottom-[10%] right-[10%] pointer-events-none" />
+            <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.02] blur-[120px] bottom-[10%] right-[10%] pointer-events-none" />
 
             <div ref={revealRef} className="max-w-5xl mx-auto relative">
                 <div data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">
-                        <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                        <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Тарифы
-                        <span className="w-8 h-px bg-[#10B981]/40 ml-3" />
+                        <span className="w-8 h-px bg-[#8B5CF6]/40 ml-3" />
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
                         Подписки после
