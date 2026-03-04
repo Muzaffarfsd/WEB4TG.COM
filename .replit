@@ -1,4 +1,4 @@
-modules = ["nodejs-20"]
+modules = ["nodejs-20", "web"]
 [agent]
 expertMode = true
 
@@ -26,7 +26,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node server.js"
+args = "npm run dev"
 waitForPort = 5000
 
 [[ports]]
