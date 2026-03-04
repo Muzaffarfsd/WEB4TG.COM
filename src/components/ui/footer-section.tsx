@@ -1,48 +1,62 @@
-import { Send } from "lucide-react";
+import { ArrowRight, Send } from "lucide-react";
 
 export const FooterSection = () => {
     return (
-        <section id="contact" className="w-full py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-[#09090b] relative">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.05),transparent_60%)]" />
-            <div className="max-w-4xl mx-auto relative text-center">
-                <h2 className="text-3xl sm:text-5xl md:text-6xl font-normal font-instrument-serif text-white tracking-tight mb-4 sm:mb-6">
-                    Готовы запустить
-                    <br />
-                    <span className="text-[#10B981]">своё приложение?</span>
-                </h2>
-                <p className="text-sm sm:text-base text-white/60 max-w-lg mx-auto font-sans mb-8 sm:mb-10">
-                    Напишите нам в Telegram — обсудим ваш проект и рассчитаем стоимость. Средний срок запуска — 14 дней.
-                </p>
-                <a
-                    href="https://t.me/w4tg_bot"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white font-medium rounded-full py-4 px-8 text-base sm:text-lg font-sans transition-colors min-h-[52px]"
-                >
-                    <Send className="w-5 h-5" />
-                    Написать в Telegram
-                </a>
+        <footer id="contact" className="relative w-full px-5 sm:px-8">
+            <div className="section-divider max-w-6xl mx-auto" />
 
-                <div className="mt-16 sm:mt-20 pt-8 border-t border-white/[0.06]">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-2">
-                            <span className="text-[#10B981] font-bold text-base font-sans">WEB4TG</span>
-                            <span className="text-white/50 font-medium text-base font-sans">STUDIO</span>
+            <div className="max-w-6xl mx-auto pt-24 sm:pt-32 md:pt-40 pb-10 sm:pb-16 relative">
+                <div className="hero-glow w-[600px] h-[600px] top-[20%] left-[30%] bg-[#10B981]/[0.04]" />
+
+                <div className="relative text-center mb-24 sm:mb-32">
+                    <h2 className="text-4xl sm:text-5xl md:text-[4.5rem] font-normal font-instrument-serif tracking-[-0.03em] leading-[1]">
+                        <span className="gradient-text-white">Готовы</span>
+                        <br />
+                        <span className="italic gradient-text">запустить?</span>
+                    </h2>
+
+                    <p className="text-sm sm:text-base text-white/30 max-w-md mx-auto font-sans font-light mt-6 sm:mt-8 leading-relaxed">
+                        Напишите нам — обсудим проект и рассчитаем стоимость.
+                        <br className="hidden sm:block" />
+                        Средний срок запуска — 14 дней.
+                    </p>
+
+                    <a
+                        href="https://t.me/w4tg_bot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary font-sans mt-8 sm:mt-10 !py-4 !px-8 !text-base"
+                    >
+                        <Send className="w-4 h-4" />
+                        Написать в Telegram
+                        <ArrowRight className="w-4 h-4" />
+                    </a>
+                </div>
+
+                <div className="section-divider" />
+
+                <div className="pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                            <span className="text-white font-bold text-[9px] font-sans">W4</span>
                         </div>
-                        <div className="flex items-center gap-6">
-                            <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-sm text-white/40 hover:text-white/70 font-sans transition-colors">
-                                @w4tg_bot
-                            </a>
-                            <span className="text-sm text-white/40 font-sans">
-                                Пн-Пт, 10:00 - 19:00 МСК
-                            </span>
-                        </div>
-                        <p className="text-xs text-white/30 font-sans">
-                            © 2025 WEB4TG Studio
-                        </p>
+                        <span className="text-white/50 text-[13px] font-sans font-medium">WEB4TG Studio</span>
                     </div>
+
+                    <div className="flex items-center gap-6 sm:gap-8">
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/25 hover:text-white/50 font-sans transition-colors duration-300">
+                            @w4tg_bot
+                        </a>
+                        <span className="text-[12px] text-white/15 font-sans">
+                            Пн-Пт 10:00-19:00
+                        </span>
+                    </div>
+
+                    <p className="text-[11px] text-white/15 font-sans">
+                        © 2025 WEB4TG Studio
+                    </p>
                 </div>
             </div>
-        </section>
+        </footer>
     );
 };

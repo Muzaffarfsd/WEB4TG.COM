@@ -1,43 +1,46 @@
 import { CreditCard, BarChart3, MessageSquare, Bell, Heart, Star, Truck, Shield } from "lucide-react";
 
 const features = [
-    { icon: CreditCard, title: "Оплата", desc: "Stripe, ЮKassa, Apple Pay, Google Pay, СБП" },
-    { icon: BarChart3, title: "Аналитика", desc: "Полная статистика продаж и трафика" },
-    { icon: MessageSquare, title: "Чат-поддержка", desc: "Общение с клиентами прямо в приложении" },
-    { icon: Bell, title: "Push-уведомления", desc: "Вовлечение и возврат клиентов" },
-    { icon: Heart, title: "Избранное", desc: "Сохранение и сравнение товаров" },
-    { icon: Star, title: "Отзывы", desc: "Рейтинги и обратная связь" },
-    { icon: Truck, title: "Доставка", desc: "Стандартная, экспресс, пункты выдачи" },
-    { icon: Shield, title: "PWA", desc: "Работает офлайн, как нативное приложение" },
+    { icon: CreditCard, title: "Платежи", desc: "Stripe, ЮKassa, Apple Pay, Google Pay, СБП — всё из коробки" },
+    { icon: BarChart3, title: "Аналитика", desc: "Воронки продаж, конверсии, LTV, когорты — полная картина бизнеса" },
+    { icon: MessageSquare, title: "Чат", desc: "Встроенный чат с клиентами, автоответы, шаблоны быстрых ответов" },
+    { icon: Bell, title: "Push", desc: "Уведомления через Telegram — бесплатно и с 95% открываемостью" },
+    { icon: Heart, title: "Избранное", desc: "Вишлисты, сравнение товаров, персональные подборки от AI" },
+    { icon: Star, title: "Отзывы", desc: "Рейтинги, фото-отзывы, верификация покупок, модерация" },
+    { icon: Truck, title: "Доставка", desc: "Интеграция со службами доставки, отслеживание в реальном времени" },
+    { icon: Shield, title: "PWA", desc: "Работает офлайн, устанавливается на экран — как нативное приложение" },
 ];
 
 export const FeaturesSection = () => {
     return (
-        <section className="w-full py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-[#09090b] relative">
-            <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-10 sm:mb-16">
-                    <span className="inline-flex items-center text-xs font-medium text-[#10B981] bg-[#10B981]/10 rounded-full py-1 px-3 font-sans mb-4 ring-1 ring-[#10B981]/20">
-                        Включено
+        <section className="relative w-full py-24 sm:py-32 md:py-40 px-5 sm:px-8">
+            <div className="hero-glow w-[500px] h-[500px] top-[30%] left-[5%] bg-[#10B981]/[0.02]" />
+
+            <div className="max-w-6xl mx-auto relative">
+                <div className="text-center mb-14 sm:mb-20">
+                    <span className="inline-flex items-center text-[11px] font-semibold text-[#10B981] uppercase tracking-[0.15em] font-sans mb-5">
+                        <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                        Возможности
+                        <span className="w-8 h-px bg-[#10B981]/40 ml-3" />
                     </span>
-                    <h2 className="text-2xl sm:text-4xl md:text-5xl font-normal font-instrument-serif text-white tracking-tight">
-                        В каждом приложении
+                    <h2 className="text-3xl sm:text-4xl md:text-[3.5rem] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
+                        Всё для продаж —
+                        <br />
+                        <span className="italic gradient-text">из коробки</span>
                     </h2>
-                    <p className="text-sm sm:text-base text-white/60 mt-3 sm:mt-4 max-w-xl mx-auto font-sans">
-                        Всё необходимое для успешных продаж — из коробки
-                    </p>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.03] rounded-2xl overflow-hidden border border-white/[0.03]">
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] ring-1 ring-white/[0.05] text-center"
+                            className="bg-[#050505] p-6 sm:p-7 group hover:bg-[#10B981]/[0.02] transition-colors duration-500"
                         >
-                            <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 text-[#10B981] mx-auto mb-3" />
-                            <h3 className="text-sm sm:text-base font-medium text-white font-sans mb-1">
+                            <feature.icon className="w-5 h-5 text-[#10B981]/50 mb-5 group-hover:text-[#10B981] transition-colors duration-500" />
+                            <h3 className="text-[14px] font-medium text-white/80 font-sans mb-2 tracking-tight">
                                 {feature.title}
                             </h3>
-                            <p className="text-xs sm:text-sm text-white/40 font-sans">
+                            <p className="text-[12px] sm:text-[13px] text-white/25 font-sans leading-relaxed font-light">
                                 {feature.desc}
                             </p>
                         </div>

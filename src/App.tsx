@@ -9,6 +9,7 @@ import { FooterSection } from './components/ui/footer-section';
 const App = () => {
     return (
         <>
+            <div className="noise-overlay" />
             <ResponsiveHeroBanner />
             <ServicesSection />
             <IphoneCarousel />

@@ -3,7 +3,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
 gsap.registerPlugin(ScrollTrigger);
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, RotateCcw, Eye, ArrowRight } from "lucide-react";
+import { Play, Pause, RotateCcw, ArrowUpRight } from "lucide-react";
 
 interface HighlightSlide {
   id: number;
@@ -36,7 +36,7 @@ export const hightlightsSlides: HighlightSlide[] = [
   },
   {
     id: 2,
-    textLists: ["Telegram Mini App.", "Без скачивания. Без комиссий."],
+    textLists: ["Telegram Mini App.", "Без скачивания.", "Без комиссий."],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010712/hightlight-third_xquibo.mp4",
     videoDuration: 5,
@@ -46,7 +46,6 @@ export const hightlightsSlides: HighlightSlide[] = [
     textLists: [
       "Встроенные платежи.",
       "Stripe, ЮKassa, СБП.",
-      "Всё из коробки.",
     ],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010700/hightlight-sec_qtf7tq.mp4",
@@ -54,7 +53,7 @@ export const hightlightsSlides: HighlightSlide[] = [
   },
   {
     id: 4,
-    textLists: ["AI-бот поддержки.", "24/7 на 150+ языках."],
+    textLists: ["AI-бот поддержки.", "150+ языков. 24/7."],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010704/hightlight-fourth_iooitu.mp4",
     videoDuration: 3.6,
@@ -179,23 +178,16 @@ export const VideoCarousel = () => {
             case "video-end":
                 setVideo((pre) => ({ ...pre, isEnd: true, videoId: i! + 1 }));
                 break;
-
             case "video-last":
                 setVideo((pre) => ({ ...pre, isLastVideo: true }));
                 break;
-
             case "video-reset":
                 setVideo((pre) => ({ ...pre, videoId: 0, isLastVideo: false }));
                 break;
-
             case "pause":
-                setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
-                break;
-
             case "play":
                 setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
                 break;
-
             default:
                 return video;
         }
@@ -210,8 +202,8 @@ export const VideoCarousel = () => {
             <div className="flex items-center">
                 {hightlightsSlides.map((list, i) => (
                     <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20">
-                        <div className="relative w-[85vw] sm:w-[70vw] h-[40vh] sm:h-[50vh] md:h-[70vh]">
-                            <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black">
+                        <div className="relative w-[85vw] sm:w-[70vw] h-[45vh] sm:h-[55vh] md:h-[70vh]">
+                            <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black/50 border border-white/[0.04]">
                                 <video
                                     id="video"
                                     playsInline={true}
@@ -236,9 +228,9 @@ export const VideoCarousel = () => {
                                 </video>
                             </div>
 
-                            <div className="absolute top-6 sm:top-12 left-[5%] z-10">
-                                {list.textLists.map((text, i) => (
-                                    <p key={i} className="text-sm sm:text-xl font-medium text-white">
+                            <div className="absolute top-6 sm:top-10 left-6 sm:left-10 z-10">
+                                {list.textLists.map((text, idx) => (
+                                    <p key={idx} className="text-sm sm:text-lg md:text-xl font-medium text-white/90 font-sans tracking-tight leading-snug">
                                         {text}
                                     </p>
                                 ))}
@@ -248,12 +240,12 @@ export const VideoCarousel = () => {
                 ))}
             </div>
 
-            <div className="relative flex items-center justify-center mt-6 sm:mt-10">
-                <div className="flex items-center justify-center py-3 px-5 sm:py-5 sm:px-7 bg-input backdrop-blur rounded-full">
+            <div className="relative flex items-center justify-center mt-8 sm:mt-12">
+                <div className="flex items-center justify-center py-3 px-5 sm:py-4 sm:px-6 bg-white/[0.04] backdrop-blur-xl rounded-full border border-white/[0.06]">
                     {videoRef.current.map((_, i) => (
                         <span
                             key={i}
-                            className="mx-1.5 sm:mx-2 w-3 h-3 bg-muted-foreground/30 rounded-full relative cursor-pointer"
+                            className="mx-1.5 sm:mx-2 w-3 h-3 bg-white/10 rounded-full relative cursor-pointer"
                             ref={(el) => {
                                 videoDivRef.current[i] = el;
                             }}
@@ -269,7 +261,7 @@ export const VideoCarousel = () => {
                 </div>
 
                 <button
-                    className="ml-3 sm:ml-4 p-3 sm:p-4 rounded-full bg-input backdrop-blur flex items-center justify-center min-w-[44px] min-h-[44px] active:bg-white/20 transition-colors"
+                    className="ml-3 sm:ml-4 p-3 sm:p-3.5 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] flex items-center justify-center min-w-[44px] min-h-[44px] hover:bg-white/[0.08] active:bg-white/[0.12] transition-all duration-300"
                     onClick={
                         isLastVideo
                             ? () => handleProcess("video-reset")
@@ -279,14 +271,13 @@ export const VideoCarousel = () => {
                     }
                 >
                     {isLastVideo ? (
-                        <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+                        <RotateCcw className="w-5 h-5 text-white/70" />
                     ) : !isPlaying ? (
-                        <Play className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+                        <Play className="w-5 h-5 text-white/70" />
                     ) : (
-                        <Pause className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+                        <Pause className="w-5 h-5 text-white/70" />
                     )}
                 </button>
-
             </div>
         </>
     );
@@ -294,26 +285,32 @@ export const VideoCarousel = () => {
 
 export const IphoneCarousel = () => {
     useGSAP(() => {
-        gsap.to('#title', { opacity: 1, y: 0 });
-        gsap.to('.link', { opacity: 1, y: 0, duration: 1, stagger: 0.25 });
+        gsap.to('#title', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' });
+        gsap.to('.link', { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' });
     }, []);
 
     return (
-        <section id='highlights' className='w-full overflow-x-hidden py-12 sm:py-20 md:py-32 px-4 sm:px-10 bg-background min-h-[100svh]'>
+        <section id='highlights' className='relative w-full overflow-x-hidden py-24 sm:py-32 md:py-40 px-5 sm:px-8 min-h-[100svh]'>
             <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
-                <div className='mb-8 sm:mb-12 w-full md:flex items-end justify-between'>
-                    <h1 id='title' className='text-foreground text-2xl sm:text-3xl md:text-5xl lg:text-6xl lg:mb-0 mb-4 sm:mb-5 font-medium opacity-0 translate-y-20 font-instrument-serif'>
-                        Наши работы.
-                    </h1>
+                <div className='mb-10 sm:mb-16 w-full md:flex items-end justify-between'>
+                    <div>
+                        <span className="inline-flex items-center text-[11px] font-semibold text-[#10B981] uppercase tracking-[0.15em] font-sans mb-5 opacity-0 translate-y-5 link">
+                            <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
+                            Портфолио
+                        </span>
+                        <h2 id='title' className='text-3xl sm:text-4xl md:text-[3.5rem] lg:mb-0 mb-5 font-normal opacity-0 translate-y-10 font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]'>
+                            Наши работы
+                        </h2>
+                    </div>
 
-                    <div className="flex flex-wrap items-end gap-3 sm:gap-5">
-                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='link text-[#10B981] hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20 font-sans'>
-                            Смотреть демо
-                            <Eye className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
+                    <div className="flex items-end gap-4 sm:gap-6">
+                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='link text-[13px] sm:text-sm text-white/40 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                            Демо
+                            <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='link text-[#10B981] hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20 font-sans'>
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='link text-[13px] sm:text-sm text-white/40 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Все проекты
-                            <ArrowRight className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
+                            <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
                     </div>
                 </div>
