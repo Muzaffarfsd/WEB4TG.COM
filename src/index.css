@@ -71,7 +71,7 @@ body {
 .noise-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 1;
   pointer-events: none;
   opacity: 0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -193,6 +193,18 @@ body {
 
 .font-instrument-serif {
   font-family: "Instrument Serif", Georgia, serif;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #10B981;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-family: "Inter", system-ui, sans-serif;
+  margin-bottom: 1.25rem;
 }
 
 .hero-glow {

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Menu, X, Sparkles } from 'lucide-react';
+import { useCountUp, useStickyNav } from '../../hooks/use-animations';
 
 const navLinks = [
     { label: "Услуги", href: "#services" },
@@ -9,168 +10,218 @@ const navLinks = [
     { label: "Контакты", href: "#contact" },
 ];
 
-const stats = [
-    { value: "50+", label: "проектов запущено" },
-    { value: "127%", label: "средний рост продаж" },
-    { value: "<2с", label: "время ответа AI-бота" },
-    { value: "4.9", label: "рейтинг клиентов" },
-];
-
-const ResponsiveHeroBanner = () => {
+const StickyHeader = () => {
+    const scrolled = useStickyNav();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [mobileMenuOpen]);
+
     return (
-        <section className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
-            <div className="absolute inset-0 bg-[#050505]" />
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#050505]/80 backdrop-blur-2xl border-b border-white/[0.04]' : ''}`}>
+            <div className="max-w-7xl mx-auto px-5 sm:px-8">
+                <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
+                    <a href="#" className="flex items-center gap-1.5 group shrink-0">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                            <span className="text-white font-bold text-[10px] sm:text-xs font-sans">W4</span>
+                        </div>
+                        <span className="text-white font-semibold text-[14px] sm:text-[15px] tracking-tight font-sans">
+                            WEB4TG
+                        </span>
+                    </a>
 
-            <div className="hero-glow w-[600px] h-[600px] -top-[200px] -right-[100px] bg-[#10B981]/[0.07] animate-float" />
-            <div className="hero-glow w-[500px] h-[500px] -bottom-[150px] -left-[100px] bg-[#10B981]/[0.04] animate-float-delay" />
-            <div className="hero-glow w-[300px] h-[300px] top-[40%] left-[60%] bg-[#059669]/[0.03] animate-pulse-glow" />
-
-            <header className="relative z-20">
-                <div className="max-w-7xl mx-auto px-5 sm:px-8">
-                    <div className="flex items-center justify-between pt-safe-top h-[72px]">
-                        <a href="#" className="flex items-center gap-1.5 group">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
-                                <span className="text-white font-bold text-xs font-sans">W4</span>
-                            </div>
-                            <span className="text-white font-semibold text-[15px] tracking-tight font-sans">
-                                WEB4TG
-                            </span>
+                    <nav className="hidden lg:flex items-center gap-1">
+                        <div className="flex items-center gap-0.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 border border-white/[0.04] backdrop-blur-xl">
+                            {navLinks.map((link, index) => (
+                                <a
+                                    key={index}
+                                    href={link.href}
+                                    className="px-4 py-2 text-[13px] font-medium text-white/50 hover:text-white rounded-full hover:bg-white/[0.05] transition-all duration-300 font-sans"
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </div>
+                        <a
+                            href="https://t.me/w4tg_bot"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-3 btn-primary !py-2.5 !px-5 !text-[13px] !min-h-[40px] !gap-1.5"
+                        >
+                            Начать проект
+                            <ArrowRight className="w-3.5 h-3.5" />
                         </a>
+                    </nav>
 
-                        <nav className="hidden lg:flex items-center gap-1">
-                            <div className="flex items-center gap-0.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 border border-white/[0.04] backdrop-blur-xl">
-                                {navLinks.map((link, index) => (
-                                    <a
-                                        key={index}
-                                        href={link.href}
-                                        className="px-4 py-2 text-[13px] font-medium text-white/60 hover:text-white rounded-full hover:bg-white/[0.05] transition-all duration-300 font-sans"
-                                    >
-                                        {link.label}
-                                    </a>
-                                ))}
-                            </div>
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] active:bg-white/[0.08] transition-colors"
+                        aria-expanded={mobileMenuOpen}
+                        aria-label="Меню"
+                    >
+                        {mobileMenuOpen ? (
+                            <X className="w-5 h-5 text-white/80" />
+                        ) : (
+                            <Menu className="w-5 h-5 text-white/80" />
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {mobileMenuOpen && (
+                <>
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+                    <div className="lg:hidden relative z-50 mx-5 mt-2 rounded-2xl bg-[#0a0a0a]/98 border border-white/[0.06] backdrop-blur-2xl p-3 animate-fade-slide-in-1">
+                        <nav className="flex flex-col gap-0.5">
+                            {navLinks.map((link, index) => (
+                                <a
+                                    key={index}
+                                    href={link.href}
+                                    className="px-4 py-3.5 text-[15px] font-medium rounded-xl font-sans transition-colors active:bg-white/[0.05] text-white/70"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
                             <a
                                 href="https://t.me/w4tg_bot"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="ml-3 btn-primary !py-2.5 !px-5 !text-[13px] !min-h-[40px] !gap-1.5"
+                                className="mt-2 btn-primary justify-center !text-[15px]"
+                                onClick={() => setMobileMenuOpen(false)}
                             >
                                 Начать проект
-                                <ArrowRight className="w-3.5 h-3.5" />
+                                <ArrowRight className="w-4 h-4" />
                             </a>
                         </nav>
-
-                        <button
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] active:bg-white/[0.08] transition-colors"
-                            aria-expanded={mobileMenuOpen}
-                            aria-label="Меню"
-                        >
-                            {mobileMenuOpen ? (
-                                <X className="w-5 h-5 text-white/80" />
-                            ) : (
-                                <Menu className="w-5 h-5 text-white/80" />
-                            )}
-                        </button>
                     </div>
+                </>
+            )}
+        </header>
+    );
+};
 
-                    {mobileMenuOpen && (
-                        <div className="lg:hidden mt-2 rounded-2xl bg-[#0a0a0a]/95 border border-white/[0.06] backdrop-blur-2xl p-3 animate-fade-slide-in-1">
-                            <nav className="flex flex-col gap-0.5">
-                                {navLinks.map((link, index) => (
-                                    <a
-                                        key={index}
-                                        href={link.href}
-                                        className="px-4 py-3.5 text-[15px] font-medium rounded-xl font-sans transition-colors active:bg-white/[0.05] text-white/70"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        {link.label}
-                                    </a>
-                                ))}
+const StatItem = ({ value, label }: { value: string; label: string }) => {
+    const { ref, display } = useCountUp(value);
+    return (
+        <div ref={ref} className="text-center py-5 sm:py-6 px-3">
+            <div className="text-xl sm:text-2xl md:text-3xl font-semibold gradient-text font-sans tracking-tight">
+                {display}
+            </div>
+            <div className="text-[10px] sm:text-[11px] text-white/25 font-sans mt-1.5 uppercase tracking-[0.12em] leading-tight">
+                {label}
+            </div>
+        </div>
+    );
+};
+
+const HeroGlow = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleMouse = (e: MouseEvent) => {
+            if (!containerRef.current) return;
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            containerRef.current.style.setProperty('--mx', `${x}%`);
+            containerRef.current.style.setProperty('--my', `${y}%`);
+        };
+        window.addEventListener('mousemove', handleMouse, { passive: true });
+        return () => window.removeEventListener('mousemove', handleMouse);
+    }, []);
+
+    return (
+        <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] rounded-full bg-[#10B981]/[0.05] blur-[120px] sm:blur-[150px] animate-float" style={{ top: '-15%', right: '-10%' }} />
+            <div className="absolute w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] rounded-full bg-[#059669]/[0.03] blur-[100px] sm:blur-[120px] animate-float-delay" style={{ bottom: '-10%', left: '-5%' }} />
+            <div className="hero-mouse-glow absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] rounded-full bg-[#10B981]/[0.025] blur-[80px] sm:blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
+        </div>
+    );
+};
+
+const stats = [
+    { value: "50+", label: "проектов" },
+    { value: "127%", label: "рост продаж" },
+    { value: "<2с", label: "ответ AI" },
+    { value: "4.9", label: "рейтинг" },
+];
+
+const ResponsiveHeroBanner = () => {
+    return (
+        <>
+            <StickyHeader />
+
+            <section className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
+                <div className="absolute inset-0 bg-[#050505]" />
+                <HeroGlow />
+
+                <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
+                    <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
+                        <div className="max-w-[820px] mx-auto text-center">
+                            <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
+                                <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#10B981] to-[#059669] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
+                                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                    24-48ч
+                                </span>
+                                <span className="text-[11px] sm:text-[13px] font-medium text-white/40 font-sans">
+                                    от заявки до запуска
+                                </span>
+                            </div>
+
+                            <h1 className="animate-fade-slide-in-2">
+                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white">
+                                    Хватит кормить
+                                </span>
+                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic">
+                                    посредников
+                                </span>
+                            </h1>
+
+                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/35 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
+                                Telegram Mini Apps мирового класса.
+                                <span className="text-white/55"> Ваш бренд, ваши продажи — без комиссий.</span>
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4">
                                 <a
                                     href="https://t.me/w4tg_bot"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-2 btn-primary justify-center !text-[15px]"
-                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="btn-primary font-sans w-full sm:w-auto justify-center"
                                 >
-                                    Начать проект
+                                    Обсудить проект
                                     <ArrowRight className="w-4 h-4" />
                                 </a>
-                            </nav>
-                        </div>
-                    )}
-                </div>
-            </header>
-
-            <div className="relative z-10 flex-1 flex items-center">
-                <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-12 sm:py-0">
-                    <div className="max-w-[820px] mx-auto text-center">
-                        <div className="mb-6 sm:mb-8 inline-flex items-center gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
-                            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-gradient-to-r from-[#10B981] to-[#059669] rounded-full py-1 px-2.5 font-sans uppercase tracking-wider">
-                                <Sparkles className="w-3 h-3" />
-                                24-48ч
-                            </span>
-                            <span className="text-[13px] font-medium text-white/50 font-sans">
-                                от заявки до запуска в Telegram
-                            </span>
+                                <a
+                                    href="#highlights"
+                                    className="btn-secondary font-sans w-full sm:w-auto justify-center"
+                                >
+                                    Смотреть работы
+                                </a>
+                            </div>
                         </div>
 
-                        <h1 className="animate-fade-slide-in-2">
-                            <span className="block text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] font-normal font-instrument-serif tracking-[-0.03em] gradient-text-white">
-                                Хватит кормить
-                            </span>
-                            <span className="block text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] font-normal font-instrument-serif tracking-[-0.03em] mt-1 sm:mt-2 gradient-text italic">
-                                посредников
-                            </span>
-                        </h1>
-
-                        <p className="text-[clamp(0.9rem,1.8vw,1.2rem)] leading-relaxed animate-fade-slide-in-3 text-white/40 max-w-[560px] mt-6 sm:mt-8 mx-auto font-sans font-light">
-                            Создаём Telegram Mini Apps мирового уровня. Ваш бренд, ваши продажи, ваши клиенты — <span className="text-white/60">без комиссий и посредников.</span>
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-12 items-center justify-center animate-fade-slide-in-4">
-                            <a
-                                href="https://t.me/w4tg_bot"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-primary font-sans"
-                            >
-                                Обсудить проект
-                                <ArrowRight className="w-4 h-4" />
-                            </a>
-                            <a
-                                href="#highlights"
-                                className="btn-secondary font-sans"
-                            >
-                                Смотреть работы
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="mt-16 sm:mt-24 max-w-3xl mx-auto animate-fade-slide-in-5">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/[0.04] rounded-2xl overflow-hidden border border-white/[0.04]">
-                            {stats.map((stat, index) => (
-                                <div key={index} className="bg-[#050505] p-5 sm:p-6 text-center">
-                                    <div className="text-2xl sm:text-3xl font-semibold gradient-text font-sans tracking-tight">
-                                        {stat.value}
-                                    </div>
-                                    <div className="text-[11px] sm:text-xs text-white/30 font-sans mt-1.5 uppercase tracking-wider">
-                                        {stat.label}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="mt-12 sm:mt-20 max-w-2xl mx-auto animate-fade-slide-in-5">
+                            <div className="grid grid-cols-4 gap-px bg-white/[0.03] rounded-2xl overflow-hidden border border-white/[0.03]">
+                                {stats.map((stat, index) => (
+                                    <StatItem key={index} value={stat.value} label={stat.label} />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="relative z-10 pb-8">
-                <div className="section-divider max-w-7xl mx-auto" />
-            </div>
-        </section>
+                <div className="relative z-10 pb-6 sm:pb-8">
+                    <div className="section-divider max-w-7xl mx-auto" />
+                </div>
+            </section>
+        </>
     );
 };
 

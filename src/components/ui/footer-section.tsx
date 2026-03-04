@@ -1,58 +1,63 @@
 import { ArrowRight, Send } from "lucide-react";
+import { useScrollReveal } from '../../hooks/use-animations';
 
 export const FooterSection = () => {
+    const revealRef = useScrollReveal({ y: 30 });
+
     return (
         <footer id="contact" className="relative w-full px-5 sm:px-8">
             <div className="section-divider max-w-6xl mx-auto" />
 
-            <div className="max-w-6xl mx-auto pt-24 sm:pt-32 md:pt-40 pb-10 sm:pb-16 relative">
-                <div className="hero-glow w-[600px] h-[600px] top-[20%] left-[30%] bg-[#10B981]/[0.04]" />
+            <div className="max-w-6xl mx-auto pt-20 sm:pt-28 md:pt-36 pb-8 sm:pb-12 relative">
+                <div className="absolute w-[500px] h-[500px] rounded-full bg-[#10B981]/[0.03] blur-[120px] top-[25%] left-[35%] pointer-events-none" />
 
-                <div className="relative text-center mb-24 sm:mb-32">
-                    <h2 className="text-4xl sm:text-5xl md:text-[4.5rem] font-normal font-instrument-serif tracking-[-0.03em] leading-[1]">
+                <div ref={revealRef} className="relative text-center mb-20 sm:mb-28">
+                    <h2 data-reveal className="text-[clamp(2rem,6vw,4.5rem)] font-normal font-instrument-serif tracking-[-0.03em] leading-[0.95]">
                         <span className="gradient-text-white">Готовы</span>
                         <br />
                         <span className="italic gradient-text">запустить?</span>
                     </h2>
 
-                    <p className="text-sm sm:text-base text-white/30 max-w-md mx-auto font-sans font-light mt-6 sm:mt-8 leading-relaxed">
-                        Напишите нам — обсудим проект и рассчитаем стоимость.
+                    <p data-reveal className="text-[clamp(0.8125rem,1.5vw,1rem)] text-white/25 max-w-sm mx-auto font-sans font-light mt-5 sm:mt-7 leading-relaxed">
+                        Напишите — обсудим проект и рассчитаем стоимость.
                         <br className="hidden sm:block" />
                         Средний срок запуска — 14 дней.
                     </p>
 
-                    <a
-                        href="https://t.me/w4tg_bot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-primary font-sans mt-8 sm:mt-10 !py-4 !px-8 !text-base"
-                    >
-                        <Send className="w-4 h-4" />
-                        Написать в Telegram
-                        <ArrowRight className="w-4 h-4" />
-                    </a>
+                    <div data-reveal>
+                        <a
+                            href="https://t.me/w4tg_bot"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary font-sans mt-7 sm:mt-9 !py-3.5 sm:!py-4 !px-7 sm:!px-8 !text-[14px] sm:!text-base"
+                        >
+                            <Send className="w-4 h-4" />
+                            Написать в Telegram
+                            <ArrowRight className="w-4 h-4" />
+                        </a>
+                    </div>
                 </div>
 
                 <div className="section-divider" />
 
-                <div className="pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
-                            <span className="text-white font-bold text-[9px] font-sans">W4</span>
+                <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                            <span className="text-white font-bold text-[8px] sm:text-[9px] font-sans">W4</span>
                         </div>
-                        <span className="text-white/50 text-[13px] font-sans font-medium">WEB4TG Studio</span>
+                        <span className="text-white/40 text-[12px] sm:text-[13px] font-sans font-medium">WEB4TG Studio</span>
                     </div>
 
-                    <div className="flex items-center gap-6 sm:gap-8">
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/25 hover:text-white/50 font-sans transition-colors duration-300">
+                    <div className="flex items-center gap-4 sm:gap-6">
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[11px] sm:text-[12px] text-white/20 hover:text-white/40 font-sans transition-colors duration-300">
                             @w4tg_bot
                         </a>
-                        <span className="text-[12px] text-white/15 font-sans">
+                        <span className="text-[11px] sm:text-[12px] text-white/10 font-sans">
                             Пн-Пт 10:00-19:00
                         </span>
                     </div>
 
-                    <p className="text-[11px] text-white/15 font-sans">
+                    <p className="text-[10px] sm:text-[11px] text-white/10 font-sans">
                         © 2025 WEB4TG Studio
                     </p>
                 </div>

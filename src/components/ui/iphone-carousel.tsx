@@ -285,30 +285,34 @@ export const VideoCarousel = () => {
 
 export const IphoneCarousel = () => {
     useGSAP(() => {
-        gsap.to('#title', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' });
-        gsap.to('.link', { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' });
+        gsap.to('#carousel-title', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
+            scrollTrigger: { trigger: '#carousel-title', start: 'top 85%', once: true }
+        });
+        gsap.to('.carousel-link', { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out',
+            scrollTrigger: { trigger: '#carousel-title', start: 'top 85%', once: true }
+        });
     }, []);
 
     return (
-        <section id='highlights' className='relative w-full overflow-x-hidden py-24 sm:py-32 md:py-40 px-5 sm:px-8 min-h-[100svh]'>
+        <section id='highlights' className='relative w-full overflow-x-hidden py-20 sm:py-28 md:py-36 px-5 sm:px-8'>
             <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
-                <div className='mb-10 sm:mb-16 w-full md:flex items-end justify-between'>
+                <div className='mb-8 sm:mb-14 w-full md:flex items-end justify-between'>
                     <div>
-                        <span className="inline-flex items-center text-[11px] font-semibold text-[#10B981] uppercase tracking-[0.15em] font-sans mb-5 opacity-0 translate-y-5 link">
+                        <span className="section-label opacity-0 translate-y-5 carousel-link">
                             <span className="w-8 h-px bg-[#10B981]/40 mr-3" />
                             Портфолио
                         </span>
-                        <h2 id='title' className='text-3xl sm:text-4xl md:text-[3.5rem] lg:mb-0 mb-5 font-normal opacity-0 translate-y-10 font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]'>
+                        <h2 id='carousel-title' className='text-[clamp(1.75rem,4.5vw,3.5rem)] lg:mb-0 mb-4 font-normal opacity-0 translate-y-10 font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]'>
                             Наши работы
                         </h2>
                     </div>
 
                     <div className="flex items-end gap-4 sm:gap-6">
-                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='link text-[13px] sm:text-sm text-white/40 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Демо
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
-                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='link text-[13px] sm:text-sm text-white/40 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='carousel-link text-[12px] sm:text-[13px] text-white/30 hover:text-[#10B981] flex items-center gap-1.5 opacity-0 translate-y-10 font-sans transition-colors duration-300'>
                             Все проекты
                             <ArrowUpRight className='w-3.5 h-3.5' />
                         </a>
