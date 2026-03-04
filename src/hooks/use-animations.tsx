@@ -50,6 +50,7 @@ export const useCountUp = (end: number | string, duration: number = 2) => {
     const [display, setDisplay] = useState('0');
     const ref = useRef<HTMLDivElement>(null);
     const hasAnimated = useRef(false);
+    const displayRef = useRef('0');
 
     useEffect(() => {
         if (!ref.current) return;
@@ -66,9 +67,10 @@ export const useCountUp = (end: number | string, duration: number = 2) => {
         const suffix = endStr.slice(endStr.indexOf(numericMatch[0]) + numericMatch[0].length);
         const hasDecimal = numericMatch[0].includes('.');
         const decimalPlaces = hasDecimal ? numericMatch[0].split('.')[1].length : 0;
+        const el = ref.current;
 
         const trigger = ScrollTrigger.create({
-            trigger: ref.current,
+            trigger: el,
             start: 'top 85%',
             once: true,
             onEnter: () => {
@@ -84,7 +86,19 @@ export const useCountUp = (end: number | string, duration: number = 2) => {
                         const formatted = hasDecimal
                             ? obj.val.toFixed(decimalPlaces)
                             : Math.round(obj.val).toLocaleString('ru-RU');
-                        setDisplay(`${prefix}${formatted}${suffix}`);
+                        const next = `${prefix}${formatted}${suffix}`;
+                        if (displayRef.current !== next) {
+                            displayRef.current = next;
+                            const target = el?.querySelector('[data-count]');
+                            if (target) target.textContent = next;
+                        }
+                    },
+                    onComplete: () => {
+                        const final = hasDecimal
+                            ? numericEnd.toFixed(decimalPlaces)
+                            : Math.round(numericEnd).toLocaleString('ru-RU');
+                        const finalStr = `${prefix}${final}${suffix}`;
+                        setDisplay(finalStr);
                     },
                 });
             },
@@ -164,9 +178,23 @@ export const useTextReveal = (options?: { delay?: number; useScroll?: boolean })
 
 export const useStickyNav = () => {
     const [scrolled, setScrolled] = useState(false);
+    const scrolledRef = useRef(false);
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 80);
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const isScrolled = window.scrollY > 80;
+                    if (scrolledRef.current !== isScrolled) {
+                        scrolledRef.current = isScrolled;
+                        setScrolled(isScrolled);
+                    }
+                    ticking = false;
+                });
+            }
+        };
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, []);

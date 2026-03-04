@@ -10,7 +10,7 @@ export const FooterSection = () => {
             <div className="section-divider max-w-6xl mx-auto" />
 
             <div className="max-w-6xl mx-auto pt-20 sm:pt-28 md:pt-36 pb-8 sm:pb-12 relative">
-                <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.03] blur-[120px] top-[25%] left-[35%] pointer-events-none" />
+                <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.035] blur-[80px] top-[25%] left-[35%] pointer-events-none" />
 
                 <div ref={revealRef} className="relative text-center mb-20 sm:mb-28">
                     <h2 data-reveal className="text-[clamp(2rem,6vw,4.5rem)] font-normal font-instrument-serif tracking-[-0.03em] leading-[0.95]">

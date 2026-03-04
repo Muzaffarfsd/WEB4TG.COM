@@ -17,7 +17,7 @@ export const FeaturesSection = () => {
 
     return (
         <section className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.015] blur-[120px] top-[30%] left-[5%] pointer-events-none" />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.02] blur-[80px] top-[30%] left-[5%] pointer-events-none" />
 
             <div ref={revealRef} className="max-w-6xl mx-auto relative">
                 <div data-reveal className="text-center mb-12 sm:mb-16">
@@ -37,7 +37,7 @@ export const FeaturesSection = () => {
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="bg-[#08080c]/60 backdrop-blur-[32px] p-5 sm:p-6 md:p-7 group hover:bg-[#0c0a14]/65 transition-all duration-500"
+                            className="bg-[#08080c]/80 p-5 sm:p-6 md:p-7 group hover:bg-[#0c0a14]/85 transition-colors duration-500"
                         >
                             <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]/40 mb-4 sm:mb-5 group-hover:text-[#8B5CF6] transition-colors duration-500" />
                             <h3 className="text-[13px] sm:text-[14px] font-medium text-white font-sans mb-1.5 tracking-tight">

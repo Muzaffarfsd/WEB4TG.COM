@@ -56,15 +56,16 @@ npm start      # Express server only (requires dist/)
 - Accent: electric violet gradients (#8B5CF6 → #7C3AED → #A78BFA)
 - Fonts: Instrument Serif (headings), Inter (body)
 - Background: Three.js tubes1 library via iframe (CDN), Canvas 2D multi-pass glow fallback; 3-level input isolation (CSS pointer-events:none + inert, JS event blocking, frozen mouse coords)
-- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(32px), semi-transparent bg rgba(8,8,12,0.6-0.65), border
+- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(16px), semi-transparent bg rgba(8,8,12,0.75), border
 - Gradient text: .gradient-text (violet), .gradient-text-white (white fade)
 - Glow cards: .glow-card with glassmorphic hover + border glow
 - Noise texture: .noise-overlay (z-index 1, pointer-events none)
 - Gradient mesh: animated blurred violet blobs in hero
 - Buttons: .btn-primary (gradient + shadow), .btn-secondary (ghost); MagneticButton is plain wrapper (no GSAP)
 - Section labels: .section-label (uppercase, tracked, with line decoration)
-- Smooth scroll: Lenis with custom easing
-- Animations: scroll reveal, count-up, marquee, text reveal (no 3D tilt, no mouse glow, no cursor tracking)
+- Smooth scroll: Lenis with autoRaf and custom easing
+- Animations: scroll reveal, count-up (direct DOM updates), marquee, text reveal (no 3D tilt, no mouse glow, no cursor tracking)
+- Performance: backdrop-blur(16px) instead of 32px, CSS containment on sections/cards, rAF-throttled scroll handler, GSAP ticker cleanup, decorative blobs blur(80px)
 - Reduced motion: respects prefers-reduced-motion
 - Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay
 - All external links: https://t.me/w4tg_bot

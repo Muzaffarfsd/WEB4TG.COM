@@ -101,6 +101,7 @@ export const VideoCarousel = () => {
     useEffect(() => {
         let currentProgress = 0;
         const span = videoSpanRef.current;
+        let animUpdateFn: (() => void) | null = null;
 
         if (span[videoId]) {
             const anim = gsap.to(span[videoId], {
@@ -142,7 +143,7 @@ export const VideoCarousel = () => {
                 anim.restart();
             }
 
-            const animUpdate = () => {
+            animUpdateFn = () => {
                 const currentVideo = videoRef.current[videoId];
                 if (currentVideo) {
                     anim.progress(
@@ -153,12 +154,14 @@ export const VideoCarousel = () => {
             };
 
             if (isPlaying) {
-                gsap.ticker.add(animUpdate);
-            } else {
-                gsap.ticker.remove(animUpdate);
+                gsap.ticker.add(animUpdateFn);
             }
         }
-    }, [videoId, startPlay]);
+
+        return () => {
+            if (animUpdateFn) gsap.ticker.remove(animUpdateFn);
+        };
+    }, [videoId, startPlay, isPlaying]);
 
     useEffect(() => {
         if (loadedData.length > 3) {
@@ -241,7 +244,7 @@ export const VideoCarousel = () => {
             </div>
 
             <div className="relative flex items-center justify-center mt-8 sm:mt-12">
-                <div className="flex items-center justify-center py-3 px-5 sm:py-4 sm:px-6 bg-white/[0.04] backdrop-blur-xl rounded-full border border-white/[0.06]">
+                <div className="flex items-center justify-center py-3 px-5 sm:py-4 sm:px-6 bg-[#0a0a10]/80 rounded-full border border-white/[0.06]">
                     {videoRef.current.map((_, i) => (
                         <span
                             key={i}
@@ -261,7 +264,7 @@ export const VideoCarousel = () => {
                 </div>
 
                 <button
-                    className="ml-3 sm:ml-4 p-3 sm:p-3.5 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] flex items-center justify-center min-w-[44px] min-h-[44px] hover:bg-white/[0.08] active:bg-white/[0.12] transition-all duration-300"
+                    className="ml-3 sm:ml-4 p-3 sm:p-3.5 rounded-full bg-[#0a0a10]/80 border border-white/[0.06] flex items-center justify-center min-w-[44px] min-h-[44px] hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-300"
                     onClick={
                         isLastVideo
                             ? () => handleProcess("video-reset")
