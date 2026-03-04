@@ -3,6 +3,10 @@ import { ArrowRight, Menu, X, Sparkles } from 'lucide-react';
 import { useCountUp, useStickyNav, useTextReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
+const techItems = [
+    "React 19", "TypeScript", "Vite", "Tailwind CSS", "Telegram Bot API", "Stripe", "ЮKassa", "AI-бот", "PWA", "PostgreSQL", "Redis", "framer-motion"
+];
+
 const navLinks = [
     { label: "Услуги", href: "#services" },
     { label: "Портфолио", href: "#highlights" },
@@ -28,12 +32,9 @@ const StickyHeader = () => {
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#08080c]/80 backdrop-blur-xl border-b border-white/[0.06]' : ''}`}>
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
-                    <a href="#" className="flex items-center gap-1.5 group shrink-0">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
-                            <span className="text-white font-bold text-[10px] sm:text-xs font-sans">W4</span>
-                        </div>
-                        <span className="text-white font-semibold text-[14px] sm:text-[15px] tracking-tight font-sans">
-                            WEB4TG
+                    <a href="#" className="flex items-center shrink-0">
+                        <span className="text-white font-bold text-[15px] sm:text-[17px] tracking-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            WEB4TG <span className="font-medium text-white/70">STUDIO</span>
                         </span>
                     </a>
 
@@ -200,6 +201,26 @@ const ResponsiveHeroBanner = () => {
                                 >
                                     Смотреть работы
                                 </MagneticButton>
+                            </div>
+
+                            <div className="mt-8 sm:mt-12 animate-fade-slide-in-5 relative overflow-hidden max-w-[600px] mx-auto">
+                                <p className="text-[10px] sm:text-[11px] text-white/50 font-sans uppercase tracking-[0.15em] mb-3 sm:mb-4 text-center">
+                                    Стек технологий
+                                </p>
+                                <div className="relative overflow-hidden">
+                                    <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
+                                    <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
+                                    <div className="flex animate-marquee whitespace-nowrap">
+                                        {[...techItems, ...techItems].map((tech, index) => (
+                                            <span
+                                                key={index}
+                                                className="inline-flex items-center px-3 py-1.5 mx-1 text-[11px] sm:text-[12px] font-medium text-white/60 bg-[#0a0a10]/80 border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
+                                            >
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

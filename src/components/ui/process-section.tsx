@@ -25,13 +25,8 @@ const steps = [
     }
 ];
 
-const techItems = [
-    "React 19", "TypeScript", "Vite", "Tailwind CSS", "Telegram Bot API", "Stripe", "ЮKassa", "AI-бот", "PWA", "PostgreSQL", "Redis", "framer-motion"
-];
-
 export const ProcessSection = () => {
     const revealRef = useScrollReveal({ stagger: 0.08 });
-    const marqueeRef = useScrollReveal({ delay: 0.3 });
 
     return (
         <section id="process" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
@@ -48,7 +43,7 @@ export const ProcessSection = () => {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 mb-16 sm:mb-24">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3">
                     {steps.map((step, index) => (
                         <div
                             key={index}
@@ -82,27 +77,6 @@ export const ProcessSection = () => {
                             </div>
                         </div>
                     ))}
-                </div>
-
-                <div ref={marqueeRef} className="relative overflow-hidden">
-                    <div data-reveal className="section-divider mb-8 sm:mb-10" />
-                    <p data-reveal className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-[0.15em] mb-5 sm:mb-6 text-center">
-                        Стек технологий
-                    </p>
-                    <div data-reveal className="relative overflow-hidden">
-                        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-[#050505]/90 to-transparent z-10 pointer-events-none" />
-                        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-[#050505]/90 to-transparent z-10 pointer-events-none" />
-                        <div className="flex animate-marquee whitespace-nowrap">
-                            {[...techItems, ...techItems].map((tech, index) => (
-                                <span
-                                    key={index}
-                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/70 bg-[#0a0a10]/80 border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
-                                >
-                                    {tech}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

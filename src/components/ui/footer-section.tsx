@@ -43,11 +43,10 @@ export const FooterSection = () => {
                 <div className="section-divider" />
 
                 <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center">
-                            <span className="text-white font-bold text-[8px] sm:text-[9px] font-sans">W4</span>
-                        </div>
-                        <span className="text-white/80 text-[12px] sm:text-[13px] font-sans font-medium">WEB4TG Studio</span>
+                    <div className="flex items-center">
+                        <span className="text-white/80 text-[12px] sm:text-[13px] font-medium tracking-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            WEB4TG <span className="font-normal text-white/50">STUDIO</span>
+                        </span>
                     </div>
 
                     <div className="flex items-center gap-4 sm:gap-6">
