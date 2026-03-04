@@ -5,7 +5,6 @@ import { ScrollTrigger } from 'gsap/all';
 gsap.registerPlugin(ScrollTrigger);
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
 
 export const useScrollReveal = (options?: { delay?: number; y?: number; duration?: number; stagger?: number }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -21,10 +20,7 @@ export const useScrollReveal = (options?: { delay?: number; y?: number; duration
             return;
         }
 
-        gsap.set(targets, {
-            opacity: 0,
-            y: options?.y ?? 40,
-        });
+        gsap.set(targets, { opacity: 0, y: options?.y ?? 40 });
 
         gsap.to(targets, {
             opacity: 1,
@@ -100,46 +96,68 @@ export const useCountUp = (end: number | string, duration: number = 2) => {
     return { ref, display };
 };
 
-export const useTilt = (intensity: number = 10) => {
+export const useParallax = (speed: number = 0.2) => {
     const ref = useRef<HTMLDivElement>(null);
 
-    const handleMove = useCallback((e: MouseEvent) => {
-        if (!ref.current) return;
-        const rect = ref.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-        gsap.to(ref.current, {
-            rotateY: x * intensity,
-            rotateX: -y * intensity,
-            duration: 0.4,
-            ease: 'power2.out',
-            transformPerspective: 800,
-        });
-    }, [intensity]);
-
-    const handleLeave = useCallback(() => {
-        if (!ref.current) return;
-        gsap.to(ref.current, {
-            rotateY: 0,
-            rotateX: 0,
-            duration: 0.6,
-            ease: 'power3.out',
-        });
-    }, []);
-
     useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
+        if (!ref.current || prefersReducedMotion()) return;
 
-        el.addEventListener('mousemove', handleMove);
-        el.addEventListener('mouseleave', handleLeave);
+        const tl = gsap.to(ref.current, {
+            y: () => speed * 100,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: ref.current,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+            },
+        });
 
         return () => {
-            el.removeEventListener('mousemove', handleMove);
-            el.removeEventListener('mouseleave', handleLeave);
+            tl.scrollTrigger?.kill();
+            tl.kill();
         };
-    }, [handleMove, handleLeave]);
+    }, [speed]);
+
+    return ref;
+};
+
+export const useTextReveal = (options?: { delay?: number; useScroll?: boolean }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+
+        if (prefersReducedMotion()) {
+            gsap.set(ref.current, { opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' });
+            return;
+        }
+
+        gsap.set(ref.current, {
+            opacity: 0,
+            y: 50,
+            clipPath: 'inset(100% 0% 0% 0%)',
+        });
+
+        const animConfig: gsap.TweenVars = {
+            opacity: 1,
+            y: 0,
+            clipPath: 'inset(0% 0% 0% 0%)',
+            duration: 1.2,
+            delay: options?.delay ?? 0.3,
+            ease: 'power4.out',
+        };
+
+        if (options?.useScroll) {
+            animConfig.scrollTrigger = {
+                trigger: ref.current,
+                start: 'top 85%',
+                once: true,
+            };
+        }
+
+        gsap.to(ref.current, animConfig);
+    }, []);
 
     return ref;
 };

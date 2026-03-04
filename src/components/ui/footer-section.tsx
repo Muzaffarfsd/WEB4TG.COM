@@ -1,5 +1,6 @@
 import { ArrowRight, Send } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
+import { MagneticButton } from './magnetic-button';
 
 export const FooterSection = () => {
     const revealRef = useScrollReveal({ y: 30 });
@@ -25,16 +26,17 @@ export const FooterSection = () => {
                     </p>
 
                     <div data-reveal>
-                        <a
+                        <MagneticButton
                             href="https://t.me/w4tg_bot"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-primary font-sans mt-7 sm:mt-9 !py-3.5 sm:!py-4 !px-7 sm:!px-8 !text-[14px] sm:!text-base"
+                            strength={0.35}
                         >
                             <Send className="w-4 h-4" />
                             Написать в Telegram
                             <ArrowRight className="w-4 h-4" />
-                        </a>
+                        </MagneticButton>
                     </div>
                 </div>
 

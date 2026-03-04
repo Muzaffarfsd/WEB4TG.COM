@@ -1,5 +1,6 @@
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
+import { MagneticButton } from './magnetic-button';
 import { useRef, useCallback } from 'react';
 import gsap from 'gsap';
 
@@ -103,7 +104,7 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
                 ))}
             </ul>
 
-            <a
+            <MagneticButton
                 href="https://t.me/w4tg_bot"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -112,10 +113,11 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
                         ? 'btn-primary !justify-center !w-full'
                         : 'btn-secondary !justify-center !w-full'
                 }`}
+                strength={0.2}
             >
                 Выбрать
                 <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </MagneticButton>
         </div>
     );
 };

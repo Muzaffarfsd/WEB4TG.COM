@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Menu, X, Sparkles } from 'lucide-react';
-import { useCountUp, useStickyNav } from '../../hooks/use-animations';
+import { useCountUp, useStickyNav, useTextReveal } from '../../hooks/use-animations';
+import { MagneticButton } from './magnetic-button';
 
 const navLinks = [
     { label: "Услуги", href: "#services" },
@@ -24,7 +25,7 @@ const StickyHeader = () => {
     }, [mobileMenuOpen]);
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#050505]/80 backdrop-blur-2xl border-b border-white/[0.04]' : ''}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#050505]/80 backdrop-blur-2xl border-b border-white/[0.04]' : ''}`}>
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
                     <a href="#" className="flex items-center gap-1.5 group shrink-0">
@@ -48,15 +49,16 @@ const StickyHeader = () => {
                                 </a>
                             ))}
                         </div>
-                        <a
+                        <MagneticButton
                             href="https://t.me/w4tg_bot"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="ml-3 btn-primary !py-2.5 !px-5 !text-[13px] !min-h-[40px] !gap-1.5"
+                            strength={0.25}
                         >
                             Начать проект
                             <ArrowRight className="w-3.5 h-3.5" />
-                        </a>
+                        </MagneticButton>
                     </nav>
 
                     <button
@@ -121,26 +123,38 @@ const StatItem = ({ value, label }: { value: string; label: string }) => {
     );
 };
 
-const HeroGlow = () => {
+const GradientMesh = () => {
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="gradient-mesh-blob gradient-mesh-1" />
+            <div className="gradient-mesh-blob gradient-mesh-2" />
+            <div className="gradient-mesh-blob gradient-mesh-3" />
+        </div>
+    );
+};
+
+const HeroMouseGlow = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 
     useEffect(() => {
+        if (isTouch || !containerRef.current) return;
+        const el = containerRef.current;
         const handleMouse = (e: MouseEvent) => {
-            if (!containerRef.current) return;
             const x = (e.clientX / window.innerWidth) * 100;
             const y = (e.clientY / window.innerHeight) * 100;
-            containerRef.current.style.setProperty('--mx', `${x}%`);
-            containerRef.current.style.setProperty('--my', `${y}%`);
+            el.style.setProperty('--mx', `${x}%`);
+            el.style.setProperty('--my', `${y}%`);
         };
         window.addEventListener('mousemove', handleMouse, { passive: true });
         return () => window.removeEventListener('mousemove', handleMouse);
-    }, []);
+    }, [isTouch]);
+
+    if (isTouch) return null;
 
     return (
         <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] rounded-full bg-[#10B981]/[0.05] blur-[120px] sm:blur-[150px] animate-float" style={{ top: '-15%', right: '-10%' }} />
-            <div className="absolute w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] rounded-full bg-[#059669]/[0.03] blur-[100px] sm:blur-[120px] animate-float-delay" style={{ bottom: '-10%', left: '-5%' }} />
-            <div className="hero-mouse-glow absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] rounded-full bg-[#10B981]/[0.025] blur-[80px] sm:blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#10B981]/[0.03] blur-[100px] transition-all duration-[2s] ease-out" style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', transform: 'translate(-50%, -50%)' }} />
         </div>
     );
 };
@@ -153,13 +167,17 @@ const stats = [
 ];
 
 const ResponsiveHeroBanner = () => {
+    const titleRef1 = useTextReveal({ delay: 0.2 });
+    const titleRef2 = useTextReveal({ delay: 0.5 });
+
     return (
         <>
             <StickyHeader />
 
             <section className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
                 <div className="absolute inset-0 bg-[#050505]" />
-                <HeroGlow />
+                <GradientMesh />
+                <HeroMouseGlow />
 
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
@@ -174,13 +192,19 @@ const ResponsiveHeroBanner = () => {
                                 </span>
                             </div>
 
-                            <h1 className="animate-fade-slide-in-2">
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white">
+                            <h1>
+                                <div
+                                    ref={titleRef1}
+                                    className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white"
+                                >
                                     Хватит кормить
-                                </span>
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic">
+                                </div>
+                                <div
+                                    ref={titleRef2}
+                                    className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic"
+                                >
                                     посредников
-                                </span>
+                                </div>
                             </h1>
 
                             <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/35 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
@@ -189,7 +213,7 @@ const ResponsiveHeroBanner = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4">
-                                <a
+                                <MagneticButton
                                     href="https://t.me/w4tg_bot"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -197,13 +221,13 @@ const ResponsiveHeroBanner = () => {
                                 >
                                     Обсудить проект
                                     <ArrowRight className="w-4 h-4" />
-                                </a>
-                                <a
+                                </MagneticButton>
+                                <MagneticButton
                                     href="#highlights"
                                     className="btn-secondary font-sans w-full sm:w-auto justify-center"
                                 >
                                     Смотреть работы
-                                </a>
+                                </MagneticButton>
                             </div>
                         </div>
 
