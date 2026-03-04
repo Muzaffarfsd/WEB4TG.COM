@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Menu, X, Sparkles } from 'lucide-react';
+import { ArrowRight, Menu, X, Sparkles, ChevronDown } from 'lucide-react';
 import { useCountUp, useStickyNav, useTextReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
@@ -144,12 +144,37 @@ const stats = [
 const ResponsiveHeroBanner = () => {
     const titleRef1 = useTextReveal({ delay: 0.2 });
     const titleRef2 = useTextReveal({ delay: 0.5 });
+    const [scrolledPastHero, setScrolledPastHero] = useState(false);
+    const heroRef = useRef<HTMLElement>(null);
+    const scrolledRef = useRef(false);
+
+    useEffect(() => {
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(() => {
+                    if (heroRef.current) {
+                        const past = heroRef.current.getBoundingClientRect().bottom < window.innerHeight * 0.5;
+                        if (scrolledRef.current !== past) {
+                            scrolledRef.current = past;
+                            setScrolledPastHero(past);
+                        }
+                    }
+                    ticking = false;
+                });
+            }
+        };
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
         <>
             <StickyHeader />
 
-            <section className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
+            <section ref={heroRef} className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
                 <GradientMesh />
 
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
@@ -225,7 +250,7 @@ const ResponsiveHeroBanner = () => {
                         </div>
 
                         <div className="mt-12 sm:mt-20 max-w-2xl mx-auto animate-fade-slide-in-5">
-                            <div className="grid grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.08] glass-panel">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.08] glass-panel">
                                 {stats.map((stat, index) => (
                                     <StatItem key={index} value={stat.value} label={stat.label} />
                                 ))}
@@ -233,6 +258,14 @@ const ResponsiveHeroBanner = () => {
                         </div>
                     </div>
                 </div>
+
+                {!scrolledPastHero && (
+                    <div className="relative z-10 flex justify-center pb-2 sm:pb-3 animate-fade-slide-in-5">
+                        <div className="scroll-indicator flex flex-col items-center gap-1 text-white/40">
+                            <ChevronDown className="w-5 h-5 animate-bounce-slow" />
+                        </div>
+                    </div>
+                )}
 
                 <div className="relative z-10 pb-6 sm:pb-8">
                     <div className="section-divider max-w-7xl mx-auto" />

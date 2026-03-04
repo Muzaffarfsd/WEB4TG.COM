@@ -6,8 +6,11 @@ import { ServicesSection } from './components/ui/services-section';
 import { IphoneCarousel } from './components/ui/iphone-carousel';
 import { ProcessSection } from './components/ui/process-section';
 import { FeaturesSection } from './components/ui/features-section';
+import { TestimonialsSection } from './components/ui/testimonials-section';
 import { PricingSection } from './components/ui/pricing-section';
+import { FaqSection } from './components/ui/faq-section';
 import { FooterSection } from './components/ui/footer-section';
+import { TelegramFab } from './components/ui/telegram-fab';
 
 const App = () => {
     useEffect(() => {
@@ -31,9 +34,12 @@ const App = () => {
                 <IphoneCarousel />
                 <ProcessSection />
                 <FeaturesSection />
+                <TestimonialsSection />
                 <PricingSection />
+                <FaqSection />
                 <FooterSection />
             </div>
+            <TelegramFab />
         </>
     );
 };
