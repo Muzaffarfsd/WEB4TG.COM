@@ -7,7 +7,7 @@ import {
     Target, Gauge, Activity, ArrowUpRight,
     ShoppingBag, UtensilsCrossed, Scissors, Dumbbell,
     Package, Search, Users, Heart, Star,
-    Send, Phone, XCircle, Timer, BarChart3
+    Send, XCircle, Timer, BarChart3
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -28,7 +28,7 @@ interface NicheScenario {
     gradient: string;
     stages: StageData[];
     heroMetric: { value: string; label: string; sub: string };
-    beforeAfter: { before: string; after: string };
+    beforeAfter: { before: string; after: string; afterMetric: string };
 }
 
 interface StageData {
@@ -65,7 +65,7 @@ const niches: NicheScenario[] = [
         color: '#8B5CF6',
         gradient: 'from-[#8B5CF6] to-[#6D28D9]',
         heroMetric: { value: '96.8%', label: 'конверсия в оплату', sub: 'vs 34% на обычном сайте' },
-        beforeAfter: { before: 'Клиент уходит с сайта — нет консультации', after: 'AI подбирает товар, отвечает на вопросы, закрывает в оплату за 3 минуты' },
+        beforeAfter: { before: 'Клиент уходит с сайта — нет консультации', after: 'AI подбирает товар, закрывает в оплату за 3 минуты', afterMetric: '+185% конверсия' },
         stages: [
             {
                 title: "Квалификация",
@@ -127,7 +127,7 @@ const niches: NicheScenario[] = [
         color: '#f59e0b',
         gradient: 'from-[#f59e0b] to-[#d97706]',
         heroMetric: { value: '+27%', label: 'средний чек', sub: 'с AI-рекомендациями сетов' },
-        beforeAfter: { before: 'Ночью и в выходные заказы теряются', after: 'AI принимает заказы 24/7, предлагает сеты и допродаёт' },
+        beforeAfter: { before: 'Ночью и в выходные заказы теряются', after: 'AI принимает заказы 24/7, предлагает сеты и допродаёт', afterMetric: '+27% чек' },
         stages: [
             {
                 title: "Умное меню",
@@ -189,7 +189,7 @@ const niches: NicheScenario[] = [
         color: '#ec4899',
         gradient: 'from-[#ec4899] to-[#be185d]',
         heroMetric: { value: '89%', label: 'записей без менеджера', sub: 'онлайн 24/7, даже ночью' },
-        beforeAfter: { before: 'Администратор не берёт трубку — клиент уходит к конкуренту', after: 'AI записывает мгновенно, подбирает мастера и допродаёт' },
+        beforeAfter: { before: 'Администратор не берёт трубку — клиент уходит к конкуренту', after: 'AI записывает мгновенно, подбирает мастера и допродаёт', afterMetric: '89% без менеджера' },
         stages: [
             {
                 title: "Подбор мастера",
@@ -252,7 +252,7 @@ const niches: NicheScenario[] = [
         color: '#22c55e',
         gradient: 'from-[#22c55e] to-[#16a34a]',
         heroMetric: { value: '73%', label: 'триалов → абонемент', sub: 'бесплатный визит = продажа' },
-        beforeAfter: { before: 'Звонят узнать цену — слышат прайс-лист и кладут трубку', after: 'AI квалифицирует цель, подбирает тариф, записывает на триал' },
+        beforeAfter: { before: 'Звонят узнать цену — слышат прайс-лист и кладут трубку', after: 'AI квалифицирует цель, подбирает тариф, записывает на триал', afterMetric: '73% → абонемент' },
         stages: [
             {
                 title: "Цель клиента",
@@ -316,14 +316,14 @@ const TypingIndicator = () => (
     </div>
 );
 
-const VoiceMessage = () => (
+const VoiceMessage = ({ color = '#8B5CF6' }: { color?: string }) => (
     <div className="flex items-center gap-2 px-1">
-        <div className="w-7 h-7 rounded-full bg-[#8B5CF6]/20 flex items-center justify-center flex-shrink-0">
-            <Mic className="w-3.5 h-3.5 text-[#8B5CF6]" />
+        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
+            <Mic className="w-3.5 h-3.5" style={{ color }} />
         </div>
         <div className="flex-1 flex items-center gap-0.5">
             {VOICE_BAR_HEIGHTS.map((h, i) => (
-                <div key={i} className="w-[2.5px] rounded-full bg-[#8B5CF6]/50" style={{ height: `${h}px`, animation: `typingBounce 2s ease-in-out ${i * 0.08}s infinite` }} />
+                <div key={i} className="w-[2.5px] rounded-full" style={{ height: `${h}px`, backgroundColor: `${color}50`, animation: `typingBounce 2s ease-in-out ${i * 0.08}s infinite` }} />
             ))}
         </div>
         <span className="text-[10px] text-white/40 flex-shrink-0">0:08</span>
@@ -345,23 +345,6 @@ const PropensityBar = ({ value, color, prevValue }: { value: number; color: stri
         </div>
     </div>
 );
-
-const AnimatedStat = ({ value, label, icon: Icon, delay }: { value: string; label: string; icon: typeof Bot; delay: number }) => {
-    const ref = useRef<HTMLDivElement>(null);
-    const [visible, setVisible] = useState(false);
-    useEffect(() => {
-        const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.5 });
-        if (ref.current) obs.observe(ref.current);
-        return () => obs.disconnect();
-    }, []);
-    return (
-        <div ref={ref} className="glow-card rounded-xl p-4 sm:p-5 text-center group hover:border-[#8B5CF6]/20 transition-all duration-500">
-            <Icon className="w-4 h-4 text-[#8B5CF6]/40 mx-auto mb-2 group-hover:text-[#8B5CF6]/70 transition-colors" />
-            <div className="text-[clamp(1.3rem,2.5vw,1.6rem)] font-instrument-serif gradient-text font-normal" style={visible ? { animation: `countUp 0.5s ease-out ${delay}s both` } : { opacity: 0 }}>{value}</div>
-            <div className="text-[10px] sm:text-[11px] text-white/40 mt-1 font-sans">{label}</div>
-        </div>
-    );
-};
 
 export const AiAgentSection = () => {
     const revealRef = useScrollReveal({ stagger: 0.06 });
@@ -458,7 +441,7 @@ export const AiAgentSection = () => {
     const renderMessage = (msg: ChatMessage, animated: boolean, idx?: number) => (
         <div key={`${activeNiche}-${msg.id}`} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`} style={animated ? { animation: `messageAppear 0.35s ease-out ${(idx || 0) * 0.05}s both` } : undefined}>
             <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed font-sans whitespace-pre-line ${msg.sender === 'user' ? 'text-white rounded-br-md' : 'bg-white/[0.06] text-white/80 rounded-bl-md'}`} style={msg.sender === 'user' ? { background: `linear-gradient(135deg, ${niche.color}, ${niche.color}cc)` } : undefined}>
-                {msg.isVoice ? <VoiceMessage /> : msg.text}
+                {msg.isVoice ? <VoiceMessage color={niche.color} /> : msg.text}
             </div>
         </div>
     );
@@ -538,7 +521,10 @@ export const AiAgentSection = () => {
                         <div className="flex gap-3 p-3.5 rounded-xl bg-[#22c55e]/[0.04] border border-[#22c55e]/10">
                             <CheckCircle className="w-4 h-4 text-[#22c55e]/60 flex-shrink-0 mt-0.5" />
                             <div>
-                                <div className="text-[10px] text-[#22c55e]/50 uppercase tracking-wider font-semibold mb-1">С AI-агентом</div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[10px] text-[#22c55e]/50 uppercase tracking-wider font-semibold">С AI-агентом</span>
+                                    <span className="text-[9px] font-bold text-[#22c55e] bg-[#22c55e]/[0.08] rounded-full px-1.5 py-0.5">{niche.beforeAfter.afterMetric}</span>
+                                </div>
                                 <div className="text-[12px] text-white/60 leading-relaxed">{niche.beforeAfter.after}</div>
                             </div>
                         </div>
@@ -680,8 +666,25 @@ export const AiAgentSection = () => {
                     </div>
                 </div>
 
-                {/* SOCIAL PROOF — пункт 14 */}
-                <div data-reveal className="mt-10 sm:mt-14 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
+                {/* TECH BADGES */}
+                <div data-reveal className="mt-10 sm:mt-14 flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                    {[
+                        { label: 'Gemini Flash/Pro', icon: Brain },
+                        { label: 'ElevenLabs v3', icon: Volume2 },
+                        { label: '17 AI-tools', icon: Zap },
+                        { label: '150+ языков', icon: Globe },
+                        { label: '0.3с ответ', icon: Timer },
+                        { label: '24/7', icon: Clock },
+                    ].map((t, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
+                            <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
+                            {t.label}
+                        </div>
+                    ))}
+                </div>
+
+                {/* SOCIAL PROOF — единый блок */}
+                <div data-reveal className="mt-6 sm:mt-8 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
                     {[
                         { value: '12+', label: 'агентов запущено' },
                         { value: '47 000+', label: 'диалогов обработано' },
@@ -694,25 +697,13 @@ export const AiAgentSection = () => {
                     ))}
                 </div>
 
-                {/* STATS */}
-                <div data-reveal className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
-                    {[
-                        { value: '0.3с', label: 'Время ответа', icon: Timer },
-                        { value: '17', label: 'AI-инструментов', icon: Zap },
-                        { value: '150+', label: 'Языков', icon: Globe },
-                        { value: '24/7', label: 'Без выходных', icon: Clock },
-                    ].map((stat, i) => (
-                        <AnimatedStat key={i} {...stat} delay={i * 0.1} />
-                    ))}
-                </div>
-
-                {/* CTA — пункт 3: премиальный CTA */}
+                {/* CTA */}
                 <div data-reveal className="mt-8 sm:mt-10 text-center">
-                    <a href="#pricing" className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl text-[14px] sm:text-[15px] font-sans font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all duration-300 shadow-xl shadow-[#8B5CF6]/20 hover:shadow-[#8B5CF6]/30 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]">
+                    <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl text-[14px] sm:text-[15px] font-sans font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all duration-300 shadow-xl shadow-[#8B5CF6]/20 hover:shadow-[#8B5CF6]/30 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]">
                         Запустить AI-агента за 14 дней
-                        <ArrowUpRight className="w-4.5 h-4.5" />
+                        <ArrowUpRight className="w-[18px] h-[18px]" />
                     </a>
-                    <p className="text-[12px] text-white/30 mt-3 font-sans">Настроим под вашу нишу — от каталога до скриптов продаж</p>
+                    <p className="text-[12px] text-white/30 mt-3 font-sans">Бесплатная консультация 15 мин · NDA · Демо на ваших данных</p>
                 </div>
             </div>
         </section>
