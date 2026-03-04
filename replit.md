@@ -32,6 +32,7 @@ src/
       magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
       client-logos.tsx               - Two-row client logos marquee (opposite directions)
       services-section.tsx           - Bento grid services (8 glassmorphic cards)
+      ai-agent-section.tsx           - Interactive AI agent demo (6-stage auto-playing chat simulation with metrics, inventory, and payment panels)
       iphone-carousel.tsx            - GSAP video carousel (portfolio)
       process-section.tsx            - 3-step process glassmorphic cards
       features-section.tsx           - Glass features grid (8 cells)
@@ -48,7 +49,7 @@ src/
 ```
 
 ## Section Order (App.tsx)
-Hero → ClientLogos → Services → IphoneCarousel → Process → Features → CaseStudies → Testimonials → ComparisonTable → Pricing → Guarantees → FAQ → IntegrationsMarquee → CtaBanner → Footer
+Hero → ClientLogos → Services → AiAgent → IphoneCarousel → Process → Features → CaseStudies → Testimonials → ComparisonTable → Pricing → Guarantees → FAQ → IntegrationsMarquee → CtaBanner → Footer
 
 ## Running
 ```bash
@@ -81,4 +82,4 @@ npm start      # Express server only (requires dist/)
 - Reduced motion: respects prefers-reduced-motion
 - Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay, horizontal scroll on comparison table
 - All external links: https://t.me/w4tg_bot
-- Section IDs: #services, #highlights, #process, #pricing, #contact
+- Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact

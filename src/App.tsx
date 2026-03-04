@@ -16,6 +16,7 @@ import { FaqSection } from './components/ui/faq-section';
 import IntegrationsMarquee from './components/ui/integrations-marquee';
 import CtaBanner from './components/ui/cta-banner';
 import { FooterSection } from './components/ui/footer-section';
+import { AiAgentSection } from './components/ui/ai-agent-section';
 import { TelegramFab } from './components/ui/telegram-fab';
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
                 <ResponsiveHeroBanner />
                 <ClientLogos />
                 <ServicesSection />
+                <AiAgentSection />
                 <IphoneCarousel />
                 <ProcessSection />
                 <FeaturesSection />
