@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { ServicesSection } from './components/ui/services-section';
 import { IphoneCarousel } from './components/ui/iphone-carousel';
@@ -27,14 +28,17 @@ const App = () => {
 
     return (
         <>
+            <TubesBackground />
             <div className="noise-overlay" />
-            <ResponsiveHeroBanner />
-            <ServicesSection />
-            <IphoneCarousel />
-            <ProcessSection />
-            <FeaturesSection />
-            <PricingSection />
-            <FooterSection />
+            <div className="relative z-[2]">
+                <ResponsiveHeroBanner />
+                <ServicesSection />
+                <IphoneCarousel />
+                <ProcessSection />
+                <FeaturesSection />
+                <PricingSection />
+                <FooterSection />
+            </div>
         </>
     );
 };

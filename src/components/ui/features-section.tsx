@@ -33,11 +33,11 @@ export const FeaturesSection = () => {
                     </h2>
                 </div>
 
-                <div data-reveal className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.025] rounded-2xl overflow-hidden border border-white/[0.025]">
+                <div data-reveal className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.08] glass-panel">
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="bg-[#050505] p-5 sm:p-6 md:p-7 group hover:bg-[#8B5CF6]/[0.015] transition-all duration-500"
+                            className="bg-white/[0.01] p-5 sm:p-6 md:p-7 group hover:bg-[#8B5CF6]/[0.03] transition-all duration-500 backdrop-blur-sm"
                         >
                             <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]/40 mb-4 sm:mb-5 group-hover:text-[#8B5CF6] transition-colors duration-500" />
                             <h3 className="text-[13px] sm:text-[14px] font-medium text-white/75 font-sans mb-1.5 tracking-tight">

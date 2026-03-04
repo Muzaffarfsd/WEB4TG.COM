@@ -90,13 +90,13 @@ export const ProcessSection = () => {
                         Стек технологий
                     </p>
                     <div data-reveal className="relative overflow-hidden">
-                        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
-                        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
+                        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-[#050505]/90 to-transparent z-10 pointer-events-none" />
+                        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-[#050505]/90 to-transparent z-10 pointer-events-none" />
                         <div className="flex animate-marquee whitespace-nowrap">
                             {[...techItems, ...techItems].map((tech, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/20 bg-white/[0.015] border border-white/[0.03] rounded-full font-sans whitespace-nowrap"
+                                    className="inline-flex items-center px-4 py-2 mx-1.5 text-[12px] sm:text-[13px] font-medium text-white/25 bg-white/[0.03] border border-white/[0.06] rounded-full font-sans whitespace-nowrap backdrop-blur-sm"
                                 >
                                     {tech}
                                 </span>

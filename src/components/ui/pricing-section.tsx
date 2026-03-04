@@ -73,7 +73,7 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
             style={{ transformStyle: isTouch ? undefined : 'preserve-3d' }}
             className={`relative rounded-2xl p-6 sm:p-7 md:p-8 transition-all duration-500 ${
                 plan.popular
-                    ? 'bg-gradient-to-b from-[#8B5CF6]/[0.06] to-[#8B5CF6]/[0.01] border border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.12)]'
+                    ? 'bg-gradient-to-b from-[#8B5CF6]/[0.08] to-[#8B5CF6]/[0.02] border border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.15)] backdrop-blur-[24px]'
                     : 'glow-card'
             }`}
         >
