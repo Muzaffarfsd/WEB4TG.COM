@@ -32,7 +32,7 @@ src/
       magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
       client-logos.tsx               - Two-row client logos marquee (opposite directions)
       services-section.tsx           - Bento grid services (8 glassmorphic cards)
-      ai-agent-section.tsx           - Multi-niche AI agent product showcase (4 niches: shop/restaurant/beauty/fitness, 3 stages each, auto-play with niche rotation, SPIN/Cialdini techniques, voice system, side panels)
+      ai-agent-section.tsx           - Premium multi-niche AI agent showcase (4 niches: shop[Лина]/restaurant[Марк]/beauty[Софи]/fitness[Макс], 3 unique stages each, propensity gauge, niche-colored glow, AnimatedStats, CTA, ElevenLabs voice, unique side panels per niche, SPIN/Cialdini/Challenger techniques)
       iphone-carousel.tsx            - GSAP video carousel (portfolio)
       process-section.tsx            - 3-step process glassmorphic cards
       features-section.tsx           - Glass features grid (8 cells)
