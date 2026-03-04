@@ -1,28 +1,37 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense, ComponentType } from 'react';
 import Lenis from 'lenis';
 import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
-import ClientLogos from './components/ui/client-logos';
-import { ServicesSection } from './components/ui/services-section';
-import { IphoneCarousel } from './components/ui/iphone-carousel';
-import { ProcessSection } from './components/ui/process-section';
-import { FeaturesSection } from './components/ui/features-section';
-import CaseStudies from './components/ui/case-studies';
-import { TestimonialsSection } from './components/ui/testimonials-section';
-import ComparisonTable from './components/ui/comparison-table';
-import { PricingSection } from './components/ui/pricing-section';
-import GuaranteesSection from './components/ui/guarantees-section';
-import { FaqSection } from './components/ui/faq-section';
-import IntegrationsMarquee from './components/ui/integrations-marquee';
-import CtaBanner from './components/ui/cta-banner';
-import { FooterSection } from './components/ui/footer-section';
-import { AiAgentSection } from './components/ui/ai-agent-section';
 import { TelegramFab } from './components/ui/telegram-fab';
+
+const ClientLogos = lazy(() => import('./components/ui/client-logos'));
+const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
+const AiAgentSection = lazy(() => import('./components/ui/ai-agent-section').then(m => ({ default: m.AiAgentSection })));
+const IphoneCarousel = lazy(() => import('./components/ui/iphone-carousel').then(m => ({ default: m.IphoneCarousel })));
+const ProcessSection = lazy(() => import('./components/ui/process-section').then(m => ({ default: m.ProcessSection })));
+const FeaturesSection = lazy(() => import('./components/ui/features-section').then(m => ({ default: m.FeaturesSection })));
+const CaseStudies = lazy(() => import('./components/ui/case-studies'));
+const TestimonialsSection = lazy(() => import('./components/ui/testimonials-section').then(m => ({ default: m.TestimonialsSection })));
+const ComparisonTable = lazy(() => import('./components/ui/comparison-table'));
+const PricingSection = lazy(() => import('./components/ui/pricing-section').then(m => ({ default: m.PricingSection })));
+const GuaranteesSection = lazy(() => import('./components/ui/guarantees-section'));
+const FaqSection = lazy(() => import('./components/ui/faq-section').then(m => ({ default: m.FaqSection })));
+const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marquee'));
+const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
+const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
+
+const LazySection = ({ component: Component }: { component: ComponentType }) => (
+    <Suspense fallback={<div className="min-h-[20vh]" />}>
+        <Component />
+    </Suspense>
+);
 
 const App = () => {
     useEffect(() => {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         const lenis = new Lenis({
-            duration: 1.2,
+            duration: prefersReduced ? 0 : 1.2,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             touchMultiplier: 1.5,
             autoRaf: true,
@@ -37,21 +46,21 @@ const App = () => {
             <div className="noise-overlay" />
             <div className="relative z-[2]">
                 <ResponsiveHeroBanner />
-                <ClientLogos />
-                <ServicesSection />
-                <AiAgentSection />
-                <IphoneCarousel />
-                <ProcessSection />
-                <FeaturesSection />
-                <CaseStudies />
-                <TestimonialsSection />
-                <ComparisonTable />
-                <PricingSection />
-                <GuaranteesSection />
-                <FaqSection />
-                <IntegrationsMarquee />
-                <CtaBanner />
-                <FooterSection />
+                <LazySection component={ClientLogos} />
+                <LazySection component={ServicesSection} />
+                <LazySection component={AiAgentSection} />
+                <LazySection component={IphoneCarousel} />
+                <LazySection component={ProcessSection} />
+                <LazySection component={FeaturesSection} />
+                <LazySection component={CaseStudies} />
+                <LazySection component={TestimonialsSection} />
+                <LazySection component={ComparisonTable} />
+                <LazySection component={PricingSection} />
+                <LazySection component={GuaranteesSection} />
+                <LazySection component={FaqSection} />
+                <LazySection component={IntegrationsMarquee} />
+                <LazySection component={CtaBanner} />
+                <LazySection component={FooterSection} />
             </div>
             <TelegramFab />
         </>

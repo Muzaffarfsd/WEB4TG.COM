@@ -33,12 +33,12 @@ try {
     mouse: { disabled: true, lerp: 0 },
     cursor: { enabled: false },
     tubes: {
-      count: 8,
-      radius: 0.08,
+      count: 5,
+      radius: 0.07,
       colors: ["#8B5CF6", "#7C3AED", "#A78BFA"],
       lights: {
-        intensity: 200,
-        colors: ["#8B5CF6", "#A78BFA", "#7C3AED", "#6D28D9"]
+        intensity: 150,
+        colors: ["#8B5CF6", "#A78BFA", "#7C3AED"]
       }
     }
   });
@@ -74,17 +74,13 @@ try {
     {speed:0.0006,r:124,g:58,b:237,w:5,off:1.2,amp:100,wc:2,v:false},
     {speed:0.0003,r:167,g:139,b:250,w:6,off:2.5,amp:120,wc:1.8,v:false},
     {speed:0.0005,r:139,g:92,b:246,w:4.5,off:3.8,amp:90,wc:3,v:false},
-    {speed:0.00035,r:109,g:40,b:217,w:7,off:5,amp:140,wc:1.5,v:false},
-    {speed:0.00045,r:167,g:139,b:250,w:5,off:0.8,amp:100,wc:2.2,v:false},
-    {speed:0.0005,r:139,g:92,b:246,w:4,off:4.2,amp:70,wc:2.8,v:false},
     {speed:0.0004,r:124,g:58,b:237,w:5.5,off:1.8,amp:110,wc:2,v:true},
-    {speed:0.00055,r:167,g:139,b:250,w:4.5,off:3,amp:90,wc:2.5,v:true},
-    {speed:0.0003,r:109,g:40,b:217,w:6,off:5.5,amp:130,wc:1.6,v:true}
+    {speed:0.00055,r:167,g:139,b:250,w:4.5,off:3,amp:90,wc:2.5,v:true}
   ];
   var tubes=TUBES.map(function(t,i){
     return Object.assign({},t,{baseY:t.v?(0.2+(i-7)*0.3):(0.1+i*0.11)});
   });
-  var segs=100,time=0;
+  var segs=60,time=0;
   function pt(tube,t){
     var wave=Math.sin(t*Math.PI*2*tube.wc+time*tube.speed+tube.off)*tube.amp
       +Math.sin(t*Math.PI*4*tube.wc+time*tube.speed*0.6+tube.off*2)*(tube.amp*0.25);

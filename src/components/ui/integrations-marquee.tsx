@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from 'react';
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const StripeIcon = () => (
@@ -28,7 +29,7 @@ const SbpIcon = () => (
 
 const TelegramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm5.62 7.16-2.118 9.98c-.16.72-.576.896-1.168.558l-3.228-2.38-1.558 1.498c-.172.172-.316.316-.648.316l.232-3.282 5.978-5.4c.26-.232-.056-.36-.404-.128l-7.39 4.654-3.182-1c-.692-.216-.706-.692.144-.1.024l12.898-4.968c.576-.208 1.08.14.892 1.024l-.448.228z" fill="#26A5E4"/>
+    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" fill="#26A5E4"/>
   </svg>
 );
 
@@ -82,6 +83,16 @@ const integrations: Integration[] = [
 
 export default function IntegrationsMarquee() {
   const sectionRef = useScrollReveal();
+  const observerRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(true);
+
+  useEffect(() => {
+    const el = observerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => setPaused(!e.isIntersecting), { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section className="py-10 sm:py-14 px-5 sm:px-8 relative overflow-hidden" ref={sectionRef}>
@@ -93,16 +104,16 @@ export default function IntegrationsMarquee() {
         </div>
       </div>
 
-      <div className="relative" data-reveal>
+      <div ref={observerRef} className="relative" data-reveal>
         <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-r from-[#050505] to-transparent" />
         <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-l from-[#050505] to-transparent" />
 
         <div className="overflow-hidden">
-          <div className="flex animate-marquee" style={{ width: 'max-content' }}>
+          <div className="flex" style={{ width: 'max-content', animation: 'marquee 30s linear infinite', animationPlayState: paused ? 'paused' : 'running' }}>
             {[...integrations, ...integrations].map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2.5 px-5 py-2.5 mx-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm whitespace-nowrap"
+                className="flex items-center gap-2.5 px-5 py-2.5 mx-2 rounded-full border border-white/[0.08] bg-white/[0.03] whitespace-nowrap"
               >
                 <item.icon />
                 <span className="text-[14px] sm:text-[15px] text-white/50 font-medium tracking-wide">

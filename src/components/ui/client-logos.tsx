@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from 'react';
 import { useScrollReveal } from '../../hooks/use-animations';
 
 const companies = [
@@ -17,7 +18,7 @@ const LogoPill = ({ name }: { name: string }) => (
   </span>
 );
 
-const MarqueeRow = ({ reverse }: { reverse?: boolean }) => {
+const MarqueeRow = ({ reverse, paused }: { reverse?: boolean; paused: boolean }) => {
   const items = [...companies, ...companies];
   return (
     <div className="relative overflow-hidden">
@@ -25,6 +26,7 @@ const MarqueeRow = ({ reverse }: { reverse?: boolean }) => {
         className="flex gap-4 w-max"
         style={{
           animation: `marquee ${reverse ? '35s' : '30s'} linear infinite${reverse ? ' reverse' : ''}`,
+          animationPlayState: paused ? 'paused' : 'running',
         }}
       >
         {items.map((name, i) => (
@@ -40,10 +42,20 @@ const MarqueeRow = ({ reverse }: { reverse?: boolean }) => {
 
 export default function ClientLogos() {
   const sectionRef = useScrollReveal();
+  const observerRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(true);
+
+  useEffect(() => {
+    const el = observerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => setPaused(!e.isIntersecting), { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section ref={sectionRef} className="relative py-16 sm:py-20 px-5 sm:px-8 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+      <div ref={observerRef} className="max-w-6xl mx-auto">
         <div data-reveal className="text-center mb-10 sm:mb-12">
           <span className="section-label justify-center">
             <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
@@ -61,8 +73,8 @@ export default function ClientLogos() {
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-r from-[#050505] to-transparent" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-l from-[#050505] to-transparent" />
 
-          <MarqueeRow />
-          <MarqueeRow reverse />
+          <MarqueeRow paused={paused} />
+          <MarqueeRow reverse paused={paused} />
         </div>
       </div>
     </section>

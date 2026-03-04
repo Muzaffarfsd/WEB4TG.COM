@@ -69,7 +69,7 @@ npm start      # Express server only (requires dist/)
 - Accent: electric violet gradients (#8B5CF6 → #7C3AED → #A78BFA)
 - Fonts: Instrument Serif (headings), Inter (body), Montserrat (logo: WEB4TG STUDIO)
 - Background: Three.js tubes1 library via iframe (CDN), Canvas 2D multi-pass glow fallback; 3-level input isolation (CSS pointer-events:none + inert, JS event blocking, frozen mouse coords)
-- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(16px), semi-transparent bg rgba(8,8,12,0.75), border
+- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(8px), semi-transparent bg rgba(8,8,12,0.85), border
 - Gradient text: .gradient-text (violet), .gradient-text-white (white fade)
 - Glow cards: .glow-card with glassmorphic hover + border glow
 - Noise texture: .noise-overlay (z-index 1, pointer-events none)
@@ -78,8 +78,18 @@ npm start      # Express server only (requires dist/)
 - Section labels: .section-label (uppercase, tracked, with line decoration)
 - Smooth scroll: Lenis with autoRaf and custom easing
 - Animations: scroll reveal, count-up (direct DOM updates), marquee, text reveal, pulse-glow, bounce-slow (no 3D tilt, no mouse glow, no cursor tracking)
-- Performance: backdrop-blur(16px) instead of 32px, CSS containment on sections/cards, rAF-throttled scroll handlers, GSAP ticker cleanup, decorative blobs blur(80px)
-- Reduced motion: respects prefers-reduced-motion
-- Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay, horizontal scroll on comparison table
+- Performance:
+  - React.lazy + per-section Suspense boundaries for code splitting (main bundle 355KB/120KB gzip, 30 lazy chunks)
+  - content-visibility: auto on all sections with contain-intrinsic-size
+  - backdrop-filter: blur(8px) on desktop, removed entirely on mobile (≤640px)
+  - Noise overlay: smaller SVG (128px), 3 octaves, hidden on mobile
+  - Gradient mesh blobs: hidden on mobile
+  - Marquee animations: pause via IntersectionObserver when off-screen
+  - Three.js tubes: 5 tubes (was 8), fallback canvas: 6 tubes (was 10), 60 segments (was 100)
+  - CSS containment: contain: layout style paint on glow-card, contain: layout style on sections
+  - rAF-throttled scroll handlers, GSAP ticker cleanup
+  - Lenis: duration=0 when prefers-reduced-motion
+- Reduced motion: prefers-reduced-motion kills all animations and transitions, hides noise+mesh
+- Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay, horizontal scroll on comparison table, no backdrop-filter, no noise overlay
 - All external links: https://t.me/w4tg_bot
 - Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact
