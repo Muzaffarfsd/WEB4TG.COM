@@ -549,66 +549,71 @@ export const AiAgentSection = () => {
                 <div data-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
 
                     {/* PHONE — пункт 8: усиленный glow */}
-                    <div className="lg:col-span-5 order-1">
-                        <div className="max-w-[380px] mx-auto" key={`phone-${activeNiche}`} style={{ animation: 'nicheSwitch 0.45s ease-out both' }}>
-                            <div className="relative">
-                                <div className="absolute -inset-[3px] rounded-[3.2rem] bg-gradient-to-b from-[#3a3a3c] via-[#2c2c2e] to-[#1c1c1e] z-0" />
-                                <div className="absolute -inset-8 rounded-[4rem] z-[-1] transition-all duration-1000 pointer-events-none" style={{ boxShadow: `0 0 100px -20px ${niche.color}35, 0 0 160px -40px ${niche.color}20, 0 20px 60px -15px rgba(0,0,0,0.8)`, animation: 'glowPulse 4s ease-in-out infinite' }} />
-                                <div className="relative rounded-[3rem] border border-[#48484a]/60 bg-[#000000] overflow-hidden z-[1]">
-                                    <div className="absolute top-[1px] left-1/2 -translate-x-1/2 w-[calc(100%-8px)] h-[3px] rounded-b-full bg-gradient-to-r from-transparent via-white/[0.07] to-transparent z-20 pointer-events-none" />
-                                    <div className="absolute right-[-3px] top-[120px] w-[3px] h-[44px] rounded-r-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
-                                    <div className="absolute left-[-3px] top-[100px] w-[3px] h-[28px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
-                                    <div className="absolute left-[-3px] top-[145px] w-[3px] h-[44px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
-                                    <div className="absolute left-[-3px] top-[200px] w-[3px] h-[44px] rounded-l-sm bg-gradient-to-b from-[#3a3a3c] to-[#2c2c2e] z-20" />
+                    <div className="lg:col-span-5 order-1 flex justify-center">
+                        <div className="w-[272px] sm:w-[290px]" key={`phone-${activeNiche}`} style={{ animation: 'nicheSwitch 0.45s ease-out both' }}>
+                            <div className="relative w-full h-[590px] sm:h-[629px]">
+                                <div className="absolute -inset-[2.5px] rounded-[52px] sm:rounded-[55px] z-0" style={{ background: 'linear-gradient(175deg, #78787a 0%, #636366 15%, #48484a 30%, #3a3a3c 50%, #2c2c2e 70%, #1c1c1e 100%)' }} />
+                                <div className="absolute -inset-10 rounded-[65px] z-[-1] transition-all duration-1000 pointer-events-none" style={{ boxShadow: `0 0 120px -15px ${niche.color}30, 0 0 200px -50px ${niche.color}18, 0 25px 70px -15px rgba(0,0,0,0.85)`, animation: 'glowPulse 4s ease-in-out infinite' }} />
 
-                                    <div className="relative px-5 pt-3 pb-0 z-10">
-                                        <div className="flex items-center justify-between text-[10px] text-white/50 font-sans font-medium mb-1">
-                                            <span>9:41</span>
-                                            <div className="absolute left-1/2 -translate-x-1/2 top-2.5">
-                                                <div className="relative w-[100px] h-[28px] bg-black rounded-full flex items-center justify-center border border-white/[0.04]">
-                                                    <div className="absolute left-[22px] w-[7px] h-[7px] rounded-full bg-[#1a1a1e] border border-white/[0.03]" />
+                                <div className="absolute right-[-2.5px] top-[22%] w-[2.5px] h-[10%] rounded-r-sm z-20" style={{ background: 'linear-gradient(180deg, #78787a, #48484a, #2c2c2e)' }} />
+                                <div className="absolute left-[-2.5px] top-[16%] w-[2.5px] h-[5.5%] rounded-l-sm z-20" style={{ background: 'linear-gradient(180deg, #78787a, #48484a, #2c2c2e)' }} />
+                                <div className="absolute left-[-2.5px] top-[24%] w-[2.5px] h-[8.5%] rounded-l-sm z-20" style={{ background: 'linear-gradient(180deg, #78787a, #48484a, #2c2c2e)' }} />
+                                <div className="absolute left-[-2.5px] top-[35%] w-[2.5px] h-[8.5%] rounded-l-sm z-20" style={{ background: 'linear-gradient(180deg, #78787a, #48484a, #2c2c2e)' }} />
+
+                                <div className="absolute inset-0 rounded-[50px] sm:rounded-[53px] bg-[#000000] overflow-hidden z-[1] flex flex-col">
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70%] h-[2px] rounded-b-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent z-30 pointer-events-none" />
+
+                                    <div className="relative px-5 pt-[14px] pb-0 z-10 flex-shrink-0">
+                                        <div className="flex items-center justify-between text-[10px] text-white/60 font-sans font-semibold">
+                                            <span className="w-12 tabular-nums">9:41</span>
+                                            <div className="absolute left-1/2 -translate-x-1/2 top-[10px]">
+                                                <div className="relative w-[90px] h-[25px] bg-black rounded-full border border-white/[0.05]" style={{ boxShadow: 'inset 0 0 3px rgba(0,0,0,0.8)' }}>
+                                                    <div className="absolute left-[20px] top-1/2 -translate-y-1/2 w-[8px] h-[8px] rounded-full" style={{ background: 'radial-gradient(circle, #1a1a2e 40%, #0d0d12 100%)', boxShadow: 'inset 0 0.5px 1px rgba(255,255,255,0.04)' }} />
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1">
-                                                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="opacity-50"><rect x="0" y="6" width="2.5" height="4" rx="0.5" fill="white"/><rect x="3.5" y="4" width="2.5" height="6" rx="0.5" fill="white"/><rect x="7" y="2" width="2.5" height="8" rx="0.5" fill="white"/><rect x="10.5" y="0" width="2.5" height="10" rx="0.5" fill="white"/></svg>
-                                                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="opacity-50"><path d="M7 1C4.5 1 2.3 2 0.8 3.7L2 5C3.2 3.5 5 2.5 7 2.5C9 2.5 10.8 3.5 12 5L13.2 3.7C11.7 2 9.5 1 7 1Z" fill="white"/><path d="M7 4C5.5 4 4.2 4.7 3.3 5.8L4.5 7C5.1 6.2 6 5.5 7 5.5C8 5.5 8.9 6.2 9.5 7L10.7 5.8C9.8 4.7 8.5 4 7 4Z" fill="white"/><circle cx="7" cy="9" r="1.2" fill="white"/></svg>
-                                                <div className="flex items-center"><div className="w-[18px] h-[9px] rounded-[2px] border border-white/40 flex items-center p-[1px]"><div className="w-[10px] h-[5px] rounded-[1px] bg-white/50" /></div><div className="w-[1.5px] h-[4px] rounded-r-sm bg-white/30 ml-[0.5px]" /></div>
+                                            <div className="flex items-center gap-[5px] w-12 justify-end">
+                                                <svg width="13" height="9" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.7" fill="white" fillOpacity="0.5"/><rect x="4.2" y="5" width="3" height="7" rx="0.7" fill="white" fillOpacity="0.5"/><rect x="8.4" y="2.5" width="3" height="9.5" rx="0.7" fill="white" fillOpacity="0.5"/><rect x="12.6" y="0" width="3" height="12" rx="0.7" fill="white" fillOpacity="0.5"/></svg>
+                                                <svg width="13" height="9" viewBox="0 0 15 11" fill="none"><path d="M7.5.5C5 .5 2.8 1.5 1.2 3.2l1.3 1.3C3.8 3.2 5.5 2.3 7.5 2.3s3.7.9 5 2.2l1.3-1.3C12.2 1.5 10 .5 7.5.5z" fill="white" fillOpacity="0.5"/><path d="M7.5 4C6 4 4.7 4.7 3.8 5.8L5 7c.7-.8 1.5-1.2 2.5-1.2S9.3 6.2 10 7l1.2-1.2C10.3 4.7 9 4 7.5 4z" fill="white" fillOpacity="0.5"/><circle cx="7.5" cy="9.5" r="1.3" fill="white" fillOpacity="0.5"/></svg>
+                                                <div className="flex items-center"><div className="w-[20px] h-[10px] rounded-[2.5px] border border-white/40 flex items-center p-[1.5px]"><div className="w-[11px] h-[6px] rounded-[1.5px] bg-white/50" /></div><div className="w-[1.5px] h-[4px] rounded-r-sm bg-white/25 ml-[0.5px]" /></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="px-4 pt-1 pb-2">
-                                        <div className="flex items-center gap-3">
+
+                                    <div className="px-3.5 pt-2 pb-1.5 flex-shrink-0">
+                                        <div className="flex items-center gap-2.5">
                                             <div className="relative">
-                                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br ${niche.gradient}`} style={{ boxShadow: `0 4px 15px ${niche.color}33` }}>
-                                                    <niche.icon className="w-4 h-4 text-white" />
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br ${niche.gradient}`} style={{ boxShadow: `0 3px 12px ${niche.color}33` }}>
+                                                    <niche.icon className="w-3.5 h-3.5 text-white" />
                                                 </div>
-                                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#22c55e] border-2 border-black" />
+                                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#34C759] border-[1.5px] border-black" />
                                             </div>
-                                            <div className="flex-1">
-                                                <div className="text-[13px] text-white/90 font-medium font-sans">{niche.agentName}</div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-[12px] text-white/90 font-medium font-sans leading-tight">{niche.agentName}</div>
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-[10px] text-white/30">{niche.agentRole}</span>
-                                                    <span className="text-[8px] text-white/15">•</span>
-                                                    <span className="text-[10px] text-[#22c55e]/80">онлайн</span>
+                                                    <span className="text-[9px] text-white/30">{niche.agentRole}</span>
+                                                    <span className="text-[7px] text-white/12">·</span>
+                                                    <span className="text-[9px] text-[#34C759]/80">онлайн</span>
                                                 </div>
                                             </div>
-                                            <div className="px-2 py-0.5 rounded-full text-[8px] font-bold font-sans border text-white/25" style={{ borderColor: `${niche.color}25`, backgroundColor: `${niche.color}08` }}>AI</div>
+                                            <div className="px-1.5 py-0.5 rounded-full text-[7px] font-bold font-sans border text-white/20 flex-shrink-0" style={{ borderColor: `${niche.color}20`, backgroundColor: `${niche.color}06` }}>AI</div>
                                         </div>
                                     </div>
-                                    <div className="mx-3"><div className="h-px bg-white/[0.06]" /></div>
-                                    <div ref={chatRef} className="h-[380px] sm:h-[420px] overflow-y-auto px-3 py-3 space-y-2.5 scroll-smooth ai-agent-chat-scroll" role="log" aria-label={`Демонстрация AI-агента ${niche.agentName}`} aria-live="polite">
+                                    <div className="mx-3"><div className="h-px bg-white/[0.05]" /></div>
+
+                                    <div ref={chatRef} className="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-2 scroll-smooth ai-agent-chat-scroll" role="log" aria-label={`Демонстрация AI-агента ${niche.agentName}`} aria-live="polite">
                                         {allPreviousMessages.map(msg => renderMessage(msg, false))}
                                         {visibleMessages.map((msg, i) => renderMessage(msg, true, i))}
                                         {isTyping && <div className="flex justify-start"><div className="bg-white/[0.06] rounded-2xl rounded-bl-md"><TypingIndicator /></div></div>}
                                     </div>
-                                    <div className="px-3 pb-3 pt-2">
-                                        <div className="flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-4 py-2.5">
-                                            <MessageSquare className="w-4 h-4 text-white/15 flex-shrink-0" />
-                                            <span className="text-[12px] text-white/15 font-sans flex-1">Написать сообщение...</span>
-                                            <Send className="w-4 h-4 flex-shrink-0" style={{ color: `${niche.color}40` }} />
+
+                                    <div className="px-2.5 pb-2.5 pt-1.5 flex-shrink-0">
+                                        <div className="flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-2">
+                                            <MessageSquare className="w-3.5 h-3.5 text-white/12 flex-shrink-0" />
+                                            <span className="text-[11px] text-white/12 font-sans flex-1">Сообщение...</span>
+                                            <Send className="w-3.5 h-3.5 flex-shrink-0" style={{ color: `${niche.color}35` }} />
                                         </div>
                                     </div>
-                                    <div className="flex justify-center pb-2"><div className="w-[120px] h-[4px] rounded-full bg-white/15" /></div>
+                                    <div className="flex justify-center pb-[6px] flex-shrink-0"><div className="w-[100px] h-[4px] rounded-full bg-white/15" /></div>
                                 </div>
                             </div>
                         </div>
