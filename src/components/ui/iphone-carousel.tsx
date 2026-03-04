@@ -3,7 +3,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
 gsap.registerPlugin(ScrollTrigger);
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, RotateCcw, PlayCircle, ArrowRight } from "lucide-react";
+import { Play, Pause, RotateCcw, Eye, ArrowRight } from "lucide-react";
 
 interface HighlightSlide {
   id: number;
@@ -26,9 +26,9 @@ export const hightlightsSlides: HighlightSlide[] = [
   {
     id: 1,
     textLists: [
-      "Enter A17 Pro.",
-      "Game-changing chip.",
-      "Groundbreaking performance.",
+      "Премиальный дизайн.",
+      "iOS-стиль интерфейса.",
+      "Мгновенный запуск.",
     ],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010712/highlight-first_dukqys.mp4",
@@ -36,7 +36,7 @@ export const hightlightsSlides: HighlightSlide[] = [
   },
   {
     id: 2,
-    textLists: ["Titanium.", "So strong. So light. So Pro."],
+    textLists: ["Telegram Mini App.", "Без скачивания. Без комиссий."],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010712/hightlight-third_xquibo.mp4",
     videoDuration: 5,
@@ -44,9 +44,9 @@ export const hightlightsSlides: HighlightSlide[] = [
   {
     id: 3,
     textLists: [
-      "iPhone 15 Pro Max has the",
-      "longest optical zoom in",
-      "iPhone ever. Far out.",
+      "Встроенные платежи.",
+      "Stripe, ЮKassa, СБП.",
+      "Всё из коробки.",
     ],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010700/hightlight-sec_qtf7tq.mp4",
@@ -54,7 +54,7 @@ export const hightlightsSlides: HighlightSlide[] = [
   },
   {
     id: 4,
-    textLists: ["All-new Action button.", "What will yours do?"],
+    textLists: ["AI-бот поддержки.", "24/7 на 150+ языках."],
     video:
       "https://res.cloudinary.com/ds3yn5l5e/video/upload/v1769010704/hightlight-fourth_iooitu.mp4",
     videoDuration: 3.6,
@@ -122,7 +122,7 @@ export const VideoCarousel = () => {
 
                         gsap.to(span[videoId], {
                             width: `${currentProgress}%`,
-                            backgroundColor: "white",
+                            backgroundColor: "#10B981",
                         });
                     }
                 },
@@ -302,19 +302,19 @@ export const IphoneCarousel = () => {
         <section id='highlights' className='w-full overflow-x-hidden py-12 sm:py-20 md:py-32 px-4 sm:px-10 bg-background min-h-[100svh]'>
             <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
                 <div className='mb-8 sm:mb-12 w-full md:flex items-end justify-between'>
-                    <h1 id='title' className='text-foreground text-2xl sm:text-3xl md:text-5xl lg:text-6xl lg:mb-0 mb-4 sm:mb-5 font-medium opacity-0 translate-y-20'>
-                        Get the highlights.
+                    <h1 id='title' className='text-foreground text-2xl sm:text-3xl md:text-5xl lg:text-6xl lg:mb-0 mb-4 sm:mb-5 font-medium opacity-0 translate-y-20 font-instrument-serif'>
+                        Наши работы.
                     </h1>
 
                     <div className="flex flex-wrap items-end gap-3 sm:gap-5">
-                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20'>
-                            Watch the film
-                            <PlayCircle className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
-                        </p>
-                        <p className='link text-blue-500 hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20'>
-                            Watch the event
+                        <a href="https://t.me/w4tg_bot/w4tg" target="_blank" rel="noopener noreferrer" className='link text-[#10B981] hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20 font-sans'>
+                            Смотреть демо
+                            <Eye className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
+                        </a>
+                        <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className='link text-[#10B981] hover:underline cursor-pointer flex items-center text-base sm:text-xl opacity-0 translate-y-20 font-sans'>
+                            Все проекты
                             <ArrowRight className='ml-2 w-4 h-4 sm:w-5 sm:h-5' />
-                        </p>
+                        </a>
                     </div>
                 </div>
 

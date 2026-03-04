@@ -1,21 +1,21 @@
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
+import { ServicesSection } from './components/ui/services-section';
 import { IphoneCarousel } from './components/ui/iphone-carousel';
+import { ProcessSection } from './components/ui/process-section';
+import { FeaturesSection } from './components/ui/features-section';
+import { PricingSection } from './components/ui/pricing-section';
+import { FooterSection } from './components/ui/footer-section';
 
 const App = () => {
     return (
         <>
-            <ResponsiveHeroBanner
-                badgeLabel="New"
-                badgeText="First Commercial Flight to Mars 2026"
-                title="Journey Beyond Earth"
-                titleLine2="Into the Cosmos"
-                description="Experience the cosmos like never before. Our advanced spacecraft and cutting-edge technology make interplanetary travel accessible, safe, and unforgettable."
-                primaryButtonText="Book Your Journey"
-                secondaryButtonText="Watch Launch"
-                ctaButtonText="Reserve Seat"
-                partnersTitle="Partnering with leading space agencies worldwide"
-            />
+            <ResponsiveHeroBanner />
+            <ServicesSection />
             <IphoneCarousel />
+            <ProcessSection />
+            <FeaturesSection />
+            <PricingSection />
+            <FooterSection />
         </>
     );
 };
