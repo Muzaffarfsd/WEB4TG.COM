@@ -1,7 +1,7 @@
 # WEB4TG Studio — web4tg.com
 
 ## Overview
-WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full landing page with animated neon tubes background, glassmorphic cards, GSAP scroll animations, 3D tilt cards, count-up stats, mouse-tracking glow, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, magnetic buttons, gradient mesh hero. Dark OLED theme with electric violet (#8B5CF6) accents.
+WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full Russian-language landing page with animated neon tubes background (Three.js via iframe), glassmorphic cards, GSAP scroll animations, count-up stats, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, gradient mesh hero. Dark OLED theme with electric violet (#8B5CF6) accents. No mouse-tracking effects (no 3D tilt, no magnetic buttons, no cursor glow).
 
 ## Architecture
 - **Runtime**: Node.js 20
@@ -27,9 +27,9 @@ src/
     use-animations.tsx               - useScrollReveal, useCountUp, useTilt, useTextReveal, useStickyNav
   components/
     ui/
-      tubes-background.tsx           - Animated neon tubes canvas background (fixed, no cursor tracking)
-      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + magnetic buttons
-      magnetic-button.tsx            - Magnetic button wrapper (GSAP elastic effect)
+      tubes-background.tsx           - Iframe-isolated Three.js tubes background (CDN tubes1 + Canvas 2D fallback, 3-level input blocking)
+      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal
+      magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
       services-section.tsx           - Bento grid services (8 glassmorphic cards)
       iphone-carousel.tsx            - GSAP video carousel (portfolio)
       process-section.tsx            - 3-step process glassmorphic cards + marquee
@@ -55,19 +55,17 @@ npm start      # Express server only (requires dist/)
 - Dark OLED: #050505 background
 - Accent: electric violet gradients (#8B5CF6 → #7C3AED → #A78BFA)
 - Fonts: Instrument Serif (headings), Inter (body)
-- Background: animated neon tubes (Canvas 2D, fixed, no cursor tracking, violet glow)
-- Glassmorphism: .glass-panel and .glow-card with backdrop-blur, semi-transparent bg, border
+- Background: Three.js tubes1 library via iframe (CDN), Canvas 2D multi-pass glow fallback; 3-level input isolation (CSS pointer-events:none + inert, JS event blocking, frozen mouse coords)
+- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(32px), semi-transparent bg rgba(8,8,12,0.6-0.65), border
 - Gradient text: .gradient-text (violet), .gradient-text-white (white fade)
 - Glow cards: .glow-card with glassmorphic hover + border glow
 - Noise texture: .noise-overlay (z-index 1, pointer-events none)
 - Gradient mesh: animated blurred violet blobs in hero
-- Magnetic buttons: GSAP-driven elastic follow on mouse move
-- Buttons: .btn-primary (gradient + shadow), .btn-secondary (ghost)
+- Buttons: .btn-primary (gradient + shadow), .btn-secondary (ghost); MagneticButton is plain wrapper (no GSAP)
 - Section labels: .section-label (uppercase, tracked, with line decoration)
 - Smooth scroll: Lenis with custom easing
-- Animations: scroll reveal, count-up, 3D tilt (desktop only), mouse glow, marquee, text reveal
+- Animations: scroll reveal, count-up, marquee, text reveal (no 3D tilt, no mouse glow, no cursor tracking)
 - Reduced motion: respects prefers-reduced-motion
-- Touch devices: 3D tilt disabled, mouse glow uses CSS transition
 - Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay
 - All external links: https://t.me/w4tg_bot
 - Section IDs: #services, #highlights, #process, #pricing, #contact
