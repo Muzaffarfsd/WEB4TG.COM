@@ -25,7 +25,7 @@ const StickyHeader = () => {
     }, [mobileMenuOpen]);
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#050505]/90 backdrop-blur-2xl border-b border-white/[0.06]' : ''}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#08080c]/60 backdrop-blur-[32px] border-b border-white/[0.06]' : ''}`}>
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
                     <a href="#" className="flex items-center gap-1.5 group shrink-0">
@@ -38,7 +38,7 @@ const StickyHeader = () => {
                     </a>
 
                     <nav className="hidden lg:flex items-center gap-1">
-                        <div className="flex items-center gap-0.5 rounded-full bg-[#0a0a0c]/80 px-1.5 py-1.5 border border-white/[0.06]">
+                        <div className="flex items-center gap-0.5 rounded-full bg-[#08080c]/60 backdrop-blur-[32px] px-1.5 py-1.5 border border-white/[0.06]">
                             {navLinks.map((link, index) => (
                                 <a
                                     key={index}

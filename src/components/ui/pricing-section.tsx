@@ -1,8 +1,6 @@
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
-import { useRef, useCallback } from 'react';
-import gsap from 'gsap';
 
 const plans = [
     {
@@ -40,40 +38,13 @@ const plans = [
     }
 ];
 
-const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-
 const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
-    const ref = useRef<HTMLDivElement>(null);
-
-    const handleMove = useCallback((e: React.MouseEvent) => {
-        if (!ref.current || isTouch) return;
-        const rect = ref.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        gsap.to(ref.current, {
-            rotateY: x * 6,
-            rotateX: -y * 6,
-            duration: 0.4,
-            ease: 'power2.out',
-            transformPerspective: 1000,
-        });
-    }, []);
-
-    const handleLeave = useCallback(() => {
-        if (!ref.current || isTouch) return;
-        gsap.to(ref.current, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
-    }, []);
-
     return (
         <div
-            ref={ref}
-            onMouseMove={handleMove}
-            onMouseLeave={handleLeave}
             data-reveal
-            style={{ transformStyle: isTouch ? undefined : 'preserve-3d' }}
             className={`relative rounded-2xl p-6 sm:p-7 md:p-8 transition-all duration-500 ${
                 plan.popular
-                    ? 'bg-gradient-to-b from-[#130f20] to-[#0a0a0c] border border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.15)]'
+                    ? 'glow-card border-[#8B5CF6]/20 shadow-[0_0_60px_-15px_rgba(139,92,246,0.15)]'
                     : 'glow-card'
             }`}
         >
@@ -113,7 +84,6 @@ const PricingCard = ({ plan }: { plan: typeof plans[0] }) => {
                         ? 'btn-primary !justify-center !w-full'
                         : 'btn-secondary !justify-center !w-full'
                 }`}
-                strength={0.2}
             >
                 Выбрать
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -127,8 +97,6 @@ export const PricingSection = () => {
 
     return (
         <section id="pricing" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div className="absolute w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.02] blur-[120px] bottom-[10%] right-[10%] pointer-events-none" />
-
             <div ref={revealRef} className="max-w-5xl mx-auto relative">
                 <div data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">

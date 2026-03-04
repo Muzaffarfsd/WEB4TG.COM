@@ -1,7 +1,5 @@
 import { ShoppingBag, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, GraduationCap, Car, Bot, ArrowUpRight } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
-import { useRef, useCallback } from 'react';
-import gsap from 'gsap';
 
 const services = [
     { icon: ShoppingBag, title: "Интернет-магазины", desc: "Каталог, корзина, оплата, доставка — полноценный e-commerce внутри Telegram", large: true },
@@ -14,44 +12,11 @@ const services = [
     { icon: Bot, title: "AI-агент 24/7", desc: "Автоматическая поддержка, продажи и аналитика на 150+ языках — работает без выходных", large: true },
 ];
 
-const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-
-const TiltCard = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-    const ref = useRef<HTMLDivElement>(null);
-
-    const handleMove = useCallback((e: React.MouseEvent) => {
-        if (!ref.current || isTouch) return;
-        const rect = ref.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        gsap.to(ref.current, {
-            rotateY: x * 8,
-            rotateX: -y * 8,
-            duration: 0.4,
-            ease: 'power2.out',
-            transformPerspective: 800,
-        });
-    }, []);
-
-    const handleLeave = useCallback(() => {
-        if (!ref.current || isTouch) return;
-        gsap.to(ref.current, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
-    }, []);
-
-    return (
-        <div ref={ref} onMouseMove={handleMove} onMouseLeave={handleLeave} className={className} style={{ transformStyle: isTouch ? undefined : 'preserve-3d' }}>
-            {children}
-        </div>
-    );
-};
-
 export const ServicesSection = () => {
     const revealRef = useScrollReveal({ stagger: 0.06 });
 
     return (
         <section id="services" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.025] blur-[120px] top-[20%] right-[5%] pointer-events-none" />
-
             <div ref={revealRef} className="max-w-6xl mx-auto relative">
                 <div data-reveal className="max-w-xl mb-12 sm:mb-16">
                     <span className="section-label">
@@ -70,7 +35,7 @@ export const ServicesSection = () => {
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                     {services.map((service, index) => (
-                        <TiltCard
+                        <div
                             key={index}
                             className={`${service.large ? 'col-span-2' : 'col-span-1'}`}
                         >
@@ -91,7 +56,7 @@ export const ServicesSection = () => {
                                     {service.desc}
                                 </p>
                             </div>
-                        </TiltCard>
+                        </div>
                     ))}
                 </div>
             </div>
