@@ -26,12 +26,7 @@ const GooglePayIcon = () => (
 );
 
 const SbpIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-    <path d="M4 4l8 4v8l-8 4V4z" fill="#8B5CF6"/>
-    <path d="M12 8l8-4v16l-8-4V8z" fill="#F26F21"/>
-    <path d="M12 8l-8-4h16l-8 4z" fill="#34D399"/>
-    <path d="M12 16l-8 4h16l-8-4z" fill="#34D399"/>
-  </svg>
+  <img src="/sbp-logo.png" alt="СБП" className="w-5 h-5 object-contain rounded-sm" />
 );
 
 const TelegramIcon = () => (
