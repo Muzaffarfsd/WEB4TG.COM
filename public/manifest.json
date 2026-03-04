@@ -1,17 +1,26 @@
 {
-  "name": "WEB4TG Studio",
+  "name": "WEB4TG Studio — Telegram Mini Apps для бизнеса",
   "short_name": "WEB4TG",
-  "description": "Разработка премиальных Telegram Mini Apps для бизнеса",
+  "description": "Разработка премиальных Telegram Mini Apps: интернет-магазины, доставка, бронирование, AI-агенты",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#050505",
-  "theme_color": "#050505",
+  "theme_color": "#8B5CF6",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "lang": "ru",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
