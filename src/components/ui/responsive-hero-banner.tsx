@@ -18,6 +18,8 @@ const navLinks = [
 const StickyHeader = () => {
     const scrolled = useStickyNav();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -26,6 +28,38 @@ const StickyHeader = () => {
             document.body.style.overflow = '';
         }
         return () => { document.body.style.overflow = ''; };
+    }, [mobileMenuOpen]);
+
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+
+        const menuEl = menuRef.current;
+        if (!menuEl) return;
+
+        const focusables = menuEl.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+        if (focusables.length > 0) focusables[0].focus();
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setMobileMenuOpen(false);
+                menuButtonRef.current?.focus();
+                return;
+            }
+            if (e.key === 'Tab' && focusables.length > 0) {
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, [mobileMenuOpen]);
 
     return (
@@ -38,7 +72,7 @@ const StickyHeader = () => {
                         </span>
                     </a>
 
-                    <nav className="hidden lg:flex items-center gap-1">
+                    <nav className="hidden lg:flex items-center gap-1" aria-label="Основная навигация">
                         <div className="flex items-center gap-0.5 rounded-full bg-[#08080c]/80 backdrop-blur-xl px-1.5 py-1.5 border border-white/[0.06]">
                             {navLinks.map((link, index) => (
                                 <a
@@ -63,10 +97,12 @@ const StickyHeader = () => {
                     </nav>
 
                     <button
+                        ref={menuButtonRef}
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] active:bg-white/[0.08] transition-colors"
                         aria-expanded={mobileMenuOpen}
-                        aria-label="Меню"
+                        aria-controls="mobile-menu"
+                        aria-label="Открыть меню навигации"
                     >
                         {mobileMenuOpen ? (
                             <X className="w-5 h-5 text-white/80" />
@@ -79,9 +115,16 @@ const StickyHeader = () => {
 
             {mobileMenuOpen && (
                 <>
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
-                    <div className="lg:hidden relative z-50 mx-5 mt-2 rounded-2xl bg-[#0a0a0a]/98 border border-white/[0.06] backdrop-blur-2xl p-3 animate-fade-slide-in-1">
-                        <nav className="flex flex-col gap-0.5">
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />
+                    <div
+                        ref={menuRef}
+                        id="mobile-menu"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Меню навигации"
+                        className="lg:hidden relative z-50 mx-5 mt-2 rounded-2xl bg-[#0a0a0a]/98 border border-white/[0.06] backdrop-blur-2xl p-3 animate-fade-slide-in-1"
+                    >
+                        <nav className="flex flex-col gap-0.5" aria-label="Мобильная навигация">
                             {navLinks.map((link, index) => (
                                 <a
                                     key={index}

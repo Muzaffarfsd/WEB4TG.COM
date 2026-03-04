@@ -1,7 +1,7 @@
 # WEB4TG Studio — web4tg.com
 
 ## Overview
-WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full Russian-language landing page with animated neon tubes background (Three.js via iframe), glassmorphic cards, GSAP scroll animations, count-up stats, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, gradient mesh hero. Dark OLED theme with electric violet (#8B5CF6) accents. No mouse-tracking effects (no 3D tilt, no magnetic buttons, no cursor glow).
+WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full Russian-language landing page with animated neon tubes background (Three.js via iframe), glassmorphic cards, GSAP scroll animations, count-up stats, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, gradient mesh hero. Dark OLED theme with electric violet (#8B5CF6) accents.
 
 ## Architecture
 - **Runtime**: Node.js 20
@@ -11,41 +11,52 @@ WEB4TG Studio website — premium agency for Telegram Mini Apps development. Ful
 - **Smooth Scroll**: Lenis
 - **Icons**: lucide-react
 - **Language**: TypeScript
-- **Port**: 5000 (Express server serving built static files)
+- **Port**: 5000 (Express server with compression, security headers, serving built static files)
 - **Entry point**: `src/main.tsx`
 
 ## Project Structure
 ```
-index.html                           - HTML entry (Google Fonts, meta tags, lang=ru)
-vite.config.ts                       - Vite build configuration
-server.js                            - Express server serving dist/ on PORT or 5000
+index.html                           - HTML entry (Google Fonts preload, OG/Twitter meta, JSON-LD schemas, lang=ru)
+vite.config.ts                       - Vite build (manualChunks: react/gsap/lenis vendors, es2022 target)
+server.js                            - Express server: compression, CSP + security headers, immutable asset caching, no-cache HTML
+public/
+  favicon.svg                        - SVG favicon (violet W4 monogram)
+  manifest.json                      - PWA web manifest
+  robots.txt                         - Robots + sitemap reference
+  sitemap.xml                        - Single-page sitemap
 src/
   main.tsx                           - React root mount
-  App.tsx                            - Main app, Lenis init, TubesBackground, all sections
-  index.css                          - Theme, animations, utility classes, glass-panel, gradient mesh
+  App.tsx                            - Main app, Lenis init, TubesBackground, skip-link, SectionSkeleton fallbacks
+  index.css                          - Theme, animations, utility classes, glass-panel, gradient mesh, skip-link, skeleton shimmer
   hooks/
     use-animations.tsx               - useScrollReveal, useCountUp, useTilt, useTextReveal, useStickyNav
   components/
     ui/
-      tubes-background.tsx           - Iframe-isolated Three.js tubes background (CDN tubes1 + Canvas 2D fallback, 3-level input blocking)
-      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal + DemandIndicator (dynamic "Ближайший старт") + stats 2x2 mobile
-      magnetic-button.tsx            - Plain link/button wrapper (no mouse tracking)
-      client-logos.tsx               - Two-row client logos marquee (opposite directions)
-      services-section.tsx           - Bento grid services (8 clickable <a> cards linking to sections, ArrowUpRight visible on hover)
-      ai-agent-section.tsx           - Premium multi-niche AI agent showcase (4 niches, 3 stages, 2-column layout, iPhone 17 Pro Max mockup, before/after cards, social proof, CTA)
-      iphone-carousel.tsx            - GSAP video carousel (portfolio) with gradient fallback on video error
-      process-section.tsx            - 3-step process glassmorphic cards (step 3 links to #pricing)
-      features-section.tsx           - "Под капотом" — technical features grid (8 cells, PCI DSS, WebSocket, PWA details)
-      case-studies.tsx               - 3 case study cards with animated count-up metrics (IntersectionObserver) + hover effects
-      testimonials-section.tsx       - 3 review cards with verified badges, result metrics, gradient avatars, company info
-      comparison-table.tsx           - 4-column comparison table with mobile scroll snap + animated hint arrow
-      pricing-section.tsx            - Bento pricing grid: 5 blocks (Разработка от 150К, 3 subscriptions, AI-Агент от 200К with green accent)
-      guarantees-section.tsx         - Bento grid (first card spans 2 cols) with gradient top borders + icon hover animations
-      faq-section.tsx                - Accordion FAQ (5 items, one open at a time)
-      integrations-marquee.tsx       - Scrolling integration badges with emoji prefixes
-      cta-banner.tsx                 - Urgency-focused CTA ("конкуренты уже запустили") with capacity badge + trust indicators
+      tubes-background.tsx           - Iframe-isolated Three.js tubes (lazy-loads after 1.5s, fade-in, respects prefers-reduced-motion)
+      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal + DemandIndicator + mobile menu (focus trap, role=dialog, aria-modal, Escape key)
+      magnetic-button.tsx            - Plain link/button wrapper
+      client-logos.tsx               - Two-row client logos marquee
+      services-section.tsx           - Bento grid services (8 cards)
+      ai-agent-section.tsx           - Orchestrator for AI agent showcase (~14KB)
+      ai-agent/
+        data.ts                      - Niche data, interfaces, constants (~23KB)
+        phone-mockup.tsx             - iPhone mockup with chat UI (~10KB)
+        propensity-bar.tsx           - Animated propensity bar (~1KB)
+        before-after-cards.tsx       - Before/after comparison cards (~2KB)
+        result-panel.tsx             - Hero metric + result cards panel (~5KB)
+      iphone-carousel.tsx            - GSAP video carousel (portfolio), reduced-motion safe
+      process-section.tsx            - 3-step process glassmorphic cards
+      features-section.tsx           - Technical features grid (8 cells)
+      case-studies.tsx               - 3 case study cards with animated count-up metrics
+      testimonials-section.tsx       - 3 review cards
+      comparison-table.tsx           - 4-column comparison table with mobile scroll snap
+      pricing-section.tsx            - Bento pricing grid (5 blocks)
+      guarantees-section.tsx         - Bento grid with gradient borders
+      faq-section.tsx                - Accordion FAQ (5 items)
+      integrations-marquee.tsx       - Scrolling integration badges
+      cta-banner.tsx                 - Urgency CTA with capacity badge
       footer-section.tsx             - Contact CTA + footer (© 2026)
-      telegram-fab.tsx               - Floating Telegram button (FAB, visible after scrolling past hero)
+      telegram-fab.tsx               - Floating Telegram button
 ```
 
 ## Section Order (App.tsx)
@@ -58,38 +69,41 @@ npm run build  # Vite production build only
 npm start      # Express server only (requires dist/)
 ```
 
-## Deployment (Railway)
-- Build: `npm run build`
-- Start: `npm start`
-- All build tools in `dependencies` (not devDependencies) for Railway
-- Express reads PORT env var, defaults to 5000
+## SEO
+- Full OG/Twitter meta tags in index.html
+- JSON-LD: Organization + WebSite + Service schemas
+- Canonical: https://web4tg.com/
+- robots.txt + sitemap.xml in public/
+- OG image: references https://web4tg.com/og-image.png (needs to be created/uploaded)
+
+## Security (server.js)
+- CSP: self + Google Fonts + Cloudinary + unpkg + jsdelivr CDNs
+- X-Content-Type-Options, X-Frame-Options, HSTS, Referrer-Policy, Permissions-Policy
+- Compression (gzip) via `compression` package
+- Immutable caching (1y) for hashed assets, no-cache for HTML
 
 ## Design System
 - Dark OLED: #050505 background
 - Accent: electric violet gradients (#8B5CF6 → #7C3AED → #A78BFA)
-- Fonts: Instrument Serif (headings), Inter (body), Montserrat (logo: WEB4TG STUDIO)
-- Background: Three.js tubes1 library via iframe (CDN), Canvas 2D multi-pass glow fallback; 3-level input isolation (CSS pointer-events:none + inert, JS event blocking, frozen mouse coords)
-- Glassmorphism: .glass-panel and .glow-card with backdrop-blur(8px), semi-transparent bg rgba(8,8,12,0.85), border
-- Gradient text: .gradient-text (violet), .gradient-text-white (white fade)
-- Glow cards: .glow-card with glassmorphic hover + border glow
-- Noise texture: .noise-overlay (z-index 1, pointer-events none)
-- Gradient mesh: animated blurred violet blobs in hero
-- Buttons: .btn-primary (gradient + shadow + rotating conic-gradient border), .btn-secondary (ghost); MagneticButton is plain wrapper (no GSAP)
-- Section labels: .section-label (uppercase, tracked, with line decoration)
-- Smooth scroll: Lenis with autoRaf and custom easing
-- Animations: scroll reveal, count-up (direct DOM updates), marquee, text reveal, pulse-glow, bounce-slow (no 3D tilt, no mouse glow, no cursor tracking)
-- Performance:
-  - React.lazy + per-section Suspense boundaries for code splitting (main bundle 355KB/120KB gzip, 30 lazy chunks)
-  - content-visibility: auto on all sections with contain-intrinsic-size
-  - backdrop-filter: blur(8px) on desktop, removed entirely on mobile (≤640px)
-  - Noise overlay: smaller SVG (128px), 3 octaves, hidden on mobile
-  - Gradient mesh blobs: hidden on mobile
-  - Marquee animations: pause via IntersectionObserver when off-screen
-  - Three.js tubes: 5 tubes (was 8), fallback canvas: 6 tubes (was 10), 60 segments (was 100)
-  - CSS containment: contain: layout style paint on glow-card, contain: layout style on sections
-  - rAF-throttled scroll handlers, GSAP ticker cleanup
-  - Lenis: duration=0 when prefers-reduced-motion
-- Reduced motion: prefers-reduced-motion kills all animations and transitions, hides noise+mesh
-- Mobile: fluid clamp() typography, 2-col grids, stacked cards, hamburger menu with overlay, horizontal scroll on comparison table, no backdrop-filter, no noise overlay
+- Niche colors: Shop=#8B5CF6, Restaurant=#f59e0b, Beauty=#ec4899, Fitness=#22c55e
+- Fonts: Instrument Serif (headings), Inter (body), Montserrat (logo)
+- Glassmorphism: backdrop-blur(8px) desktop, rgba(8,8,12,0.92) solid on mobile
+- Section labels: uppercase, tracked, with line decoration
 - All external links: https://t.me/w4tg_bot
 - Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact
+
+## Performance
+- React.lazy + per-section Suspense with SectionSkeleton shimmer fallbacks
+- Vendor chunks: react-vendor, gsap-vendor, lenis-vendor (manualChunks)
+- Build target: es2022
+- content-visibility: auto on sections
+- Three.js lazy-loads after 1.5s delay with opacity fade-in
+- backdrop-filter removed on mobile (≤640px)
+- Noise overlay + gradient mesh hidden on mobile
+- CSS containment on cards and sections
+- Google Fonts: preload + display=swap + preconnect
+
+## Accessibility
+- Skip-to-content link (#main-content)
+- Mobile menu: focus trap, role="dialog", aria-modal="true", Escape key closes
+- prefers-reduced-motion: all GSAP animations skip, Three.js background disabled, Lenis duration=0

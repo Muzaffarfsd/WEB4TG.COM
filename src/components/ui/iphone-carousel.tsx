@@ -82,9 +82,11 @@ export const VideoCarousel = () => {
     };
 
     useGSAP(() => {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         gsap.to("#slider", {
             transform: `translateX(${-100 * videoId}%)`,
-            duration: 2,
+            duration: prefersReduced ? 0 : 2,
             ease: "power2.inOut",
         });
 
@@ -311,6 +313,12 @@ export const VideoCarousel = () => {
 
 export const IphoneCarousel = () => {
     useGSAP(() => {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) {
+            gsap.set('#carousel-title', { opacity: 1, y: 0 });
+            gsap.set('.carousel-link', { opacity: 1, y: 0 });
+            return;
+        }
         gsap.to('#carousel-title', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
             scrollTrigger: { trigger: '#carousel-title', start: 'top 85%', once: true }
         });

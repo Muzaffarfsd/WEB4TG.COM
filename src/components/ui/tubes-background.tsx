@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const IFRAME_HTML = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
@@ -123,8 +123,18 @@ try {
 
 export function TubesBackground() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const timer = setTimeout(() => setReady(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
     const iframe = iframeRef.current;
     if (!iframe) return;
 
@@ -135,10 +145,15 @@ export function TubesBackground() {
     return () => {
       URL.revokeObjectURL(url);
     };
-  }, []);
+  }, [ready]);
+
+  if (!ready) return null;
 
   return (
-    <div className="fixed inset-0 w-full h-full z-0 pointer-events-none" style={{ isolation: 'isolate' }}>
+    <div
+      className="fixed inset-0 w-full h-full z-0 pointer-events-none"
+      style={{ isolation: 'isolate', animation: 'tubesFadeIn 2s ease-out both' }}
+    >
       <div className="absolute inset-0 w-full h-full pointer-events-none">
         <iframe
           ref={iframeRef}

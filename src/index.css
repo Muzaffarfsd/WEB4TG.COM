@@ -427,6 +427,11 @@ section {
   100% { background-position: 200% 0; }
 }
 
+@keyframes tubesFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes scrollArrow {
   0%, 100% { transform: translateX(0); opacity: 0.5; }
   50% { transform: translateX(5px); opacity: 1; }
@@ -462,6 +467,39 @@ section {
   .gradient-mesh-blob {
     display: none;
   }
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: #8B5CF6;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Inter", system-ui, sans-serif;
+  border-radius: 0 0 12px 12px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid #A78BFA;
+  outline-offset: 2px;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(139, 92, 246, 0.06) 40%,
+    rgba(255, 255, 255, 0.02) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
 .ai-agent-chat-scroll::-webkit-scrollbar {

@@ -20,8 +20,23 @@ const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marq
 const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
 const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
 
+const SectionSkeleton = () => (
+    <div className="min-h-[20vh] px-5 sm:px-8 py-16">
+        <div className="max-w-6xl mx-auto space-y-4">
+            <div className="skeleton-shimmer h-3 w-24 rounded-full" />
+            <div className="skeleton-shimmer h-8 w-64 rounded-lg" />
+            <div className="skeleton-shimmer h-4 w-96 max-w-full rounded-lg" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-8">
+                <div className="skeleton-shimmer h-32 rounded-2xl" />
+                <div className="skeleton-shimmer h-32 rounded-2xl" />
+                <div className="skeleton-shimmer h-32 rounded-2xl hidden sm:block" />
+            </div>
+        </div>
+    </div>
+);
+
 const LazySection = ({ component: Component }: { component: ComponentType }) => (
-    <Suspense fallback={<div className="min-h-[20vh]" />}>
+    <Suspense fallback={<SectionSkeleton />}>
         <Component />
     </Suspense>
 );
@@ -42,9 +57,12 @@ const App = () => {
 
     return (
         <>
+            <a href="#main-content" className="skip-link">
+                Перейти к содержимому
+            </a>
             <TubesBackground />
             <div className="noise-overlay" />
-            <div className="relative z-[2]">
+            <main id="main-content" className="relative z-[2]">
                 <ResponsiveHeroBanner />
                 <LazySection component={ClientLogos} />
                 <LazySection component={ServicesSection} />
@@ -61,7 +79,7 @@ const App = () => {
                 <LazySection component={IntegrationsMarquee} />
                 <LazySection component={CtaBanner} />
                 <LazySection component={FooterSection} />
-            </div>
+            </main>
             <TelegramFab />
         </>
     );

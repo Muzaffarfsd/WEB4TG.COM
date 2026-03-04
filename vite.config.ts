@@ -15,4 +15,17 @@ export default defineConfig({
       ignored: ['**/.local/**', '**/.cache/**', '**/.git/**'],
     },
   },
+  build: {
+    target: 'es2022',
+    reportCompressedSize: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'gsap-vendor': ['gsap', '@gsap/react', 'gsap/all'],
+          'lenis-vendor': ['lenis'],
+        },
+      },
+    },
+  },
 })
