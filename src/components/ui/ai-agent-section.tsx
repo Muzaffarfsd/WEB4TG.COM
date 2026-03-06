@@ -13,6 +13,7 @@ import type { ChatMessage } from './ai-agent/data';
 import { PhoneMockup } from './ai-agent/phone-mockup';
 import { ResultPanel } from './ai-agent/result-panel';
 import { BeforeAfterCards } from './ai-agent/before-after-cards';
+import { IsometricOffice } from './ai-agent/isometric-office';
 
 export const AiAgentSection = () => {
     const revealRef = useScrollReveal({ stagger: 0.06 });
@@ -162,6 +163,12 @@ export const AiAgentSection = () => {
 
                 <div data-reveal className="max-w-3xl mx-auto mb-8 sm:mb-10">
                     <BeforeAfterCards niche={niche} activeNiche={activeNiche} />
+                </div>
+
+                <div data-reveal className="max-w-4xl mx-auto mb-8 sm:mb-10">
+                    <div className="glass-panel rounded-2xl border border-white/[0.06] overflow-hidden p-2 sm:p-3">
+                        <IsometricOffice niche={niche} activeNiche={activeNiche} currentStage={currentStage} />
+                    </div>
                 </div>
 
                 <div data-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
