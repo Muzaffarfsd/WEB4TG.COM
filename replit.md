@@ -140,6 +140,16 @@ npm start      # Express server only (requires dist/)
 - Pre-built Brotli (.br) and Gzip (.gz) compressed assets
 - Video carousel loading spinner while buffering
 
+### Canvas Office Optimizations
+- **OffscreenCanvas static cache** (`renderStaticLayer`): wall, floor, bricks, tiles, grid, divider, zone labels, LED strips, window/sky/city, server rack shell, plant — rendered once and reused as `drawImage()` per frame
+- **LOD system** (detectLOD): 'high' (W≥700), 'medium' (400-699), 'low' (<400). On 'low': skip cables, clock, wifi router, bookshelf, water cooler, roomba, drone; larger grid step, no tile checkerboard, no light cones. On 'medium': double brick width
+- **DPR capped at MAX_DPR=2** — prevents 3x mobile from rendering 9x pixel count
+- **IntersectionObserver** pauses rAF when canvas is offscreen (threshold 0.05)
+- **Pre-sorted desk positions** stored in `sortedDesks.current` (sorted once on layout rebuild, not per frame)
+- **All `shadowBlur` replaced** with cheaper alpha-blended glow rects/circles — eliminates GPU shadow compositing
+- **Loop-based state counting** instead of `.filter()` for walking/working/idle counts
+- **`drawRoomDynamic`** renders only per-frame dynamic elements: ceiling lights, screen animations, server LEDs, city building lights, alert pulse
+
 ## Accessibility
 - Skip-to-content link (#main-content)
 - Mobile menu: focus trap, role="dialog", aria-modal="true", Escape key closes

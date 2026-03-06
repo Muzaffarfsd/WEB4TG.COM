@@ -1,10 +1,15 @@
 import type { Agent, Particle, Drone, Roomba, Toast } from './office-config';
+import type { LOD } from './office-config';
 import { ha } from './office-config';
 
-export function drawRoom(
-    ctx: CanvasRenderingContext2D,
-    W: number, H: number, col: string, t: number, agentsWalking: number,
-) {
+export function renderStaticLayer(
+    W: number, H: number, col: string, lod: LOD,
+): OffscreenCanvas | HTMLCanvasElement {
+    let oc: OffscreenCanvas | HTMLCanvasElement;
+    try { oc = new OffscreenCanvas(W, H); } catch { oc = document.createElement('canvas'); oc.width = W; oc.height = H; }
+    const ctx = oc.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    if (!ctx) return oc;
+
     const rL = W * 0.04, rR = W * 0.96;
     const wallTop = H * 0.04, wallBot = H * 0.30, floorBot = H * 0.93;
 
@@ -15,14 +20,16 @@ export function drawRoom(
     ctx.fillStyle = wG;
     ctx.fillRect(rL, wallTop, rR - rL, wallBot - wallTop);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.015)';
-    ctx.lineWidth = 0.5;
-    const bH = 14, bW = 26;
-    for (let row = 0; row < Math.ceil((wallBot - wallTop) / bH); row++) {
-        const y = wallTop + row * bH;
-        const off = row % 2 === 0 ? 0 : bW / 2;
-        for (let x = rL + off; x < rR; x += bW) {
-            ctx.strokeRect(x, y, bW, bH);
+    if (lod !== 'low') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+        ctx.lineWidth = 0.5;
+        const bH = 14, bW = lod === 'high' ? 26 : 52;
+        for (let row = 0; row < Math.ceil((wallBot - wallTop) / bH); row++) {
+            const y = wallTop + row * bH;
+            const off = row % 2 === 0 ? 0 : bW / 2;
+            for (let x = rL + off; x < rR; x += bW) {
+                ctx.strokeRect(x, y, bW, bH);
+            }
         }
     }
 
@@ -39,18 +46,21 @@ export function drawRoom(
     ctx.fillStyle = fG;
     ctx.fillRect(rL, wallBot, rR - rL, floorBot - wallBot);
 
-    const ts = 28;
-    for (let tx2 = rL; tx2 < rR; tx2 += ts) {
-        for (let ty = wallBot; ty < floorBot; ty += ts) {
-            const chk = (Math.floor((tx2 - rL) / ts) + Math.floor((ty - wallBot) / ts)) % 2 === 0;
-            ctx.fillStyle = chk ? 'rgba(139,92,246,0.018)' : 'rgba(255,255,255,0.006)';
-            ctx.fillRect(tx2 + 0.3, ty + 0.3, ts - 0.6, ts - 0.6);
+    const ts = lod === 'low' ? 56 : 28;
+    if (lod !== 'low') {
+        for (let tx2 = rL; tx2 < rR; tx2 += ts) {
+            for (let ty = wallBot; ty < floorBot; ty += ts) {
+                const chk = (Math.floor((tx2 - rL) / ts) + Math.floor((ty - wallBot) / ts)) % 2 === 0;
+                ctx.fillStyle = chk ? 'rgba(139,92,246,0.018)' : 'rgba(255,255,255,0.006)';
+                ctx.fillRect(tx2 + 0.3, ty + 0.3, ts - 0.6, ts - 0.6);
+            }
         }
     }
     ctx.strokeStyle = 'rgba(139,92,246,0.025)';
     ctx.lineWidth = 0.3;
-    for (let x = rL; x <= rR; x += ts) { ctx.beginPath(); ctx.moveTo(x, wallBot); ctx.lineTo(x, floorBot); ctx.stroke(); }
-    for (let y = wallBot; y <= floorBot; y += ts) { ctx.beginPath(); ctx.moveTo(rL, y); ctx.lineTo(rR, y); ctx.stroke(); }
+    const gridStep = lod === 'low' ? ts * 2 : ts;
+    for (let x = rL; x <= rR; x += gridStep) { ctx.beginPath(); ctx.moveTo(x, wallBot); ctx.lineTo(x, floorBot); ctx.stroke(); }
+    for (let y = wallBot; y <= floorBot; y += gridStep) { ctx.beginPath(); ctx.moveTo(rL, y); ctx.lineTo(rR, y); ctx.stroke(); }
 
     const divX = W * 0.54;
     ctx.strokeStyle = ha(col, 0.06);
@@ -73,39 +83,9 @@ export function drawRoom(
     for (let lx = rL + 30; lx < rR - 30; lx += 80) {
         ctx.fillStyle = ha(col, 0.03);
         ctx.fillRect(lx, stripY, 50, 2);
-        ctx.save();
-        ctx.shadowColor = col;
-        ctx.shadowBlur = 8;
         ctx.fillStyle = ha(col, 0.08);
         ctx.fillRect(lx + 5, stripY, 40, 1);
-        ctx.restore();
     }
-
-    const ceilingLights = [
-        { x: rL + (divX - rL) * 0.3, y: wallBot },
-        { x: rL + (divX - rL) * 0.7, y: wallBot },
-        { x: divX + (rR - divX) * 0.5, y: wallBot },
-    ];
-    ceilingLights.forEach((cl2, ci) => {
-        ctx.fillStyle = ha(col, 0.15 + Math.sin(t * 0.8 + ci * 1.5) * 0.04);
-        ctx.fillRect(cl2.x - 12, wallTop + 1, 24, 3);
-        ctx.fillStyle = ha(col, 0.4);
-        ctx.beginPath(); ctx.arc(cl2.x, wallTop + 3, 2, 0, Math.PI * 2); ctx.fill();
-
-        const coneH = (floorBot - wallBot) * 0.6;
-        const coneG = ctx.createLinearGradient(cl2.x, cl2.y, cl2.x, cl2.y + coneH);
-        coneG.addColorStop(0, ha(col, 0.035));
-        coneG.addColorStop(0.5, ha(col, 0.015));
-        coneG.addColorStop(1, ha(col, 0));
-        ctx.fillStyle = coneG;
-        ctx.beginPath();
-        ctx.moveTo(cl2.x - 8, cl2.y);
-        ctx.lineTo(cl2.x + 8, cl2.y);
-        ctx.lineTo(cl2.x + 45, cl2.y + coneH);
-        ctx.lineTo(cl2.x - 45, cl2.y + coneH);
-        ctx.closePath();
-        ctx.fill();
-    });
 
     const winX = divX + (rR - divX) * 0.5 - 25;
     const winW = 50, winH2 = (wallBot - wallTop) * 0.5;
@@ -120,12 +100,10 @@ export function drawRoom(
     skyG.addColorStop(1, 'rgba(30,22,55,0.4)');
     ctx.fillStyle = skyG;
     ctx.fillRect(winX + 2, winY2 + 2, winW - 4, winH2 - 4);
-    const starCount = 6;
-    for (let si = 0; si < starCount; si++) {
+    for (let si = 0; si < 6; si++) {
         const sx = winX + 5 + (si * 7.3) % (winW - 10);
         const sy = winY2 + 4 + (si * 5.1) % (winH2 * 0.5);
-        const sa = 0.15 + 0.12 * Math.sin(t * 1.2 + si * 2.1);
-        ctx.fillStyle = `rgba(255,255,255,${sa})`;
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
         ctx.beginPath(); ctx.arc(sx, sy, 0.8, 0, Math.PI * 2); ctx.fill();
     }
     const cityY = winY2 + winH2 - 8;
@@ -134,15 +112,83 @@ export function drawRoom(
         const bh = 3 + (bi * 3.7) % 5;
         ctx.fillStyle = 'rgba(25,20,45,0.7)';
         ctx.fillRect(bx, cityY - bh, 4, bh);
-        if (Math.sin(t * 0.5 + bi * 1.3) > 0.2) {
-            ctx.fillStyle = 'rgba(255,220,100,0.2)';
-            ctx.fillRect(bx + 1, cityY - bh + 1, 1, 1);
+    }
+
+    const srvX = rL + 8, srvY = wallBot + 10;
+    const srvW = 16, srvH = floorBot - wallBot - 20;
+    ctx.fillStyle = '#08060e';
+    ctx.strokeStyle = 'rgba(50,42,65,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(srvX, srvY, srvW, srvH, 2); ctx.fill(); ctx.stroke();
+
+    ctx.font = '500 5px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.textAlign = 'center'; ctx.fillText('SRV', srvX + srvW / 2, srvY + srvH + 8); ctx.textAlign = 'start';
+
+    const plX = rL + 32, plY = floorBot - 8;
+    ctx.fillStyle = '#2a1a0e';
+    ctx.fillRect(plX - 5, plY - 10, 10, 12);
+    ctx.fillStyle = '#3a2818';
+    ctx.beginPath(); ctx.ellipse(plX, plY - 10, 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+    [-.5, -.15, .2, .55].forEach((ang, i) => {
+        ctx.save(); ctx.translate(plX, plY - 12); ctx.rotate(ang);
+        ctx.fillStyle = i % 2 === 0 ? '#1a5a1a' : '#22882a';
+        ctx.beginPath(); ctx.ellipse(0, -10 - i * 1.5, 3.5, 9, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    });
+
+    return oc;
+}
+
+export function drawRoomDynamic(
+    ctx: CanvasRenderingContext2D,
+    W: number, H: number, col: string, t: number, agentsWalking: number, lod: LOD,
+) {
+    const rL = W * 0.04, rR = W * 0.96;
+    const wallTop = H * 0.04, wallBot = H * 0.30, floorBot = H * 0.93;
+    const divX = W * 0.54;
+
+    const ceilingLights = [
+        { x: rL + (divX - rL) * 0.3, y: wallBot },
+        { x: rL + (divX - rL) * 0.7, y: wallBot },
+        { x: divX + (rR - divX) * 0.5, y: wallBot },
+    ];
+    ceilingLights.forEach((cl2, ci) => {
+        ctx.fillStyle = ha(col, 0.15 + Math.sin(t * 0.8 + ci * 1.5) * 0.04);
+        ctx.fillRect(cl2.x - 12, wallTop + 1, 24, 3);
+        ctx.fillStyle = ha(col, 0.4);
+        ctx.beginPath(); ctx.arc(cl2.x, wallTop + 3, 2, 0, Math.PI * 2); ctx.fill();
+
+        if (lod !== 'low') {
+            const coneH = (floorBot - wallBot) * 0.6;
+            const coneG = ctx.createLinearGradient(cl2.x, cl2.y, cl2.x, cl2.y + coneH);
+            coneG.addColorStop(0, ha(col, 0.035));
+            coneG.addColorStop(0.5, ha(col, 0.015));
+            coneG.addColorStop(1, ha(col, 0));
+            ctx.fillStyle = coneG;
+            ctx.beginPath();
+            ctx.moveTo(cl2.x - 8, cl2.y);
+            ctx.lineTo(cl2.x + 8, cl2.y);
+            ctx.lineTo(cl2.x + 45, cl2.y + coneH);
+            ctx.lineTo(cl2.x - 45, cl2.y + coneH);
+            ctx.closePath();
+            ctx.fill();
+        }
+    });
+
+    const winX = divX + (rR - divX) * 0.5 - 25;
+    const winH2 = (wallBot - wallTop) * 0.5;
+    const winY2 = wallTop + (wallBot - wallTop) * 0.15;
+    const cityY = winY2 + winH2 - 8;
+    if (lod !== 'low') {
+        for (let bi = 0; bi < 7; bi++) {
+            const bx = winX + 4 + bi * 6.5;
+            const bh = 3 + (bi * 3.7) % 5;
+            if (Math.sin(t * 0.5 + bi * 1.3) > 0.2) {
+                ctx.fillStyle = 'rgba(255,220,100,0.2)';
+                ctx.fillRect(bx + 1, cityY - bh + 1, 1, 1);
+            }
         }
     }
-    ctx.save(); ctx.shadowColor = 'rgba(100,80,180,0.15)'; ctx.shadowBlur = 30;
-    ctx.fillStyle = 'rgba(80,60,160,0.03)';
-    ctx.fillRect(winX - 20, winY2 + winH2, winW + 40, 20);
-    ctx.restore();
 
     const screens = [
         { x: rL + (divX - rL) * 0.18, y: wallTop + 10, w: 52, h: 32, type: 'tasks' },
@@ -159,9 +205,8 @@ export function drawRoom(
         ctx.fillRect(s.x + s.w / 2 - 6, s.y + s.h + 6, 12, 2);
 
         const ix = s.x + 3, iy = s.y + 3, iw = s.w - 6, ih = s.h - 6;
-        const sG = ctx.createLinearGradient(ix, iy, ix + iw, iy + ih);
-        sG.addColorStop(0, ha(col, 0.12)); sG.addColorStop(1, ha(col, 0.04));
-        ctx.fillStyle = sG; ctx.fillRect(ix, iy, iw, ih);
+        ctx.fillStyle = ha(col, 0.08);
+        ctx.fillRect(ix, iy, iw, ih);
 
         ctx.font = '600 7px Inter, sans-serif';
         ctx.fillStyle = ha(col, 0.6);
@@ -169,7 +214,7 @@ export function drawRoom(
 
         if (s.type === 'analytics') {
             ctx.fillText('ANALYTICS', ix + 2, iy + 8);
-            const bars = 7;
+            const bars = lod === 'low' ? 4 : 7;
             const bw2 = (iw - 6) / bars - 1.5;
             for (let i = 0; i < bars; i++) {
                 const bh2 = (ih - 14) * (0.15 + 0.7 * Math.abs(Math.sin(t * 0.6 + i * 0.8)));
@@ -188,42 +233,28 @@ export function drawRoom(
         } else {
             ctx.fillText('STATUS', ix + 2, iy + 8);
             const cR = Math.min(iw, ih) * 0.25;
-            const cX = ix + iw / 2, cY = iy + ih / 2 + 3;
-            ctx.beginPath(); ctx.arc(cX, cY, cR, 0, Math.PI * 2);
+            const cX2 = ix + iw / 2, cY2 = iy + ih / 2 + 3;
+            ctx.beginPath(); ctx.arc(cX2, cY2, cR, 0, Math.PI * 2);
             ctx.strokeStyle = ha(col, 0.15); ctx.lineWidth = 2; ctx.stroke();
-            ctx.beginPath(); ctx.arc(cX, cY, cR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 1.5);
+            ctx.beginPath(); ctx.arc(cX2, cY2, cR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 1.5);
             ctx.strokeStyle = ha(col, 0.5); ctx.lineWidth = 3; ctx.stroke();
             ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillStyle = ha(col, 0.7); ctx.fillText('92%', cX, cY + 3);
+            ctx.fillStyle = ha(col, 0.7); ctx.fillText('92%', cX2, cY2 + 3);
             ctx.textAlign = 'start';
         }
-
-        ctx.save();
-        ctx.shadowColor = col; ctx.shadowBlur = 15; ctx.globalAlpha = 0.06;
-        ctx.fillStyle = col; ctx.fillRect(ix, iy, iw, ih);
-        ctx.restore();
     });
 
-    const walkingCount = agentsWalking;
-    if (walkingCount > 0) {
+    if (agentsWalking > 0) {
         const alertPulse = Math.sin(t * 5);
         const mainScreen = screens[1];
-        ctx.save();
-        ctx.shadowColor = '#ef4444';
-        ctx.shadowBlur = 14 + alertPulse * 6;
         ctx.strokeStyle = ha('#ef4444', 0.4 + alertPulse * 0.2);
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.roundRect(mainScreen.x - 2, mainScreen.y - 2, mainScreen.w + 4, mainScreen.h + 4, 4);
         ctx.stroke();
-        ctx.restore();
     }
 
     const srvX = rL + 8, srvY = wallBot + 10;
     const srvW = 16, srvH = floorBot - wallBot - 20;
-    ctx.fillStyle = '#08060e';
-    ctx.strokeStyle = 'rgba(50,42,65,0.4)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.roundRect(srvX, srvY, srvW, srvH, 2); ctx.fill(); ctx.stroke();
     for (let i = 0; i < 5; i++) {
         const ry = srvY + 5 + i * (srvH / 6);
         ctx.fillStyle = 'rgba(25,20,38,0.6)';
@@ -231,20 +262,6 @@ export function drawRoom(
         ctx.fillStyle = Math.sin(t * 3 + i * 1.3) > 0 ? '#22c55e' : ha(col, 0.4);
         ctx.beginPath(); ctx.arc(srvX + srvW - 4, ry + 3.5, 1.5, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.font = '500 5px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.textAlign = 'center'; ctx.fillText('SRV', srvX + srvW / 2, srvY + srvH + 8); ctx.textAlign = 'start';
-
-    const plX = rL + 32, plY = floorBot - 8;
-    ctx.fillStyle = '#2a1a0e';
-    ctx.fillRect(plX - 5, plY - 10, 10, 12);
-    ctx.fillStyle = '#3a2818';
-    ctx.beginPath(); ctx.ellipse(plX, plY - 10, 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
-    [-.5, -.15, .2, .55].forEach((ang, i) => {
-        ctx.save(); ctx.translate(plX, plY - 12); ctx.rotate(ang);
-        ctx.fillStyle = i % 2 === 0 ? '#1a5a1a' : '#22882a';
-        ctx.beginPath(); ctx.ellipse(0, -10 - i * 1.5, 3.5, 9, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-    });
 }
 
 export function drawArcade(
@@ -294,8 +311,9 @@ export function drawArcade(
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(scrX + 9, invY - bulletOff, 1, 2);
 
-    ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.globalAlpha = 0.1;
-    ctx.fillStyle = col; ctx.fillRect(scrX, scrY, scrW, scrH); ctx.restore();
+    ctx.globalAlpha = 0.1;
+    ctx.fillStyle = col; ctx.fillRect(scrX - 3, scrY - 3, scrW + 6, scrH + 6);
+    ctx.globalAlpha = 1;
 
     const ctrlY = y - h2 + 30;
     ctx.fillStyle = '#0a0816';
@@ -402,8 +420,9 @@ export function drawVending(
     ctx.fillStyle = 'rgba(40,35,55,0.5)';
     ctx.fillRect(x - 6, y - 8, 12, 6);
 
-    ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.globalAlpha = 0.04;
-    ctx.fillStyle = col; ctx.fillRect(glassX, glassY, glassW, glassH); ctx.restore();
+    ctx.globalAlpha = 0.04;
+    ctx.fillStyle = col; ctx.fillRect(glassX - 2, glassY - 2, glassW + 4, glassH + 4);
+    ctx.globalAlpha = 1;
 
     ctx.font = 'bold 6px monospace'; ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(0,0,0,0.4)';
@@ -512,8 +531,9 @@ export function drawDesk(
             }
         }
 
-        ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = isOrch ? 30 : 18; ctx.globalAlpha = 0.15;
-        ctx.fillStyle = col; ctx.fillRect(sX, sY, sW, sH); ctx.restore();
+        ctx.globalAlpha = 0.15;
+        ctx.fillStyle = col; ctx.fillRect(sX - 4, sY - 4, sW + 8, sH + 8);
+        ctx.globalAlpha = 1;
 
         ctx.fillStyle = ha(col, 0.04);
         ctx.beginPath();
@@ -746,9 +766,10 @@ export function drawPerson(
         ctx.lineTo(hX + 5, hY - hR - 2);
         ctx.closePath(); ctx.fill();
 
-        ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 18; ctx.globalAlpha = 0.15;
-        ctx.beginPath(); ctx.arc(hX, hY, hR + 10, 0, Math.PI * 2);
-        ctx.fillStyle = col; ctx.fill(); ctx.restore();
+        ctx.globalAlpha = 0.12;
+        ctx.beginPath(); ctx.arc(hX, hY, hR + 8, 0, Math.PI * 2);
+        ctx.fillStyle = col; ctx.fill();
+        ctx.globalAlpha = 1;
     }
 
     if (a.state === 'working') {
@@ -783,9 +804,10 @@ export function drawParticle(
     const arc = -55 * Math.sin(p.p * Math.PI);
     const y = p.fy + (p.ty - p.fy) * p.p + arc;
     const r = 3.5 + Math.sin(t * 6 + p.idx) * 1.2;
-    ctx.save(); ctx.shadowColor = p.col; ctx.shadowBlur = 18;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = p.col; ctx.fill(); ctx.restore();
+    ctx.fillStyle = p.col; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+    ctx.fillStyle = ha(p.col, 0.15); ctx.fill();
     ctx.beginPath(); ctx.arc(x, y, r * 2.5, 0, Math.PI * 2);
     ctx.fillStyle = ha(p.col, 0.06); ctx.fill();
     for (let i = 1; i <= 4; i++) {
@@ -901,11 +923,10 @@ export function drawClock(
     ctx.fillStyle = ha(col, 0.5);
     ctx.beginPath(); ctx.arc(x, y, 1.2, 0, Math.PI * 2); ctx.fill();
 
-    ctx.save();
-    ctx.shadowColor = col; ctx.shadowBlur = 8; ctx.globalAlpha = 0.06;
+    ctx.globalAlpha = 0.06;
     ctx.fillStyle = col;
-    ctx.beginPath(); ctx.arc(x, y, r + 2, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
 }
 
 export function drawWifiRouter(
@@ -969,11 +990,8 @@ export function drawRoomba(
     ctx.fillStyle = ha(col, ledPulse);
     ctx.beginPath(); ctx.arc(rb.x, rb.y - 2, 1.5, 0, Math.PI * 2); ctx.fill();
 
-    ctx.save();
-    ctx.shadowColor = col; ctx.shadowBlur = 6;
-    ctx.fillStyle = ha(col, ledPulse * 0.4);
-    ctx.beginPath(); ctx.arc(rb.x, rb.y - 2, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.fillStyle = ha(col, ledPulse * 0.3);
+    ctx.beginPath(); ctx.arc(rb.x, rb.y - 2, 3.5, 0, Math.PI * 2); ctx.fill();
 
     const dirX = Math.cos(rb.angle) * (r - 1);
     const dirY = Math.sin(rb.angle) * (r - 1);
@@ -1010,11 +1028,8 @@ export function drawToast(
     ctx.lineWidth = 0.8;
     ctx.beginPath(); ctx.roundRect(tx, ty, tw, th, 4); ctx.fill(); ctx.stroke();
 
-    ctx.save();
-    ctx.shadowColor = toast.col; ctx.shadowBlur = 6;
-    ctx.fillStyle = ha(toast.col, 0.15);
-    ctx.beginPath(); ctx.roundRect(tx, ty, tw, th, 4); ctx.fill();
-    ctx.restore();
+    ctx.fillStyle = ha(toast.col, 0.12);
+    ctx.beginPath(); ctx.roundRect(tx - 2, ty - 2, tw + 4, th + 4, 5); ctx.fill();
 
     ctx.font = '600 7px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -1225,11 +1240,8 @@ export function drawDrone(
     ctx.fillStyle = ha(col, 0.5 + Math.sin(t * 6) * 0.2);
     ctx.beginPath(); ctx.arc(dx, dy + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
 
-    ctx.save();
-    ctx.shadowColor = col; ctx.shadowBlur = 10;
-    ctx.fillStyle = ha(col, 0.15);
-    ctx.beginPath(); ctx.arc(dx, dy + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.fillStyle = ha(col, 0.12);
+    ctx.beginPath(); ctx.arc(dx, dy + 1.5, 4, 0, Math.PI * 2); ctx.fill();
 
     const beam = 0.08 + Math.sin(t * 3) * 0.03;
     ctx.fillStyle = ha(col, beam);

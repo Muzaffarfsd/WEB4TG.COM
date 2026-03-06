@@ -1,8 +1,11 @@
 import { useRef, useEffect, useCallback } from 'react';
 import type { Agent, Particle, Drone, Roomba, Toast, IsometricOfficeProps } from './office-config';
+import type { LOD } from './office-config';
+import { MAX_DPR, detectLOD } from './office-config';
 import { buildLayout, updateAgents } from './office-agents';
 import {
-    drawRoom, drawArcade, drawCouch, drawVending, drawCoffeeTable,
+    renderStaticLayer, drawRoomDynamic,
+    drawArcade, drawCouch, drawVending, drawCoffeeTable,
     drawDesk, drawChair, drawPerson, drawParticle, drawConnections,
     drawWhiteboard, drawClock, drawWifiRouter, drawRoomba,
     drawToast, drawWaterCooler, drawCables, drawBookshelf, drawDrone,
@@ -33,7 +36,7 @@ function createRoomba(W: number, H: number): Roomba {
     };
 }
 
-function updateDrone(drone: Drone, dt: number, t: number, W: number, H: number, deskPos: {x: number; y: number}[]) {
+function updateDrone(drone: Drone, dt: number, _t: number, W: number, H: number, deskPos: {x: number; y: number}[]) {
     drone.propellerAngle += dt * 40;
 
     if (drone.waitTimer > 0) {
@@ -93,6 +96,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const afRef = useRef(0);
     const ags = useRef<Agent[]>([]);
     const deskPos = useRef<{x: number; y: number; isOrch: boolean}[]>([]);
+    const sortedDesks = useRef<{x: number; y: number; isOrch: boolean}[]>([]);
     const pts = useRef<Particle[]>([]);
     const droneRef = useRef<Drone | null>(null);
     const roombaRef = useRef<Roomba | null>(null);
@@ -102,6 +106,10 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const pN = useRef(-1);
     const pS = useRef(-1);
     const noMo = useRef(false);
+    const visRef = useRef(true);
+    const staticCache = useRef<OffscreenCanvas | HTMLCanvasElement | null>(null);
+    const cacheSize = useRef({ w: 0, h: 0, col: '' });
+    const lodRef = useRef<LOD>('high');
 
     useEffect(() => {
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -111,38 +119,62 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         return () => mq.removeEventListener('change', fn);
     }, []);
 
+    const startLoop = useRef<(() => void) | null>(null);
+
+    useEffect(() => {
+        const cv = cvRef.current; if (!cv) return;
+        const io = new IntersectionObserver(
+            ([entry]) => {
+                const wasVisible = visRef.current;
+                visRef.current = entry.isIntersecting;
+                if (entry.isIntersecting && !wasVisible && startLoop.current) {
+                    startLoop.current();
+                }
+            },
+            { threshold: 0.05 },
+        );
+        io.observe(cv);
+        return () => io.disconnect();
+    }, []);
+
     const rebuildLayout = useCallback((W: number, H: number) => {
         const result = buildLayout(niche.agentTeam, W, H);
         ags.current = result.agents;
         deskPos.current = result.deskPositions;
+        sortedDesks.current = [...result.deskPositions].sort((a, b) => a.y - b.y);
         if (!droneRef.current) droneRef.current = createDrone(W, H);
         if (!roombaRef.current) roombaRef.current = createRoomba(W, H);
+        lodRef.current = detectLOD(W);
     }, [niche.agentTeam]);
+
+    const invalidateCache = useCallback(() => { staticCache.current = null; }, []);
 
     useEffect(() => {
         if (activeNiche !== pN.current || currentStage !== pS.current) {
             pN.current = activeNiche; pS.current = currentStage;
             const c = cvRef.current; if (!c) return;
-            const dpr = window.devicePixelRatio || 1;
+            const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
             const W = c.width / dpr, H = c.height / dpr;
             rebuildLayout(W, H);
             pts.current = []; clk.current = 0;
             droneRef.current = createDrone(W, H);
             roombaRef.current = createRoomba(W, H);
             toastsRef.current = [];
+            invalidateCache();
         }
-    }, [activeNiche, currentStage, niche.agentTeam, rebuildLayout]);
+    }, [activeNiche, currentStage, niche.agentTeam, rebuildLayout, invalidateCache]);
 
     useEffect(() => {
         const cv = cvRef.current; if (!cv) return;
         const ctx = cv.getContext('2d'); if (!ctx) return;
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
 
         const resize = () => {
             const r = cv.getBoundingClientRect();
             cv.width = r.width * dpr; cv.height = r.height * dpr;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             rebuildLayout(r.width, r.height);
+            invalidateCache();
         };
         resize();
         const ro = new ResizeObserver(resize);
@@ -150,14 +182,24 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         let prev = 0;
 
         const animate = (ts: number) => {
+            if (!visRef.current) return;
+            afRef.current = requestAnimationFrame(animate);
+
             const dt = Math.min((ts - prev) / 1000, 0.05);
             prev = ts;
             clk.current += dt;
             const t = clk.current;
             const W = cv.width / dpr;
             const H = cv.height / dpr;
+            const lod = lodRef.current;
 
             ctx.clearRect(0, 0, W, H);
+
+            if (!staticCache.current || cacheSize.current.w !== W || cacheSize.current.h !== H || cacheSize.current.col !== niche.color) {
+                staticCache.current = renderStaticLayer(W, H, niche.color, lod);
+                cacheSize.current = { w: W, h: H, col: niche.color };
+            }
+            ctx.drawImage(staticCache.current, 0, 0);
 
             const wallBot = H * 0.30;
             const floorBot = H * 0.93;
@@ -169,40 +211,54 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
 
             updateAgents(agList, t, dt, noMo.current, pts.current, niche.color, orch);
 
-            const walkingAgents = agList.filter(a => a.state === 'walk_to_desk' || a.state === 'walk_back').length;
-            const workingAgents = agList.filter(a => a.state === 'working').length;
-            const idleAgents = agList.filter(a => a.state === 'idle').length;
+            let walkingAgents = 0, workingAgents = 0, idleAgents = 0;
+            for (let i = 0; i < agList.length; i++) {
+                const s = agList[i].state;
+                if (s === 'walk_to_desk' || s === 'walk_back') walkingAgents++;
+                else if (s === 'working') workingAgents++;
+                else idleAgents++;
+            }
 
-            drawRoom(ctx, W, H, niche.color, t, walkingAgents);
+            drawRoomDynamic(ctx, W, H, niche.color, t, walkingAgents, lod);
 
             const rL = W * 0.04;
             const divX = W * 0.54;
 
-            const srvX = rL + 8, srvY = wallBot + 10;
-            const srvH = floorBot - wallBot - 20;
-            drawCables(ctx, srvX, srvY, srvH, deskPos.current, niche.color, t);
+            if (lod !== 'low') {
+                const srvX = rL + 8, srvY = wallBot + 10;
+                const srvH = floorBot - wallBot - 20;
+                drawCables(ctx, srvX, srvY, srvH, deskPos.current, niche.color, t);
+            }
 
             const wbX = rL + (divX - rL) * 0.36;
             const wbY = wallBot * 0.35 + 2;
             drawWhiteboard(ctx, wbX, wbY, niche.color, t, workingAgents, agList.length);
 
-            const clockX = rL + (divX - rL) * 0.78;
-            const clockY = wallBot * 0.45 + 4;
-            drawClock(ctx, clockX, clockY, niche.color, t);
+            if (lod !== 'low') {
+                const clockX = rL + (divX - rL) * 0.78;
+                const clockY = wallBot * 0.45 + 4;
+                drawClock(ctx, clockX, clockY, niche.color, t);
+            }
 
-            const wifiX = (rL + divX) / 2;
-            const wifiY = wallBot * 0.15 + 2;
-            drawWifiRouter(ctx, wifiX, wifiY, niche.color, t);
+            if (lod === 'high') {
+                const wifiX = (rL + divX) / 2;
+                const wifiY = wallBot * 0.15 + 2;
+                drawWifiRouter(ctx, wifiX, wifiY, niche.color, t);
+            }
 
-            const rR = W * 0.96;
-            const winX = divX + (rR - divX) * 0.5 - 25;
-            const bsX = winX - 42;
-            const bsY = wallBot * 0.25 + 2;
-            drawBookshelf(ctx, bsX, bsY, niche.color);
+            if (lod !== 'low') {
+                const rR = W * 0.96;
+                const winX = divX + (rR - divX) * 0.5 - 25;
+                const bsX = winX - 42;
+                const bsY = wallBot * 0.25 + 2;
+                drawBookshelf(ctx, bsX, bsY, niche.color);
+            }
 
-            const coolerX = rL + 14;
-            const coolerY = wallBot + fH * 0.50;
-            drawWaterCooler(ctx, coolerX, coolerY, niche.color, t);
+            if (lod !== 'low') {
+                const coolerX = rL + 14;
+                const coolerY = wallBot + fH * 0.50;
+                drawWaterCooler(ctx, coolerX, coolerY, niche.color, t);
+            }
 
             const arcadeX = lL + (lR - lL) * 0.15;
             const arcadeY = wallBot + fH * 0.50;
@@ -222,34 +278,43 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
 
             if (orch) drawConnections(ctx, agList, orch, niche.color, t);
 
-            if (roombaRef.current && !noMo.current) {
+            if (roombaRef.current && !noMo.current && lod !== 'low') {
                 updateRoomba(roombaRef.current, dt, W, H);
                 drawRoomba(ctx, roombaRef.current, niche.color, t);
             }
 
-            const desksToRender = [...deskPos.current].sort((a, b) => a.y - b.y);
-            desksToRender.forEach(d => {
-                const sittingAgent = agList.find(a => a.deskX === d.x && a.deskY === d.y && a.state === 'working');
-                const isWorking = !!sittingAgent;
-                const ph = sittingAgent ? sittingAgent.phase : 0;
+            const desks = sortedDesks.current;
+            for (let i = 0; i < desks.length; i++) {
+                const d = desks[i];
+                let isWorking = false, ph = 0;
+                for (let j = 0; j < agList.length; j++) {
+                    const a = agList[j];
+                    if (a.deskX === d.x && a.deskY === d.y && a.state === 'working') {
+                        isWorking = true; ph = a.phase; break;
+                    }
+                }
                 drawChair(ctx, d.x, d.y, niche.color, d.isOrch);
                 drawDesk(ctx, d.x, d.y, niche.color, d.isOrch, isWorking, t, ph);
-            });
+            }
 
             const sorted = [...agList].sort((a, b) => a.y - b.y);
-            sorted.forEach(a => {
+            for (let i = 0; i < sorted.length; i++) {
+                const a = sorted[i];
                 const isO = a === orch;
                 const isWalking = a.state === 'walk_to_desk' || a.state === 'walk_back';
                 drawPerson(ctx, a, niche.color, isO, t, isWalking, noMo.current);
-            });
+            }
 
-            if (droneRef.current && !noMo.current) {
+            if (droneRef.current && !noMo.current && lod !== 'low') {
                 updateDrone(droneRef.current, dt, t, W, H, deskPos.current);
                 drawDrone(ctx, droneRef.current, niche.color, t);
             }
 
-            if (!noMo.current && t - lastToastTime.current > 4) {
-                const workingAg = agList.filter(a => a.state === 'working' && a !== orch);
+            if (!noMo.current && t - lastToastTime.current > (lod === 'low' ? 6 : 4)) {
+                const workingAg: Agent[] = [];
+                for (let i = 0; i < agList.length; i++) {
+                    if (agList[i].state === 'working' && agList[i] !== orch) workingAg.push(agList[i]);
+                }
                 if (workingAg.length > 0) {
                     const ag = workingAg[Math.floor(Math.random() * workingAg.length)];
                     const msgs = ['Task done', 'Готово', 'Report sent', 'Анализ ✓', 'Данные ↑', 'Синхрон.'];
@@ -293,13 +358,16 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.fillStyle = 'rgba(255,255,255,0.18)';
             ctx.fillText(statusText, W / 2, H - 8);
             ctx.textAlign = 'start';
-
-            afRef.current = requestAnimationFrame(animate);
         };
 
+        startLoop.current = () => {
+            cancelAnimationFrame(afRef.current);
+            prev = performance.now();
+            afRef.current = requestAnimationFrame(animate);
+        };
         afRef.current = requestAnimationFrame(animate);
-        return () => { cancelAnimationFrame(afRef.current); ro.disconnect(); };
-    }, [niche, activeNiche, rebuildLayout]);
+        return () => { cancelAnimationFrame(afRef.current); startLoop.current = null; ro.disconnect(); };
+    }, [niche, activeNiche, rebuildLayout, invalidateCache]);
 
     return (
         <div className="relative w-full" style={{ aspectRatio: '16/9' }}>

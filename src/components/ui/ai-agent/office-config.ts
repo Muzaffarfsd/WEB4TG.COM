@@ -67,6 +67,16 @@ export const PH_WALK_BACK_START = 0.65;
 export const PH_WALK_BACK_END = 0.77;
 export const PH_IDLE_END = 1.0;
 
+export type LOD = 'high' | 'medium' | 'low';
+
+export function detectLOD(W: number): LOD {
+    if (W < 400) return 'low';
+    if (W < 700) return 'medium';
+    return 'high';
+}
+
+export const MAX_DPR = 2;
+
 export const ha = (hex: string, a: number) =>
     hex + Math.round(Math.max(0, Math.min(1, a)) * 255).toString(16).padStart(2, '0');
 
