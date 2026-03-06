@@ -235,6 +235,69 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 ctx.restore();
             }
 
+            const ceilingLights = [
+                { x: rL + (divX - rL) * 0.3, y: wallBot },
+                { x: rL + (divX - rL) * 0.7, y: wallBot },
+                { x: divX + (rR - divX) * 0.5, y: wallBot },
+            ];
+            ceilingLights.forEach((cl2, ci) => {
+                ctx.fillStyle = ha(col, 0.15 + Math.sin(t * 0.8 + ci * 1.5) * 0.04);
+                ctx.fillRect(cl2.x - 12, wallTop + 1, 24, 3);
+                ctx.fillStyle = ha(col, 0.4);
+                ctx.beginPath(); ctx.arc(cl2.x, wallTop + 3, 2, 0, Math.PI * 2); ctx.fill();
+
+                const coneH = (floorBot - wallBot) * 0.6;
+                const coneG = ctx.createLinearGradient(cl2.x, cl2.y, cl2.x, cl2.y + coneH);
+                coneG.addColorStop(0, ha(col, 0.035));
+                coneG.addColorStop(0.5, ha(col, 0.015));
+                coneG.addColorStop(1, ha(col, 0));
+                ctx.fillStyle = coneG;
+                ctx.beginPath();
+                ctx.moveTo(cl2.x - 8, cl2.y);
+                ctx.lineTo(cl2.x + 8, cl2.y);
+                ctx.lineTo(cl2.x + 45, cl2.y + coneH);
+                ctx.lineTo(cl2.x - 45, cl2.y + coneH);
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            const winX = divX + (rR - divX) * 0.5 - 25;
+            const winW = 50, winH2 = (wallBot - wallTop) * 0.5;
+            const winY2 = wallTop + (wallBot - wallTop) * 0.15;
+            ctx.fillStyle = '#08081a';
+            ctx.beginPath(); ctx.roundRect(winX, winY2, winW, winH2, 2); ctx.fill();
+            ctx.strokeStyle = 'rgba(80,70,110,0.3)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.roundRect(winX, winY2, winW, winH2, 2); ctx.stroke();
+            const skyG = ctx.createLinearGradient(winX, winY2, winX, winY2 + winH2);
+            skyG.addColorStop(0, 'rgba(15,12,35,0.6)');
+            skyG.addColorStop(0.6, 'rgba(20,15,40,0.5)');
+            skyG.addColorStop(1, 'rgba(30,22,55,0.4)');
+            ctx.fillStyle = skyG;
+            ctx.fillRect(winX + 2, winY2 + 2, winW - 4, winH2 - 4);
+            const starCount = 6;
+            for (let si = 0; si < starCount; si++) {
+                const sx = winX + 5 + (si * 7.3) % (winW - 10);
+                const sy = winY2 + 4 + (si * 5.1) % (winH2 * 0.5);
+                const sa = 0.15 + 0.12 * Math.sin(t * 1.2 + si * 2.1);
+                ctx.fillStyle = `rgba(255,255,255,${sa})`;
+                ctx.beginPath(); ctx.arc(sx, sy, 0.8, 0, Math.PI * 2); ctx.fill();
+            }
+            const cityY = winY2 + winH2 - 8;
+            for (let bi = 0; bi < 7; bi++) {
+                const bx = winX + 4 + bi * 6.5;
+                const bh = 3 + (bi * 3.7) % 5;
+                ctx.fillStyle = 'rgba(25,20,45,0.7)';
+                ctx.fillRect(bx, cityY - bh, 4, bh);
+                if (Math.sin(t * 0.5 + bi * 1.3) > 0.2) {
+                    ctx.fillStyle = 'rgba(255,220,100,0.2)';
+                    ctx.fillRect(bx + 1, cityY - bh + 1, 1, 1);
+                }
+            }
+            ctx.save(); ctx.shadowColor = 'rgba(100,80,180,0.15)'; ctx.shadowBlur = 30;
+            ctx.fillStyle = 'rgba(80,60,160,0.03)';
+            ctx.fillRect(winX - 20, winY2 + winH2, winW + 40, 20);
+            ctx.restore();
+
             const screens = [
                 { x: rL + (divX - rL) * 0.18, y: wallTop + 10, w: 52, h: 32, type: 'tasks' },
                 { x: rL + (divX - rL) * 0.55, y: wallTop + 8, w: 62, h: 38, type: 'analytics' },
@@ -663,7 +726,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
 
         const drawPerson = (a: Agent, col: string, isOrch: boolean, t: number, isWalking: boolean) => {
             const bob = noMo.current ? 0 : (isWalking
-                ? Math.abs(Math.sin(a.walkT * 20 * Math.PI)) * 3
+                ? Math.abs(Math.sin(a.walkT * 8 * Math.PI)) * 2.5
                 : Math.sin(t * 1.5 + a.phase) * 1);
             const hR = isOrch ? 10 : 8;
             const hY = a.y - (isOrch ? 24 : 18) - bob;
@@ -685,7 +748,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.fillRect(hX - 0.5, bY + 3, 1, bH2 - 4);
 
             if (isWalking && !noMo.current) {
-                const legPhase = Math.sin(a.walkT * 18 * Math.PI);
+                const legPhase = Math.sin(a.walkT * 8 * Math.PI);
                 [-1, 1].forEach(side => {
                     const lOff = side * legPhase * 3;
                     ctx.fillStyle = '#1a1830';
@@ -824,16 +887,20 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             }
         };
 
-        const drawConnections = (agList: Agent[], orch: Agent, col: string) => {
+        const drawConnections = (agList: Agent[], orch: Agent, col: string, t: number) => {
             agList.forEach(a => {
                 if (a === orch || a.state === 'idle') return;
                 ctx.beginPath();
-                ctx.moveTo(orch.x, orch.y);
-                const mx = (orch.x + a.x) / 2, my = (orch.y + a.y) / 2 - 12;
-                ctx.quadraticCurveTo(mx, my, a.x, a.y);
-                ctx.strokeStyle = ha(col, a.state === 'working' ? 0.1 : 0.04);
-                ctx.lineWidth = 0.6;
-                ctx.setLineDash([3, 5]); ctx.stroke(); ctx.setLineDash([]);
+                ctx.moveTo(orch.x, orch.y - 10);
+                const mx = (orch.x + a.x) / 2, my = (orch.y + a.y) / 2 - 18;
+                ctx.quadraticCurveTo(mx, my, a.x, a.y - 10);
+                ctx.strokeStyle = ha(col, a.state === 'working' ? 0.12 : 0.05);
+                ctx.lineWidth = 0.8;
+                ctx.setLineDash([4, 5]);
+                ctx.lineDashOffset = -t * 15;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.lineDashOffset = 0;
             });
         };
 
@@ -935,7 +1002,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const coffeeY = wallBot + fH * 0.45;
             drawCoffeeTable(coffeeX, coffeeY, niche.color, t);
 
-            if (orch) drawConnections(agList, orch, niche.color);
+            if (orch) drawConnections(agList, orch, niche.color, t);
 
             const desksToRender = [...deskPos.current].sort((a, b) => a.y - b.y);
             desksToRender.forEach(d => {
