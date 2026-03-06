@@ -298,12 +298,12 @@ const ResponsiveHeroBanner = () => {
                                 <SplitText
                                     text="Хватит кормить"
                                     className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white"
-                                    delay={2.2}
+                                    delay={0.1}
                                 />
                                 <SplitText
                                     text="посредников"
                                     className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic"
-                                    delay={2.7}
+                                    delay={0.5}
                                 />
                             </h1>
 
