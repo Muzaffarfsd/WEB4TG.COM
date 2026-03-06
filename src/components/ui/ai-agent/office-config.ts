@@ -58,6 +58,15 @@ export interface Toast {
     col: string;
 }
 
+export interface OfficeCat {
+    x: number; y: number;
+    targetX: number; targetY: number;
+    state: 'walk' | 'sit' | 'sleep' | 'groom';
+    stateTimer: number;
+    direction: number;
+    tailPhase: number;
+}
+
 export const SKINS = ['#f0d0b0', '#d4a878', '#c49070', '#e8c4a0', '#b87848', '#f2dcc8'];
 export const HAIRS = ['#1a1420', '#3a2210', '#8a6030', '#c49050', '#582010', '#222'];
 export const SHIRTS = ['#6d5acd', '#4a90d9', '#2ecc71', '#e67e22', '#e74c3c', '#1abc9c', '#9b59b6', '#f39c12'];
