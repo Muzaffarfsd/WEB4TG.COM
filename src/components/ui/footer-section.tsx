@@ -1,9 +1,9 @@
 import { ArrowRight, Send } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useClipReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
 export const FooterSection = () => {
-    const revealRef = useScrollReveal({ y: 30 });
+    const revealRef = useClipReveal('up', { stagger: 0.1 });
 
     return (
         <footer id="contact" className="relative w-full px-5 sm:px-8">

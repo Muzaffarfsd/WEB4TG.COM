@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useSlideReveal } from '../../hooks/use-animations';
 import {
     Brain, Clock,
     Zap, Globe, Volume2,
@@ -16,7 +16,7 @@ import { BeforeAfterCards } from './ai-agent/before-after-cards';
 import { IsometricOffice } from './ai-agent/isometric-office';
 
 export const AiAgentSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.06 });
+    const revealRef = useSlideReveal('right', { stagger: 0.06 });
     const [activeNiche, setActiveNiche] = useState(0);
     const [currentStage, setCurrentStage] = useState(0);
     const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useDirectionalReveal } from '../../hooks/use-animations';
 import { ShoppingBag, Dumbbell, Truck } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -169,7 +169,7 @@ function TiltCard({ children, study }: { children: React.ReactNode; study: typeo
 }
 
 export default function CaseStudies() {
-  const sectionRef = useScrollReveal({ stagger: 0.15 });
+  const sectionRef = useDirectionalReveal({ stagger: 0.15 });
   const [visible, setVisible] = useState(false);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 

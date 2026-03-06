@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useClipReveal } from '../../hooks/use-animations';
 
 const companies = [
   'Flowershop.tg',
@@ -41,7 +41,7 @@ const MarqueeRow = ({ reverse, paused }: { reverse?: boolean; paused: boolean })
 };
 
 export default function ClientLogos() {
-  const sectionRef = useScrollReveal();
+  const sectionRef = useClipReveal('up', { stagger: 0.08 });
   const observerRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(true);
 

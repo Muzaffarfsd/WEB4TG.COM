@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useRotateReveal } from '../../hooks/use-animations';
 import { faqItems } from '../../data/faq';
 
 export const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const sectionRef = useScrollReveal();
+  const sectionRef = useRotateReveal({ stagger: 0.08 });
 
   const toggle = (index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));

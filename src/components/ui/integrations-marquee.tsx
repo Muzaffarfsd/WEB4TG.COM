@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useClipReveal } from '../../hooks/use-animations';
 import { integrations } from '../../data/integration-icons';
 
 export default function IntegrationsMarquee() {
-  const sectionRef = useScrollReveal();
+  const sectionRef = useClipReveal('left', { duration: 1.2 });
   const observerRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(true);
 

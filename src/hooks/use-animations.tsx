@@ -407,6 +407,135 @@ export const useCharReveal = (options?: { duration?: number; stagger?: number; s
     return ref;
 };
 
+export const useDirectionalReveal = (options?: { duration?: number; stagger?: number; distance?: number }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const children = ref.current.querySelectorAll('[data-reveal]');
+        const targets = children.length > 0 ? Array.from(children) : [ref.current];
+
+        if (prefersReducedMotion()) {
+            gsap.set(targets, { opacity: 1, x: 0, y: 0 });
+            return;
+        }
+
+        const dist = options?.distance ?? 80;
+        targets.forEach((el, i) => {
+            const fromLeft = i % 2 === 0;
+            gsap.set(el, { opacity: 0, x: fromLeft ? -dist : dist, y: 15 });
+        });
+
+        targets.forEach((el, i) => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                duration: options?.duration ?? 0.9,
+                delay: i * (options?.stagger ?? 0.12),
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: ref.current,
+                    start: 'top 82%',
+                    once: true,
+                },
+            });
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach(t => {
+                if (t.trigger === ref.current) t.kill();
+            });
+        };
+    }, []);
+
+    return ref;
+};
+
+export const useClipReveal = (direction: 'up' | 'down' | 'left' | 'right' = 'up', options?: { duration?: number; stagger?: number }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const children = ref.current.querySelectorAll('[data-reveal]');
+        const targets = children.length > 0 ? children : [ref.current];
+
+        if (prefersReducedMotion()) {
+            gsap.set(targets, { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' });
+            return;
+        }
+
+        const clipStart =
+            direction === 'up' ? 'inset(100% 0% 0% 0%)' :
+            direction === 'down' ? 'inset(0% 0% 100% 0%)' :
+            direction === 'left' ? 'inset(0% 100% 0% 0%)' :
+            'inset(0% 0% 0% 100%)';
+
+        gsap.set(targets, { opacity: 0, clipPath: clipStart });
+
+        gsap.to(targets, {
+            opacity: 1,
+            clipPath: 'inset(0% 0% 0% 0%)',
+            duration: options?.duration ?? 1,
+            stagger: options?.stagger ?? 0.1,
+            ease: 'power4.out',
+            scrollTrigger: {
+                trigger: ref.current,
+                start: 'top 82%',
+                once: true,
+            },
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach(t => {
+                if (t.trigger === ref.current) t.kill();
+            });
+        };
+    }, []);
+
+    return ref;
+};
+
+export const useRotateReveal = (options?: { duration?: number; stagger?: number }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const children = ref.current.querySelectorAll('[data-reveal]');
+        const targets = children.length > 0 ? children : [ref.current];
+
+        if (prefersReducedMotion()) {
+            gsap.set(targets, { opacity: 1, rotate: 0, y: 0, scale: 1 });
+            return;
+        }
+
+        gsap.set(targets, { opacity: 0, rotate: -3, y: 50, scale: 0.95, transformOrigin: 'left bottom' });
+
+        gsap.to(targets, {
+            opacity: 1,
+            rotate: 0,
+            y: 0,
+            scale: 1,
+            duration: options?.duration ?? 1,
+            stagger: options?.stagger ?? 0.1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: ref.current,
+                start: 'top 82%',
+                once: true,
+            },
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach(t => {
+                if (t.trigger === ref.current) t.kill();
+            });
+        };
+    }, []);
+
+    return ref;
+};
+
 export const useStickyNav = () => {
     const [scrolled, setScrolled] = useState(false);
     const scrolledRef = useRef(false);

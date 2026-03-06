@@ -1,5 +1,5 @@
 import { Check, ArrowRight, Sparkles, Bot, Smartphone, Brain } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useDirectionalReveal } from '../../hooks/use-animations';
 import { appDevelopmentFeatures, subscriptionPlans, aiAgentFeatures, aiAgentStats } from '../../data/pricing';
 
 const SectionDivider = ({ number, title, subtitle }: { number: string; title: string; subtitle: string }) => (
@@ -20,7 +20,7 @@ const SectionDivider = ({ number, title, subtitle }: { number: string; title: st
 );
 
 export const PricingSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.1 });
+    const revealRef = useDirectionalReveal({ stagger: 0.1 });
 
     return (
         <section id="pricing" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
