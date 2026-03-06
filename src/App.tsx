@@ -6,7 +6,6 @@ import { TelegramFab } from './components/ui/telegram-fab';
 import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Preloader } from './components/ui/preloader';
-import { SoundProvider } from './hooks/use-sound';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
@@ -143,7 +142,7 @@ const App = () => {
     }, []);
 
     return (
-        <SoundProvider>
+        <>
             <Preloader />
             <ScrollProgress />
             <a href="#main-content" className="skip-link">
@@ -181,7 +180,7 @@ const App = () => {
             </main>
             <TelegramFab />
 
-        </SoundProvider>
+        </>
     );
 };
 
