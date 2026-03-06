@@ -5,7 +5,6 @@ import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
 import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
-import { CustomCursor } from './components/ui/custom-cursor';
 import { Preloader } from './components/ui/preloader';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
@@ -143,7 +142,6 @@ const App = () => {
     return (
         <>
             <Preloader />
-            <CustomCursor />
             <ScrollProgress />
             <a href="#main-content" className="skip-link">
                 Перейти к содержимому
