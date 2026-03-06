@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react';
-import type { Agent, Particle, Drone, Roomba, Toast, IsometricOfficeProps } from './office-config';
+import type { Agent, Particle, Drone, Roomba, Toast, OfficeCat, IsometricOfficeProps } from './office-config';
 import type { LOD } from './office-config';
 import { MAX_DPR, detectLOD } from './office-config';
 import { buildLayout, updateAgents } from './office-agents';
@@ -9,7 +9,7 @@ import {
     drawDesk, drawChair, drawPerson, drawParticle, drawConnections,
     drawWhiteboard, drawClock, drawWifiRouter, drawRoomba,
     drawToast, drawWaterCooler, drawCables, drawBookshelf, drawDrone,
-    drawDeskAccessories,
+    drawDeskAccessories, drawOfficeCat, drawNeonSign,
 } from './office-renderer';
 
 function createDrone(W: number, H: number): Drone {
@@ -35,6 +35,70 @@ function createRoomba(W: number, H: number): Roomba {
         turnTimer: 3 + Math.random() * 4,
         ledPhase: Math.random() * Math.PI * 2,
     };
+}
+
+function createCat(W: number, H: number): OfficeCat {
+    const wallBot = H * 0.30;
+    const floorBot = H * 0.93;
+    const divX = W * 0.54;
+    const rR = W * 0.96;
+    return {
+        x: divX + (rR - divX) * 0.5,
+        y: wallBot + (floorBot - wallBot) * 0.7,
+        targetX: divX + (rR - divX) * 0.3,
+        targetY: wallBot + (floorBot - wallBot) * 0.65,
+        state: 'sit',
+        stateTimer: 3 + Math.random() * 5,
+        direction: 1,
+        tailPhase: Math.random() * Math.PI * 2,
+    };
+}
+
+function updateCat(cat: OfficeCat, dt: number, W: number, H: number) {
+    const wallBot = H * 0.30;
+    const floorBot = H * 0.93;
+    const divX = W * 0.54;
+    const rR = W * 0.96;
+
+    cat.stateTimer -= dt;
+    if (cat.stateTimer <= 0) {
+        const states: OfficeCat['state'][] = ['walk', 'sit', 'sleep', 'groom'];
+        const weights = [0.3, 0.3, 0.25, 0.15];
+        let r = Math.random(), acc = 0;
+        let newState: OfficeCat['state'] = 'sit';
+        for (let i = 0; i < states.length; i++) {
+            acc += weights[i];
+            if (r < acc) { newState = states[i]; break; }
+        }
+        cat.state = newState;
+        cat.stateTimer = newState === 'walk' ? 2 + Math.random() * 3
+            : newState === 'sleep' ? 5 + Math.random() * 8
+            : 3 + Math.random() * 4;
+
+        if (newState === 'walk') {
+            cat.targetX = divX + 15 + Math.random() * (rR - divX - 30);
+            cat.targetY = wallBot + (floorBot - wallBot) * (0.5 + Math.random() * 0.35);
+            cat.direction = cat.targetX > cat.x ? 1 : -1;
+        }
+    }
+
+    if (cat.state === 'walk') {
+        const dx = cat.targetX - cat.x;
+        const dy = cat.targetY - cat.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 2) {
+            const speed = 18 * dt;
+            cat.x += (dx / dist) * speed;
+            cat.y += (dy / dist) * speed;
+            cat.direction = dx > 0 ? 1 : -1;
+        } else {
+            cat.state = 'sit';
+            cat.stateTimer = 2 + Math.random() * 4;
+        }
+    }
+
+    cat.x = Math.max(divX + 10, Math.min(rR - 10, cat.x));
+    cat.y = Math.max(wallBot + 20, Math.min(floorBot - 5, cat.y));
 }
 
 function updateDrone(drone: Drone, dt: number, _t: number, W: number, H: number, deskPos: {x: number; y: number}[]) {
@@ -101,6 +165,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const pts = useRef<Particle[]>([]);
     const droneRef = useRef<Drone | null>(null);
     const roombaRef = useRef<Roomba | null>(null);
+    const catRef = useRef<OfficeCat | null>(null);
     const toastsRef = useRef<Toast[]>([]);
     const lastToastTime = useRef(0);
     const clk = useRef(0);
@@ -145,6 +210,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         sortedDesks.current = [...result.deskPositions].sort((a, b) => a.y - b.y);
         if (!droneRef.current) droneRef.current = createDrone(W, H);
         if (!roombaRef.current) roombaRef.current = createRoomba(W, H);
+        if (!catRef.current) catRef.current = createCat(W, H);
         lodRef.current = detectLOD(W);
     }, [niche.agentTeam]);
 
@@ -160,6 +226,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             pts.current = []; clk.current = 0;
             droneRef.current = createDrone(W, H);
             roombaRef.current = createRoomba(W, H);
+            catRef.current = createCat(W, H);
             toastsRef.current = [];
             invalidateCache();
         }
@@ -261,6 +328,12 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 drawWaterCooler(ctx, coolerX, coolerY, niche.color, t);
             }
 
+            if (lod !== 'low') {
+                const neonX = divX + (W * 0.96 - divX) * 0.5 - 23;
+                const neonY = wallBot * 0.2 + 2;
+                drawNeonSign(ctx, neonX, neonY, niche.color, t);
+            }
+
             const arcadeX = lL + (lR - lL) * 0.15;
             const arcadeY = wallBot + fH * 0.50;
             drawArcade(ctx, arcadeX, arcadeY, niche.color, t);
@@ -297,7 +370,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 drawChair(ctx, d.x, d.y, niche.color, d.isOrch);
                 drawDesk(ctx, d.x, d.y, niche.color, d.isOrch, isWorking, t, ph);
                 if (lod !== 'low') {
-                    drawDeskAccessories(ctx, d.x, d.y, d.isOrch, niche.color, agIdx);
+                    drawDeskAccessories(ctx, d.x, d.y, d.isOrch, niche.color, agIdx, t);
                 }
             }
 
@@ -312,6 +385,11 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             if (droneRef.current && !noMo.current && lod !== 'low') {
                 updateDrone(droneRef.current, dt, t, W, H, deskPos.current);
                 drawDrone(ctx, droneRef.current, niche.color, t);
+            }
+
+            if (catRef.current && !noMo.current && lod !== 'low') {
+                updateCat(catRef.current, dt, W, H);
+                drawOfficeCat(ctx, catRef.current, niche.color, t);
             }
 
             if (!noMo.current && t - lastToastTime.current > (lod === 'low' ? 6 : 4)) {
