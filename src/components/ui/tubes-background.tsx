@@ -164,8 +164,8 @@ export function TubesBackground() {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full z-0 pointer-events-none"
-      style={{ isolation: 'isolate', animation: 'tubesFadeIn 2s ease-out both' }}
+      className="fixed inset-0 w-full h-full z-[3] pointer-events-none"
+      style={{ isolation: 'isolate', animation: 'tubesFadeIn 2s ease-out both', mixBlendMode: 'screen' }}
     >
       <div className="absolute inset-0 w-full h-full pointer-events-none">
         <iframe
