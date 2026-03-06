@@ -336,7 +336,11 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
 
             const arcadeX = lL + (lR - lL) * 0.15;
             const arcadeY = wallBot + fH * 0.50;
-            drawArcade(ctx, arcadeX, arcadeY, niche.color, t);
+            let arcadePlayer: Agent | null = null;
+            for (let i = 1; i < agList.length; i++) {
+                if (agList[i].state === 'idle') { arcadePlayer = agList[i]; break; }
+            }
+            drawArcade(ctx, arcadeX, arcadeY, niche.color, t, arcadePlayer);
 
             const couchX = lL + (lR - lL) * 0.55;
             const couchY = wallBot + fH * 0.72;
