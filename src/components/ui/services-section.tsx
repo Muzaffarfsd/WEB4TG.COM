@@ -9,7 +9,7 @@ const services = [
     { icon: Dumbbell, title: "Фитнес", desc: "Абонементы, расписание, трекинг", href: "#pricing" },
     { icon: GraduationCap, title: "Образование", desc: "Курсы, прогресс, сертификаты", href: "#pricing" },
     { icon: Car, title: "Сервисы", desc: "Аренда, бронирование, такси", href: "#pricing" },
-    { icon: Bot, title: "AI-агент 24/7", desc: "Автоматическая поддержка, продажи и аналитика на 150+ языках — работает без выходных", large: true, href: "#ai-agent" },
+    { icon: Bot, title: "Мультиагентный AI", desc: "До 20 специализированных AI-агентов: продажи, поддержка, аналитика, логистика — команда работает 24/7", large: true, href: "#ai-agent" },
 ];
 
 export const ServicesSection = () => {

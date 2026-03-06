@@ -4,7 +4,9 @@ import {
     Brain, Clock,
     Zap, Globe, Volume2,
     ArrowUpRight,
-    Timer
+    Timer, Target, Shield,
+    Activity, Users, Package,
+    Mic, Sparkles
 } from 'lucide-react';
 import { niches, AUTOPLAY_STAGE_DURATION } from './ai-agent/data';
 import type { ChatMessage } from './ai-agent/data';
@@ -108,16 +110,16 @@ export const AiAgentSection = () => {
                 <div data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
-                        AI-Агент для вашего бизнеса
+                        Мультиагентная AI-система
                         <span className="w-8 h-px bg-[#8B5CF6]/40 ml-3" />
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.25rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
-                        Каждый неотвеченный чат —
+                        Не один агент, а
                         <br />
-                        <span className="italic gradient-text">потерянная продажа</span>
+                        <span className="italic gradient-text">команда до 20 AI-агентов</span>
                     </h2>
                     <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/50 mt-4 sm:mt-5 font-sans font-light leading-relaxed max-w-2xl mx-auto">
-                        Разрабатываем AI-агента <span className="text-white/80 font-medium">под ваш бизнес за 14 дней</span>. Он отвечает за 0.3 секунды, закрывает <span className="text-white/80 font-medium">73% диалогов в продажу</span> и работает когда ваши менеджеры спят.
+                        Разрабатываем <span className="text-white/80 font-medium">мультиагентную систему под ваш бизнес за 14–21 день</span>. Оркестратор координирует до 20 специализированных агентов: продажи, поддержка, аналитика, логистика, CRM — каждый делает своё дело, вместе закрывают <span className="text-white/80 font-medium">89% задач без менеджеров</span>.
                     </p>
                 </div>
 
@@ -170,27 +172,48 @@ export const AiAgentSection = () => {
                     <ResultPanel niche={niche} stage={stage} activeNiche={activeNiche} currentStage={currentStage} totalStages={stagesData.length} animKey={animKey} prevPropensity={prevPropensity} />
                 </div>
 
-                <div data-reveal className="mt-10 sm:mt-14 flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-                    {[
-                        { label: 'Gemini Flash/Pro', icon: Brain },
-                        { label: 'ElevenLabs v3', icon: Volume2 },
-                        { label: '17 AI-tools', icon: Zap },
-                        { label: '150+ языков', icon: Globe },
-                        { label: '0.3с ответ', icon: Timer },
-                        { label: '24/7', icon: Clock },
-                    ].map((t, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
-                            <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
-                            {t.label}
-                        </div>
-                    ))}
+                <div data-reveal className="mt-10 sm:mt-14">
+                    <p className="text-center text-[11px] sm:text-[12px] text-white/25 font-sans mb-3 tracking-wide uppercase">Архитектура мультиагентной системы</p>
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                        {[
+                            { label: 'Оркестратор', icon: Brain },
+                            { label: 'Sales-агент', icon: Target },
+                            { label: 'Support-агент', icon: Shield },
+                            { label: 'Аналитик', icon: Activity },
+                            { label: 'CRM-агент', icon: Users },
+                            { label: 'Логистика', icon: Package },
+                            { label: 'Голосовой агент', icon: Mic },
+                            { label: 'Контент-агент', icon: Sparkles },
+                        ].map((t, i) => (
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
+                                <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
+                                {t.label}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mt-2">
+                        {[
+                            { label: 'До 20 агентов', icon: Zap },
+                            { label: 'Gemini 2.5 Pro', icon: Brain },
+                            { label: 'ElevenLabs v3', icon: Volume2 },
+                            { label: '150+ языков', icon: Globe },
+                            { label: '0.3с ответ', icon: Timer },
+                            { label: '24/7', icon: Clock },
+                        ].map((t, i) => (
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
+                                <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
+                                {t.label}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div data-reveal className="mt-6 sm:mt-8 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
                     {[
-                        { value: '12+', label: 'агентов запущено' },
-                        { value: '47 000+', label: 'диалогов обработано' },
-                        { value: '89%', label: 'закрытий в продажу' },
+                        { value: '140+', label: 'агентов запущено' },
+                        { value: '280 000+', label: 'диалогов обработано' },
+                        { value: '89%', label: 'задач без менеджера' },
+                        { value: '20', label: 'агентов в одной системе' },
                     ].map((s, i) => (
                         <div key={i} className="text-center">
                             <div className="text-[clamp(1.1rem,2vw,1.4rem)] font-instrument-serif gradient-text font-normal">{s.value}</div>
@@ -201,7 +224,7 @@ export const AiAgentSection = () => {
 
                 <div data-reveal className="mt-8 sm:mt-10 text-center">
                     <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl text-[14px] sm:text-[15px] font-sans font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all duration-300 shadow-xl shadow-[#8B5CF6]/20 hover:shadow-[#8B5CF6]/30 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]">
-                        Запустить AI-агента за 14 дней
+                        Запустить мультиагентную систему
                         <ArrowUpRight className="w-[18px] h-[18px]" />
                     </a>
                     <p className="text-[12px] text-white/30 mt-3 font-sans">Бесплатная консультация 15 мин · NDA · Демо на ваших данных</p>

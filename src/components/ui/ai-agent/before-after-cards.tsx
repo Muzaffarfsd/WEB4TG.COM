@@ -14,7 +14,7 @@ export const BeforeAfterCards = ({ niche, activeNiche }: { niche: NicheScenario;
             <CheckCircle className="w-4 h-4 text-[#22c55e]/60 flex-shrink-0 mt-0.5" />
             <div>
                 <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] text-[#22c55e]/50 uppercase tracking-wider font-semibold">С AI-агентом</span>
+                    <span className="text-[10px] text-[#22c55e]/50 uppercase tracking-wider font-semibold">Мультиагентная система</span>
                     <span className="text-[9px] font-bold text-[#22c55e] bg-[#22c55e]/[0.08] rounded-full px-1.5 py-0.5">{niche.beforeAfter.afterMetric}</span>
                 </div>
                 <div className="text-[12px] text-white/60 leading-relaxed">{niche.beforeAfter.after}</div>

@@ -36,7 +36,7 @@ export const PricingSection = () => {
                         <span className="italic gradient-text">без сюрпризов</span>
                     </h2>
                     <p className="text-[clamp(0.8125rem,1.3vw,0.95rem)] text-white/50 mt-4 sm:mt-5 font-sans font-light max-w-xl mx-auto">
-                        Три понятных блока: разработка, подписка на поддержку и AI-агент
+                        Три понятных блока: разработка, подписка на поддержку и мультиагентная AI-система
                     </p>
                 </div>
 
@@ -193,7 +193,7 @@ export const PricingSection = () => {
                 {/* ═══════════════════════════════════════════════════ */}
                 {/* GROUP 3: AI-АГЕНТ */}
                 {/* ═══════════════════════════════════════════════════ */}
-                <SectionDivider number="03" title="AI-агент для вашего бизнеса" subtitle="Голосовой и текстовый помощник, который продаёт" />
+                <SectionDivider number="03" title="Мультиагентная AI-система" subtitle="До 20 специализированных агентов для вашего бизнеса" />
 
                 <div data-reveal className="relative overflow-hidden rounded-2xl glow-card border-[#22c55e]/10">
                     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#22c55e]/30 to-transparent" />
@@ -204,15 +204,15 @@ export const PricingSection = () => {
                     <div className="flex flex-wrap items-center gap-3 p-4 sm:p-6">
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-full py-1 px-3 font-sans uppercase tracking-wider">
                             <Bot className="w-3 h-3" />
-                            AI-Агент
+                            Мультиагентный AI
                         </span>
                         <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-medium text-white/60 border border-white/[0.08] rounded-full py-1 px-2.5 font-sans">
                             <Brain className="w-3 h-3 text-[#22c55e]/60" />
-                            Gemini + ElevenLabs
+                            До 20 агентов · Gemini 2.5 Pro · ElevenLabs
                         </span>
                         <div className="ml-auto">
                             <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] sm:text-[13px] font-medium font-sans bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:from-[#16a34a] hover:to-[#15803d] transition-all duration-300 shadow-lg shadow-[#22c55e]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]">
-                                Запустить агента
+                                Запустить систему
                                 <ArrowRight className="w-3.5 h-3.5" />
                             </a>
                         </div>
@@ -232,9 +232,9 @@ export const PricingSection = () => {
                         <div className="lg:w-[70%]">
                             <div className="grid sm:grid-cols-2 gap-3 text-[12px] sm:text-[13px]">
                                 {[
-                                    { icon: MessageSquare, text: "Продаёт, консультирует, записывает — 24/7 на 150+ языках" },
-                                    { icon: Brain, text: "SPIN-продажи, Чалдини, Challenger — автоматически" },
-                                    { icon: Zap, text: "17 AI-инструментов: корзина, оплата, CRM, бронирование" },
+                                    { icon: MessageSquare, text: "До 20 агентов: продажи, поддержка, аналитика, логистика — параллельно 24/7" },
+                                    { icon: Brain, text: "Оркестратор координирует команду агентов, каждый специализирован под свою задачу" },
+                                    { icon: Zap, text: "17 AI-инструментов: корзина, оплата, CRM, бронирование, голос" },
                                     { icon: BarChart3, text: "Аналитика: конверсия, LTV, propensity score в реальном времени" },
                                 ].map((f, i) => (
                                     <div key={i} className="flex items-start gap-2.5 text-white/70 font-sans font-light">

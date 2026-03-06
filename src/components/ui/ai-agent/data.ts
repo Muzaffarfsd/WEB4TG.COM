@@ -15,6 +15,11 @@ export interface ChatMessage {
     isVoice?: boolean;
 }
 
+export interface AgentInfo {
+    name: string;
+    role: string;
+}
+
 export interface NicheScenario {
     id: string;
     icon: typeof Bot;
@@ -22,6 +27,7 @@ export interface NicheScenario {
     shortName: string;
     agentName: string;
     agentRole: string;
+    agentTeam: AgentInfo[];
     color: string;
     gradient: string;
     stages: StageData[];
@@ -60,10 +66,18 @@ export const niches: NicheScenario[] = [
         shortName: 'Магазин',
         agentName: 'Лина',
         agentRole: 'Sales-агент',
+        agentTeam: [
+            { name: 'Лина', role: 'Sales-агент' },
+            { name: 'Макс', role: 'Склад и логистика' },
+            { name: 'Софи', role: 'Аналитик поведения' },
+            { name: 'Алекс', role: 'Cross-sell агент' },
+            { name: 'Нора', role: 'Support и возвраты' },
+            { name: 'Виктор', role: 'CRM-синхронизация' },
+        ],
         color: '#8B5CF6',
         gradient: 'from-[#8B5CF6] to-[#6D28D9]',
-        heroMetric: { value: '96.8%', label: 'конверсия в оплату', sub: 'vs 34% на обычном сайте' },
-        beforeAfter: { before: 'Клиент уходит с сайта — нет консультации', after: 'AI подбирает товар, закрывает в оплату за 3 минуты', afterMetric: '+185% конверсия' },
+        heroMetric: { value: '96.8%', label: 'конверсия в оплату', sub: '6 агентов работают вместе' },
+        beforeAfter: { before: 'Один менеджер не успевает — склад, подбор, оплата', after: '6 AI-агентов: подбор, склад, оплата, допродажа — параллельно за 3 мин', afterMetric: '+185% конверсия' },
         stages: [
             {
                 title: "Квалификация",
@@ -122,10 +136,17 @@ export const niches: NicheScenario[] = [
         shortName: 'Ресторан',
         agentName: 'Марк',
         agentRole: 'Консьерж',
+        agentTeam: [
+            { name: 'Марк', role: 'Консьерж-агент' },
+            { name: 'Алиса', role: 'Меню и рекомендации' },
+            { name: 'Кирилл', role: 'Логистика доставки' },
+            { name: 'Ева', role: 'Лояльность и бонусы' },
+            { name: 'Тимур', role: 'Аналитика заказов' },
+        ],
         color: '#f59e0b',
         gradient: 'from-[#f59e0b] to-[#d97706]',
-        heroMetric: { value: '+27%', label: 'средний чек', sub: 'с AI-рекомендациями сетов' },
-        beforeAfter: { before: 'Ночью и в выходные заказы теряются', after: 'AI принимает заказы 24/7, предлагает сеты и допродаёт', afterMetric: '+27% чек' },
+        heroMetric: { value: '+27%', label: 'средний чек', sub: '5 агентов координируют заказ' },
+        beforeAfter: { before: 'Ночью и в выходные заказы теряются', after: '5 AI-агентов: меню, оплата, доставка, бонусы — работают 24/7', afterMetric: '+27% чек' },
         stages: [
             {
                 title: "Умное меню",
@@ -184,10 +205,18 @@ export const niches: NicheScenario[] = [
         shortName: 'Салон',
         agentName: 'Софи',
         agentRole: 'Администратор',
+        agentTeam: [
+            { name: 'Софи', role: 'Администратор-агент' },
+            { name: 'Лера', role: 'Подбор мастера' },
+            { name: 'Дина', role: 'Голосовой агент' },
+            { name: 'Игорь', role: 'CRM и расписание' },
+            { name: 'Мила', role: 'Допродажи и уход' },
+            { name: 'Артём', role: 'Напоминания и лояльность' },
+        ],
         color: '#ec4899',
         gradient: 'from-[#ec4899] to-[#be185d]',
-        heroMetric: { value: '89%', label: 'записей без менеджера', sub: 'онлайн 24/7, даже ночью' },
-        beforeAfter: { before: 'Администратор не берёт трубку — клиент уходит к конкуренту', after: 'AI записывает мгновенно, подбирает мастера и допродаёт', afterMetric: '89% без менеджера' },
+        heroMetric: { value: '89%', label: 'записей без менеджера', sub: '6 агентов ведут клиента' },
+        beforeAfter: { before: 'Администратор не берёт трубку — клиент уходит к конкуренту', after: '6 AI-агентов: запись, подбор мастера, напоминания, допродажа — мгновенно', afterMetric: '89% без менеджера' },
         stages: [
             {
                 title: "Подбор мастера",
@@ -247,10 +276,17 @@ export const niches: NicheScenario[] = [
         shortName: 'Фитнес',
         agentName: 'Макс',
         agentRole: 'Консультант',
+        agentTeam: [
+            { name: 'Макс', role: 'Консультант-агент' },
+            { name: 'Яна', role: 'Подбор тренера' },
+            { name: 'Денис', role: 'Расписание и слоты' },
+            { name: 'Оля', role: 'Мотивация и retention' },
+            { name: 'Руслан', role: 'Аналитик прогресса' },
+        ],
         color: '#22c55e',
         gradient: 'from-[#22c55e] to-[#16a34a]',
-        heroMetric: { value: '73%', label: 'триалов → абонемент', sub: 'бесплатный визит = продажа' },
-        beforeAfter: { before: 'Звонят узнать цену — слышат прайс-лист и кладут трубку', after: 'AI квалифицирует цель, подбирает тариф, записывает на триал', afterMetric: '73% → абонемент' },
+        heroMetric: { value: '73%', label: 'триалов → абонемент', sub: '5 агентов ведут клиента к цели' },
+        beforeAfter: { before: 'Звонят узнать цену — слышат прайс-лист и кладут трубку', after: '5 AI-агентов: подбор, запись, мотивация, прогресс — полный цикл', afterMetric: '73% → абонемент' },
         stages: [
             {
                 title: "Цель клиента",

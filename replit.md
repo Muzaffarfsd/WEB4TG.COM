@@ -37,10 +37,10 @@ src/
       magnetic-button.tsx            - Plain link/button wrapper
       client-logos.tsx               - Two-row client logos marquee
       services-section.tsx           - Bento grid services (8 cards)
-      ai-agent-section.tsx           - Orchestrator for AI agent showcase (~14KB)
+      ai-agent-section.tsx           - Orchestrator for multi-agent AI showcase (~14KB)
       ai-agent/
-        data.ts                      - Niche data, interfaces, constants (~23KB)
-        phone-mockup.tsx             - iPhone mockup with chat UI (~10KB)
+        data.ts                      - Niche data with agentTeam arrays (5-6 agents per niche), interfaces, constants (~23KB)
+        phone-mockup.tsx             - iPhone mockup with chat UI, team avatars overlay (~10KB)
         propensity-bar.tsx           - Animated propensity bar (~1KB)
         before-after-cards.tsx       - Before/after comparison cards (~2KB)
         result-panel.tsx             - Hero metric + result cards panel (~5KB)

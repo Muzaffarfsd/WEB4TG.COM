@@ -89,14 +89,28 @@ export const PhoneMockup = ({ niche, activeNiche, allPreviousMessages, visibleMe
                                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#34C759] border-[1.5px] border-black" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-[12px] text-white/90 font-medium font-sans leading-tight">{niche.agentName}</div>
+                                <div className="text-[12px] text-white/90 font-medium font-sans leading-tight">{niche.agentName} <span className="text-white/30 font-normal">+ {niche.agentTeam.length - 1} агентов</span></div>
                                 <div className="flex items-center gap-1">
                                     <span className="text-[9px] text-white/30">{niche.agentRole}</span>
                                     <span className="text-[7px] text-white/12">·</span>
-                                    <span className="text-[9px] text-[#34C759]/80">онлайн</span>
+                                    <span className="text-[9px] text-[#34C759]/80">все онлайн</span>
                                 </div>
                             </div>
-                            <div className="px-1.5 py-0.5 rounded-full text-[7px] font-bold font-sans border text-white/20 flex-shrink-0" style={{ borderColor: `${niche.color}20`, backgroundColor: `${niche.color}06` }}>AI</div>
+                            <div className="px-1.5 py-0.5 rounded-full text-[7px] font-bold font-sans border text-white/20 flex-shrink-0" style={{ borderColor: `${niche.color}20`, backgroundColor: `${niche.color}06` }}>
+                                <span className="flex items-center gap-0.5">{niche.agentTeam.length} <span className="text-[6px]">AI</span></span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1.5 ml-[42px]">
+                            {niche.agentTeam.slice(0, 5).map((agent, i) => (
+                                <div key={i} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold font-sans border border-white/[0.08]" style={{ backgroundColor: `${niche.color}${15 + i * 5}`, color: 'rgba(255,255,255,0.7)', marginLeft: i > 0 ? '-4px' : '0', zIndex: 5 - i }}>
+                                    {agent.name[0]}
+                                </div>
+                            ))}
+                            {niche.agentTeam.length > 5 && (
+                                <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[6px] font-bold font-sans bg-white/[0.06] text-white/40 border border-white/[0.08]" style={{ marginLeft: '-4px' }}>
+                                    +{niche.agentTeam.length - 5}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="mx-3"><div className="h-px bg-white/[0.05]" /></div>
