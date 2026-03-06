@@ -262,7 +262,7 @@ const ResponsiveHeroBanner = () => {
                                 <span className="text-white/90"> Ваш бренд, ваши продажи — без комиссий.</span>
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4 relative z-[5]">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4">
                                 <MagneticButton
                                     href="https://t.me/w4tg_bot"
                                     target="_blank"
