@@ -3,7 +3,7 @@ import type { Agent, Particle } from './office-config';
 import {
     SKINS, HAIRS, SHIRTS, CYCLE,
     PH_WALK_TO_END, PH_WORK_END, PH_WALK_BACK_START, PH_WALK_BACK_END,
-    lerp, easeIO, clamp01,
+    lerp, easeIO, clamp01, detectLOD,
 } from './office-config';
 
 export function buildLayout(
@@ -14,13 +14,14 @@ export function buildLayout(
     const wallBot = H * 0.30;
     const floorBot = H * 0.93;
     const fH = floorBot - wallBot;
+    const lod = detectLOD(W);
 
     const wL = W * 0.07, wR = W * 0.52;
     const lL = W * 0.56, lR = W * 0.93;
 
-    const orchDesk = { x: (wL + wR) / 2, y: wallBot + fH * 0.12 };
+    const orchDesk = { x: (wL + wR) / 2, y: wallBot + fH * (lod === 'low' ? 0.15 : 0.12) };
 
-    const desks = [
+    const desksHigh = [
         { x: wL + (wR - wL) * 0.22, y: wallBot + fH * 0.40 },
         { x: wL + (wR - wL) * 0.78, y: wallBot + fH * 0.40 },
         { x: wL + (wR - wL) * 0.22, y: wallBot + fH * 0.68 },
@@ -28,7 +29,15 @@ export function buildLayout(
         { x: wL + (wR - wL) * 0.50, y: wallBot + fH * 0.54 },
     ];
 
-    const lounges = [
+    const desksMobile = [
+        { x: wL + (wR - wL) * 0.25, y: wallBot + fH * 0.42 },
+        { x: wL + (wR - wL) * 0.75, y: wallBot + fH * 0.42 },
+        { x: wL + (wR - wL) * 0.50, y: wallBot + fH * 0.70 },
+    ];
+
+    const desks = lod === 'low' ? desksMobile : desksHigh;
+
+    const loungesHigh = [
         { x: lL + (lR - lL) * 0.18, y: wallBot + fH * 0.30 },
         { x: lL + (lR - lL) * 0.55, y: wallBot + fH * 0.58 },
         { x: lL + (lR - lL) * 0.85, y: wallBot + fH * 0.35 },
@@ -36,11 +45,25 @@ export function buildLayout(
         { x: lL + (lR - lL) * 0.70, y: wallBot + fH * 0.55 },
     ];
 
+    const loungesMobile = [
+        { x: lL + (lR - lL) * 0.30, y: wallBot + fH * 0.35 },
+        { x: lL + (lR - lL) * 0.70, y: wallBot + fH * 0.55 },
+        { x: lL + (lR - lL) * 0.50, y: wallBot + fH * 0.70 },
+    ];
+
+    const lounges = lod === 'low' ? loungesMobile : loungesHigh;
+
+    const maxAgents = lod === 'low' ? Math.min(team.length, 4) : team.length;
+
     const allDesks: { x: number; y: number; isOrch: boolean }[] = [
         { x: orchDesk.x, y: orchDesk.y, isOrch: true },
     ];
 
-    const agents = team.map((a, i) => {
+    const agents = team.slice(0, maxAgents).map((a, i) => {
+        const glasses = i % 3 === 1;
+        const headphones = i % 5 === 2;
+        const hairStyle = i % 5;
+
         if (i === 0) {
             return {
                 name: a.name, role: a.role,
@@ -52,12 +75,13 @@ export function buildLayout(
                 walkT: 0, workProgress: 0,
                 skin: SKINS[0], hair: HAIRS[0], shirt: SHIRTS[0],
                 cycleOffset: 0,
+                glasses: true, headphones: false, hairStyle: 0,
             };
         }
         const di = (i - 1) % desks.length;
         const li = (i - 1) % lounges.length;
         allDesks.push({ x: desks[di].x, y: desks[di].y, isOrch: false });
-        const stagger = ((i - 1) / Math.max(1, team.length - 2));
+        const stagger = ((i - 1) / Math.max(1, maxAgents - 2));
         return {
             name: a.name, role: a.role,
             deskX: desks[di].x, deskY: desks[di].y,
@@ -70,6 +94,7 @@ export function buildLayout(
             hair: HAIRS[i % HAIRS.length],
             shirt: SHIRTS[i % SHIRTS.length],
             cycleOffset: stagger * CYCLE,
+            glasses, headphones, hairStyle,
         };
     });
 

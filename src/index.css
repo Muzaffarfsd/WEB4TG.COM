@@ -457,6 +457,22 @@ section {
   }
 }
 
+.office-canvas-wrap {
+  aspect-ratio: 16/9;
+}
+
+@media (max-width: 639px) {
+  .office-canvas-wrap {
+    aspect-ratio: 4/3;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 899px) {
+  .office-canvas-wrap {
+    aspect-ratio: 3/2;
+  }
+}
+
 @media (max-width: 640px) {
   .glow-card,
   .glass-panel {

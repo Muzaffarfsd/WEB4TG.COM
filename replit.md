@@ -57,9 +57,9 @@ src/
       ai-agent/
         data.ts                      - Niche data with agentTeam arrays
         isometric-office.tsx         - Main isometric office component with drone, roomba, toast systems
-        office-config.ts             - Layout, colors, positions config + Drone/Roomba/Toast interfaces
-        office-agents.ts             - Agent movement logic
-        office-renderer.ts           - Canvas drawing: room, desks, agents, arcade, couch, vending, coffee table, whiteboard (kanban), clock, wifi router, roomba, toasts, water cooler, cables, bookshelf, drone, connections, particles
+        office-config.ts             - Layout, colors, positions config + Drone/Roomba/Toast interfaces + Agent (glasses/headphones/hairStyle fields)
+        office-agents.ts             - Agent movement logic + buildLayout (mobile-aware: fewer desks/lounges/agents on low LOD, wider spacing)
+        office-renderer.ts           - Canvas drawing: room, desks, chibi-style agents (gradient shading, ears, 5 hairstyles, glasses, headphones, cheek blush, eye detail w/ pupils+highlights, drop shadows), arcade, couch, vending, coffee table, whiteboard (kanban), clock, wifi router, roomba, toasts, water cooler, cables, bookshelf, drone, connections, particles
         phone-mockup.tsx             - iPhone mockup with chat UI
         propensity-bar.tsx           - Animated propensity bar
         before-after-cards.tsx       - Before/after comparison cards
@@ -142,7 +142,8 @@ npm start      # Express server only (requires dist/)
 
 ### Canvas Office Optimizations
 - **OffscreenCanvas static cache** (`renderStaticLayer`): wall, floor, bricks, tiles, grid, divider, zone labels, LED strips, window/sky/city, server rack shell, plant — rendered once and reused as `drawImage()` per frame
-- **LOD system** (detectLOD): 'high' (W≥700), 'medium' (400-699), 'low' (<400). On 'low': skip cables, clock, wifi router, bookshelf, water cooler, roomba, drone; larger grid step, no tile checkerboard, no light cones. On 'medium': double brick width
+- **LOD system** (detectLOD): 'high' (W≥700), 'medium' (400-699), 'low' (<400). On 'low': skip cables, clock, wifi router, bookshelf, water cooler, roomba, drone; larger grid step, no tile checkerboard, no light cones; fewer desks (3 vs 5), fewer agents (max 4), wider spacing. On 'medium': double brick width
+- **Responsive canvas aspect ratio**: CSS class `office-canvas-wrap` — 16/9 desktop, 3/2 tablet (640-899px), 4/3 mobile (<640px)
 - **DPR capped at MAX_DPR=2** — prevents 3x mobile from rendering 9x pixel count
 - **IntersectionObserver** pauses rAF when canvas is offscreen (threshold 0.05)
 - **Pre-sorted desk positions** stored in `sortedDesks.current` (sorted once on layout rebuild, not per frame)

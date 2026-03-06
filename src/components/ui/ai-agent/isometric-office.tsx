@@ -370,7 +370,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     }, [niche, activeNiche, rebuildLayout, invalidateCache]);
 
     return (
-        <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
+        <div className="relative w-full office-canvas-wrap">
             <canvas
                 ref={cvRef}
                 className="w-full h-full rounded-xl"

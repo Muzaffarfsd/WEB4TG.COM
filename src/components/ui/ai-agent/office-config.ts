@@ -21,6 +21,9 @@ export interface Agent {
     hair: string;
     shirt: string;
     cycleOffset: number;
+    glasses: boolean;
+    headphones: boolean;
+    hairStyle: number;
 }
 
 export interface Particle {

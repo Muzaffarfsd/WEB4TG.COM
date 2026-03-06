@@ -612,128 +612,214 @@ export function drawPerson(
     ctx: CanvasRenderingContext2D,
     a: Agent, col: string, isOrch: boolean, t: number, isWalking: boolean, noMotion: boolean,
 ) {
+    const sc = isOrch ? 1.25 : 1;
     const bob = noMotion ? 0 : (isWalking
         ? Math.abs(Math.sin(a.walkT * 8 * Math.PI)) * 2.5
-        : Math.sin(t * 1.5 + a.phase) * 1);
-    const hR = isOrch ? 10 : 8;
-    const hY = a.y - (isOrch ? 24 : 18) - bob;
+        : Math.sin(t * 1.5 + a.phase) * 0.8);
+    const hR = 9 * sc;
+    const hY = a.y - 22 * sc - bob;
     const hX = a.x;
 
-    const bW = isOrch ? 18 : 14, bH2 = isOrch ? 14 : 11;
-    const bY = hY + hR - 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.beginPath(); ctx.ellipse(hX, a.y + 2, 10 * sc, 3, 0, 0, Math.PI * 2); ctx.fill();
 
-    const shG = ctx.createLinearGradient(hX, bY, hX, bY + bH2);
+    const bW = 16 * sc, bH = 13 * sc;
+    const bY = hY + hR - 1;
+
+    const shG = ctx.createLinearGradient(hX - bW / 2, bY, hX + bW / 2, bY + bH);
     shG.addColorStop(0, a.shirt);
-    shG.addColorStop(1, ha(a.shirt, 0.55));
+    shG.addColorStop(0.7, ha(a.shirt, 0.7));
+    shG.addColorStop(1, ha(a.shirt, 0.45));
     ctx.fillStyle = shG;
-    ctx.beginPath(); ctx.roundRect(hX - bW / 2, bY, bW, bH2, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(hX - bW / 2, bY, bW, bH, [4 * sc, 4 * sc, 2 * sc, 2 * sc]); ctx.fill();
 
-    ctx.fillStyle = ha(a.shirt, 0.7);
-    ctx.beginPath(); ctx.roundRect(hX - (bW + 4) / 2, bY, bW + 4, 5, 2); ctx.fill();
+    ctx.fillStyle = ha(a.shirt, 0.85);
+    ctx.beginPath();
+    ctx.roundRect(hX - (bW + 4 * sc) / 2, bY - 1, bW + 4 * sc, 6 * sc, [3 * sc, 3 * sc, 0, 0]);
+    ctx.fill();
 
-    ctx.fillStyle = ha(a.shirt, 0.3);
-    ctx.fillRect(hX - 0.5, bY + 3, 1, bH2 - 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillRect(hX - bW / 2 + 1, bY + 1, bW / 2 - 2, bH - 2);
+
+    ctx.fillStyle = a.skin;
+    ctx.beginPath();
+    ctx.moveTo(hX - 2.5 * sc, bY + 1);
+    ctx.lineTo(hX + 2.5 * sc, bY + 1);
+    ctx.lineTo(hX + 1.5 * sc, bY + 5 * sc);
+    ctx.lineTo(hX - 1.5 * sc, bY + 5 * sc);
+    ctx.closePath(); ctx.fill();
 
     if (isWalking && !noMotion) {
         const legPhase = Math.sin(a.walkT * 8 * Math.PI);
         [-1, 1].forEach(side => {
             const lOff = side * legPhase * 3;
             ctx.fillStyle = '#1a1830';
-            ctx.fillRect(hX + side * 3 - 2, bY + bH2, 4, 9 + lOff * side * 0.3);
-            ctx.fillStyle = '#151225';
-            ctx.beginPath(); ctx.ellipse(hX + side * 3, bY + bH2 + 9 + lOff * side * 0.3, 3, 2, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(hX + side * 3.5 * sc - 2.5 * sc, bY + bH, 5 * sc, 10 * sc + lOff * side * 0.3, 2); ctx.fill();
+            ctx.fillStyle = '#222040';
+            ctx.beginPath(); ctx.ellipse(hX + side * 3.5 * sc, bY + bH + 10 * sc + lOff * side * 0.3, 4 * sc, 2 * sc, 0, 0, Math.PI * 2); ctx.fill();
         });
 
         [-1, 1].forEach(side => {
             const aOff = -side * legPhase * 0.3;
             ctx.save();
-            ctx.translate(hX + side * (bW / 2 + 1), bY + 4);
+            ctx.translate(hX + side * (bW / 2 + 1), bY + 3 * sc);
             ctx.rotate(aOff);
-            ctx.fillStyle = a.shirt;
-            ctx.beginPath(); ctx.roundRect(-2.5, 0, 5, bH2 * 0.55, 2); ctx.fill();
+            const armG = ctx.createLinearGradient(0, 0, 0, bH * 0.5);
+            armG.addColorStop(0, a.shirt);
+            armG.addColorStop(1, ha(a.shirt, 0.6));
+            ctx.fillStyle = armG;
+            ctx.beginPath(); ctx.roundRect(-3 * sc, 0, 6 * sc, bH * 0.5, 3 * sc); ctx.fill();
             ctx.fillStyle = a.skin;
-            ctx.beginPath(); ctx.arc(0, bH2 * 0.55 + 1, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, bH * 0.5 + 1, 3 * sc, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         });
     } else {
         [-1, 1].forEach(side => {
             ctx.save();
-            ctx.translate(hX + side * (bW / 2 + 1), bY + 4);
-            const rot = a.state === 'working' ? (Math.sin(t * 3.5 + a.phase + side) * 0.15) : 0;
+            ctx.translate(hX + side * (bW / 2 + 1), bY + 3 * sc);
+            const rot = a.state === 'working' ? (Math.sin(t * 3.5 + a.phase + side) * 0.12) : 0;
             ctx.rotate(rot);
-            ctx.fillStyle = a.shirt;
-            ctx.beginPath(); ctx.roundRect(-2.5, 0, 5, bH2 * 0.5, 2); ctx.fill();
+            const armG = ctx.createLinearGradient(0, 0, 0, bH * 0.5);
+            armG.addColorStop(0, a.shirt);
+            armG.addColorStop(1, ha(a.shirt, 0.6));
+            ctx.fillStyle = armG;
+            ctx.beginPath(); ctx.roundRect(-3 * sc, 0, 6 * sc, bH * 0.5, 3 * sc); ctx.fill();
             ctx.fillStyle = a.skin;
-            ctx.beginPath(); ctx.arc(0, bH2 * 0.5 + 1, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, bH * 0.5 + 1, 3 * sc, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         });
     }
 
-    const hdG = ctx.createRadialGradient(hX - 1, hY - 2, 0, hX, hY, hR);
-    hdG.addColorStop(0, a.skin);
-    hdG.addColorStop(0.8, ha(a.skin, 0.88));
+    const hdG = ctx.createRadialGradient(hX - 2 * sc, hY - 2 * sc, 0, hX, hY, hR * 1.1);
+    hdG.addColorStop(0, '#fff4');
+    hdG.addColorStop(0.15, a.skin);
+    hdG.addColorStop(0.85, ha(a.skin, 0.85));
+    hdG.addColorStop(1, ha(a.skin, 0.7));
     ctx.fillStyle = hdG;
     ctx.beginPath(); ctx.arc(hX, hY, hR, 0, Math.PI * 2); ctx.fill();
 
+    ctx.strokeStyle = ha(a.skin, 0.3);
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(hX, hY, hR, 0, Math.PI * 2); ctx.stroke();
+
+    const earR = 2.5 * sc;
+    ctx.fillStyle = a.skin;
+    ctx.beginPath(); ctx.arc(hX - hR + 1, hY + 1, earR, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hX + hR - 1, hY + 1, earR, 0, Math.PI * 2); ctx.fill();
+
+    const hs = a.hairStyle % 5;
+    const hairDark = ha(a.hair, 0.8);
     ctx.fillStyle = a.hair;
-    const hs = Math.floor(a.phase * 3) % 3;
     if (hs === 0) {
         ctx.beginPath();
-        ctx.ellipse(hX, hY - hR * 0.35, hR + 1.5, hR * 0.7, 0, Math.PI, Math.PI * 2); ctx.fill();
-        ctx.fillRect(hX + hR - 1, hY - hR * 0.35, 2.5, hR * 0.6);
+        ctx.ellipse(hX, hY - hR * 0.3, hR + 2 * sc, hR * 0.75, 0, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = hairDark;
+        ctx.beginPath();
+        ctx.ellipse(hX + 3 * sc, hY - hR * 0.4, hR * 0.4, hR * 0.3, 0.2, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = a.hair;
+        ctx.fillRect(hX + hR - 0.5, hY - hR * 0.3, 3 * sc, hR * 0.7);
     } else if (hs === 1) {
         ctx.beginPath();
-        ctx.arc(hX, hY - 1, hR + 1, Math.PI + 0.4, -0.4); ctx.fill();
+        ctx.arc(hX, hY - 1, hR + 1.5 * sc, Math.PI + 0.3, -0.3); ctx.fill();
+        ctx.fillStyle = hairDark;
+        ctx.beginPath();
+        ctx.ellipse(hX, hY - hR * 0.5, hR * 0.6, hR * 0.25, -0.15, Math.PI, Math.PI * 2); ctx.fill();
+    } else if (hs === 2) {
+        ctx.beginPath();
+        ctx.ellipse(hX, hY - hR * 0.35, hR + 2.5 * sc, hR * 0.65, 0, Math.PI + 0.4, -0.4); ctx.fill();
+        ctx.fillStyle = a.hair;
+        ctx.fillRect(hX - hR - 1.5 * sc, hY - hR * 0.35, 3 * sc, hR);
+        ctx.fillRect(hX + hR - 1 * sc, hY - hR * 0.35, 3 * sc, hR);
+    } else if (hs === 3) {
+        ctx.beginPath();
+        ctx.ellipse(hX, hY - hR * 0.25, hR + 1 * sc, hR * 0.8, 0, Math.PI, Math.PI * 2); ctx.fill();
+        for (let spike = 0; spike < 5; spike++) {
+            const sA = Math.PI + 0.6 + (spike / 4) * (Math.PI - 1.2);
+            ctx.beginPath();
+            ctx.moveTo(hX + Math.cos(sA) * (hR + 1), hY + Math.sin(sA) * (hR + 1));
+            ctx.lineTo(hX + Math.cos(sA) * (hR + 5 * sc), hY + Math.sin(sA) * (hR + 5 * sc) - 2);
+            ctx.lineTo(hX + Math.cos(sA + 0.25) * (hR + 1), hY + Math.sin(sA + 0.25) * (hR + 1));
+            ctx.closePath(); ctx.fill();
+        }
     } else {
         ctx.beginPath();
-        ctx.ellipse(hX, hY - hR * 0.4, hR + 2, hR * 0.6, 0, Math.PI + 0.5, -0.5); ctx.fill();
-        ctx.fillRect(hX - hR - 1, hY - hR * 0.4, 2.5, hR * 0.9);
-        ctx.fillRect(hX + hR - 1, hY - hR * 0.4, 2.5, hR * 0.9);
+        ctx.arc(hX, hY, hR + 1.5 * sc, Math.PI + 0.2, -0.2); ctx.fill();
+        ctx.fillRect(hX - hR - 1 * sc, hY - 2, 2.5 * sc, hR + 4);
+        ctx.fillRect(hX + hR - 1 * sc, hY - 2, 2.5 * sc, hR + 4);
+        ctx.beginPath();
+        ctx.ellipse(hX - hR * 0.3, hY + hR + 1, hR * 0.5, 3 * sc, -0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(hX + hR * 0.3, hY + hR + 1, hR * 0.5, 3 * sc, 0.3, 0, Math.PI * 2); ctx.fill();
     }
 
-    const eY = hY + 1, eO = hR * 0.3;
-    ctx.fillStyle = '#1a1520';
-    ctx.fillRect(hX - eO - 1.8, eY, 3, 2.5);
-    ctx.fillRect(hX + eO - 1, eY, 3, 2.5);
+    const eY = hY + 1 * sc, eO = hR * 0.32;
+    const eW = 3.5 * sc, eH = 3 * sc;
     ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(hX - eO - 0.2, eY + 0.8, 0.6, 0, Math.PI * 2);
-    ctx.arc(hX + eO + 0.4, eY + 0.8, 0.6, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(hX - eO, eY, eW / 2, eH / 2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(hX + eO, eY, eW / 2, eH / 2, 0, 0, Math.PI * 2); ctx.fill();
+
+    const lookX = a.state === 'working' ? -0.3 : (isWalking ? Math.sin(a.walkT * 4) * 0.5 : 0);
+    ctx.fillStyle = '#1a1520';
+    ctx.beginPath(); ctx.arc(hX - eO + lookX, eY + 0.3, 1.5 * sc, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hX + eO + lookX, eY + 0.3, 1.5 * sc, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.arc(hX - eO - 0.5 + lookX, eY - 0.3, 0.5 * sc, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hX + eO - 0.5 + lookX, eY - 0.3, 0.5 * sc, 0, Math.PI * 2); ctx.fill();
+
+    if (a.glasses) {
+        ctx.strokeStyle = 'rgba(200,200,255,0.5)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.ellipse(hX - eO, eY, eW / 2 + 1, eH / 2 + 0.5, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(hX + eO, eY, eW / 2 + 1, eH / 2 + 0.5, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(hX - eO + eW / 2 + 1, eY); ctx.lineTo(hX + eO - eW / 2 - 1, eY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(hX - eO - eW / 2 - 1, eY); ctx.lineTo(hX - hR + 1, eY - 1); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(hX + eO + eW / 2 + 1, eY); ctx.lineTo(hX + hR - 1, eY - 1); ctx.stroke();
+    }
+
+    if (a.headphones) {
+        ctx.strokeStyle = 'rgba(80,70,100,0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(hX, hY - 2, hR + 2.5 * sc, Math.PI + 0.5, -0.5); ctx.stroke();
+        ctx.fillStyle = 'rgba(60,50,80,0.9)';
+        ctx.beginPath(); ctx.roundRect(hX - hR - 3.5 * sc, hY - 2, 4 * sc, 7 * sc, 2); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(hX + hR - 0.5 * sc, hY - 2, 4 * sc, 7 * sc, 2); ctx.fill();
+    }
 
     if (a.state === 'idle') {
         ctx.fillStyle = ha(a.skin, 0.6);
-        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.4, 1.8, 0, Math.PI); ctx.fill();
-        ctx.strokeStyle = ha(a.skin, 0.3);
-        ctx.lineWidth = 0.3;
-        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.4, 1.8, 0, Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.42, 2 * sc, 0, Math.PI); ctx.fill();
     } else if (a.state === 'working') {
-        ctx.fillStyle = ha(a.skin, 0.5);
+        ctx.strokeStyle = ha(a.skin, 0.5);
+        ctx.lineWidth = 0.8;
         ctx.beginPath();
-        ctx.moveTo(hX - 1.2, hY + hR * 0.45);
-        ctx.lineTo(hX + 1.2, hY + hR * 0.45);
+        ctx.moveTo(hX - 1.5 * sc, hY + hR * 0.42);
+        ctx.lineTo(hX + 1.5 * sc, hY + hR * 0.42);
         ctx.stroke();
 
         if (!noMotion) {
             const blink = Math.sin(t * 0.8 + a.phase * 3);
             if (blink > 0.97) {
-                ctx.strokeStyle = ha(col, 0.3); ctx.lineWidth = 0.5;
+                ctx.strokeStyle = a.skin; ctx.lineWidth = eH;
                 ctx.beginPath();
-                ctx.moveTo(hX - eO - 2, eY + 1.5); ctx.lineTo(hX - eO + 1, eY + 1.5);
-                ctx.moveTo(hX + eO - 1.5, eY + 1.5); ctx.lineTo(hX + eO + 1.5, eY + 1.5);
+                ctx.moveTo(hX - eO - eW / 2, eY); ctx.lineTo(hX - eO + eW / 2, eY);
+                ctx.moveTo(hX + eO - eW / 2, eY); ctx.lineTo(hX + eO + eW / 2, eY);
                 ctx.stroke();
             }
         }
     } else {
         ctx.fillStyle = ha(a.skin, 0.6);
-        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.45, 1.2, 0, Math.PI); ctx.fill();
+        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.42, 1.5 * sc, 0, Math.PI); ctx.fill();
     }
 
+    ctx.fillStyle = ha(a.skin, 0.35);
+    ctx.beginPath(); ctx.arc(hX - hR * 0.4, hY + hR * 0.15, 2 * sc, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hX + hR * 0.4, hY + hR * 0.15, 2 * sc, 0, Math.PI * 2); ctx.fill();
+
     if (a.state === 'working' && !noMotion && Math.sin(t * 7 + a.phase) > 0.85) {
-        ctx.fillStyle = ha(col, 0.45);
-        ctx.font = '600 8px Inter, sans-serif';
+        ctx.fillStyle = ha(col, 0.5);
+        ctx.font = `600 ${9 * sc}px Inter, sans-serif`;
         ctx.textAlign = 'center';
-        ctx.fillText('···', hX, hY - hR - 3);
+        ctx.fillText('···', hX, hY - hR - 4 * sc);
         ctx.textAlign = 'start';
     }
 
@@ -747,52 +833,66 @@ export function drawPerson(
                 const sx = hX + hR + 3 + Math.cos(sAng) * sDist;
                 const sy = hY - hR + 1 + Math.sin(sAng) * sDist;
                 ctx.fillStyle = ha('#ffd700', 0.4 * (1 - sparkAlpha));
-                ctx.beginPath(); ctx.arc(sx, sy, 1, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(sx, sy, 1.2, 0, Math.PI * 2); ctx.fill();
             }
         }
     }
 
     if (isOrch) {
-        ctx.strokeStyle = ha(col, 0.4); ctx.lineWidth = 2;
+        ctx.strokeStyle = ha(col, 0.35); ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(hX, hY, hR + 5, 0, Math.PI * 2); ctx.stroke();
 
+        const crY = hY - hR - 4 * sc;
         ctx.fillStyle = '#ffd700';
         ctx.beginPath();
-        ctx.moveTo(hX, hY - hR - 8);
-        ctx.lineTo(hX - 5, hY - hR - 2);
-        ctx.lineTo(hX - 2, hY - hR - 3);
-        ctx.lineTo(hX, hY - hR);
-        ctx.lineTo(hX + 2, hY - hR - 3);
-        ctx.lineTo(hX + 5, hY - hR - 2);
+        ctx.moveTo(hX, crY - 6 * sc);
+        ctx.lineTo(hX - 6 * sc, crY);
+        ctx.lineTo(hX - 3 * sc, crY - 1);
+        ctx.lineTo(hX - 2 * sc, crY + 2);
+        ctx.lineTo(hX, crY);
+        ctx.lineTo(hX + 2 * sc, crY + 2);
+        ctx.lineTo(hX + 3 * sc, crY - 1);
+        ctx.lineTo(hX + 6 * sc, crY);
         ctx.closePath(); ctx.fill();
 
-        ctx.globalAlpha = 0.12;
-        ctx.beginPath(); ctx.arc(hX, hY, hR + 8, 0, Math.PI * 2);
+        ctx.fillStyle = ha('#ffd700', 0.3);
+        ctx.beginPath();
+        ctx.moveTo(hX, crY - 6 * sc);
+        ctx.lineTo(hX + 6 * sc, crY);
+        ctx.lineTo(hX + 2 * sc, crY + 2);
+        ctx.lineTo(hX, crY);
+        ctx.closePath(); ctx.fill();
+
+        ctx.globalAlpha = 0.1;
+        ctx.beginPath(); ctx.arc(hX, hY, hR + 10, 0, Math.PI * 2);
         ctx.fillStyle = col; ctx.fill();
         ctx.globalAlpha = 1;
     }
 
     if (a.state === 'working') {
         ctx.fillStyle = '#22c55e';
-        ctx.beginPath(); ctx.arc(hX + hR + 3, hY - hR + 1, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(hX + hR + 3, hY - hR + 1, 4.5 * sc, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = '#050505'; ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.fillStyle = 'white'; ctx.font = 'bold 5px Inter, sans-serif';
-        ctx.textAlign = 'center'; ctx.fillText('✓', hX + hR + 3, hY - hR + 3); ctx.textAlign = 'start';
+        ctx.fillStyle = 'white'; ctx.font = `bold ${6 * sc}px Inter, sans-serif`;
+        ctx.textAlign = 'center'; ctx.fillText('✓', hX + hR + 3, hY - hR + 3.5); ctx.textAlign = 'start';
     }
 
     ctx.textAlign = 'center';
 
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.font = `bold ${isOrch ? 11 : 10}px Inter, sans-serif`;
-    ctx.fillText(a.name, hX + 1, hY - hR - (isOrch ? 14 : 8) + 1);
-    ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.92 : 0.72})`;
-    ctx.fillText(a.name, hX, hY - hR - (isOrch ? 14 : 8));
+    const labelY = hY - hR - (isOrch ? 18 : 10) * sc;
+    const roleY = labelY - 10 * sc;
 
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.font = `600 ${isOrch ? 8 : 7}px Inter, sans-serif`;
-    ctx.fillText(a.role, hX + 1, hY - hR - (isOrch ? 24 : 17) + 1);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.font = `bold ${(isOrch ? 11 : 10) * sc}px Inter, sans-serif`;
+    ctx.fillText(a.name, hX + 0.8, labelY + 1);
+    ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.92 : 0.75})`;
+    ctx.fillText(a.name, hX, labelY);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.font = `600 ${(isOrch ? 8 : 7) * sc}px Inter, sans-serif`;
+    ctx.fillText(a.role, hX + 0.8, roleY + 1);
     ctx.fillStyle = ha(col, 0.7);
-    ctx.fillText(a.role, hX, hY - hR - (isOrch ? 24 : 17));
+    ctx.fillText(a.role, hX, roleY);
     ctx.textAlign = 'start';
 }
 
