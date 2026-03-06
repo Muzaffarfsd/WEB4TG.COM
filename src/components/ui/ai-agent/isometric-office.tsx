@@ -18,7 +18,15 @@ interface Agent {
     state: 'idle' | 'walk_to_desk' | 'working' | 'walk_back';
     walkT: number;
     workProgress: number;
+    skin: string;
+    hair: string;
+    shirt: string;
+    cycleOffset: number;
 }
+
+const SKINS = ['#f0d0b0', '#d4a878', '#c49070', '#e8c4a0', '#b87848', '#f2dcc8'];
+const HAIRS = ['#1a1420', '#3a2210', '#8a6030', '#c49050', '#582010', '#222'];
+const SHIRTS = ['#6d5acd', '#4a90d9', '#2ecc71', '#e67e22', '#e74c3c', '#1abc9c', '#9b59b6', '#f39c12'];
 
 interface Particle {
     fx: number; fy: number; tx: number; ty: number;
@@ -32,18 +40,19 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeIO = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
 
-const CYCLE = 10;
-const PHASE_IDLE_END = 0.15;
-const PHASE_ALERT_END = 0.20;
-const PHASE_WALK_TO = 0.38;
-const PHASE_WORK_END = 0.68;
-const PHASE_RESULT_END = 0.73;
-const PHASE_WALK_BACK = 0.90;
+const CYCLE = 14;
+const PH_WALK_TO_START = 0.0;
+const PH_WALK_TO_END = 0.12;
+const PH_WORK_END = 0.65;
+const PH_WALK_BACK_START = 0.65;
+const PH_WALK_BACK_END = 0.77;
+const PH_IDLE_END = 1.0;
 
 export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricOfficeProps) => {
     const cvRef = useRef<HTMLCanvasElement>(null);
     const afRef = useRef(0);
     const ags = useRef<Agent[]>([]);
+    const deskPos = useRef<{x: number; y: number; isOrch: boolean}[]>([]);
     const pts = useRef<Particle[]>([]);
     const clk = useRef(0);
     const pN = useRef(-1);
@@ -84,6 +93,10 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             { x: lL + (lR - lL) * 0.70, y: wallBot + fH * 0.55 },
         ];
 
+        const allDesks: {x: number; y: number; isOrch: boolean}[] = [
+            { x: orchDesk.x, y: orchDesk.y, isOrch: true },
+        ];
+
         ags.current = team.map((a, i) => {
             if (i === 0) {
                 return {
@@ -94,20 +107,29 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                     phase: Math.random() * Math.PI * 2,
                     walkDelay: 0, state: 'working' as const,
                     walkT: 0, workProgress: 0,
+                    skin: SKINS[0], hair: HAIRS[0], shirt: SHIRTS[0],
+                    cycleOffset: 0,
                 };
             }
             const di = (i - 1) % desks.length;
             const li = (i - 1) % lounges.length;
+            allDesks.push({ x: desks[di].x, y: desks[di].y, isOrch: false });
+            const stagger = ((i - 1) / Math.max(1, team.length - 2));
             return {
                 name: a.name, role: a.role,
                 deskX: desks[di].x, deskY: desks[di].y,
                 loungeX: lounges[li].x, loungeY: lounges[li].y,
                 x: lounges[li].x, y: lounges[li].y,
                 phase: Math.random() * Math.PI * 2,
-                walkDelay: (i - 1) * 0.025,
+                walkDelay: 0,
                 state: 'idle' as const, walkT: 0, workProgress: 0,
+                skin: SKINS[i % SKINS.length],
+                hair: HAIRS[i % HAIRS.length],
+                shirt: SHIRTS[i % SHIRTS.length],
+                cycleOffset: stagger * CYCLE,
             };
         });
+        deskPos.current = allDesks;
     }, []);
 
     useEffect(() => {
@@ -136,7 +158,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         ro.observe(cv);
         let prev = 0;
 
-        const drawRoom = (W: number, H: number, col: string, t: number, cp: number) => {
+        const drawRoom = (W: number, H: number, col: string, t: number, agentsWalking: number) => {
             const rL = W * 0.04, rR = W * 0.96;
             const wallTop = H * 0.04, wallBot = H * 0.30, floorBot = H * 0.93;
 
@@ -191,11 +213,14 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.beginPath(); ctx.moveTo(divX, wallBot + 4); ctx.lineTo(divX, floorBot - 4); ctx.stroke();
             ctx.setLineDash([]);
 
-            ctx.font = '600 7px Inter, sans-serif';
+            ctx.font = '600 9px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillStyle = ha(col, 0.25);
-            ctx.fillText('⚡ WORK ZONE', (rL + divX) / 2, wallBot + 12);
-            ctx.fillText('☕ LOUNGE', (divX + rR) / 2, wallBot + 12);
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText('⚡ РАБОЧАЯ ЗОНА', (rL + divX) / 2 + 1, wallBot + 14);
+            ctx.fillText('☕ ЛАУНЖ', (divX + rR) / 2 + 1, wallBot + 14);
+            ctx.fillStyle = ha(col, 0.35);
+            ctx.fillText('⚡ РАБОЧАЯ ЗОНА', (rL + divX) / 2, wallBot + 13);
+            ctx.fillText('☕ ЛАУНЖ', (divX + rR) / 2, wallBot + 13);
             ctx.textAlign = 'start';
 
             const stripY = wallTop + 2;
@@ -229,8 +254,8 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 sG.addColorStop(0, ha(col, 0.12)); sG.addColorStop(1, ha(col, 0.04));
                 ctx.fillStyle = sG; ctx.fillRect(ix, iy, iw, ih);
 
-                ctx.font = '600 6px Inter, sans-serif';
-                ctx.fillStyle = ha(col, 0.5);
+                ctx.font = '600 7px Inter, sans-serif';
+                ctx.fillStyle = ha(col, 0.6);
                 ctx.textAlign = 'left';
 
                 if (s.type === 'analytics') {
@@ -270,23 +295,18 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 ctx.restore();
             });
 
-            if (cp >= PHASE_IDLE_END && cp < PHASE_ALERT_END) {
-                const alertPulse = Math.sin((cp - PHASE_IDLE_END) / (PHASE_ALERT_END - PHASE_IDLE_END) * Math.PI * 4);
+            const walkingCount = agentsWalking;
+            if (walkingCount > 0) {
+                const alertPulse = Math.sin(t * 5);
                 const mainScreen = screens[1];
                 ctx.save();
                 ctx.shadowColor = '#ef4444';
-                ctx.shadowBlur = 20 + alertPulse * 10;
-                ctx.strokeStyle = ha('#ef4444', 0.6 + alertPulse * 0.3);
+                ctx.shadowBlur = 14 + alertPulse * 6;
+                ctx.strokeStyle = ha('#ef4444', 0.4 + alertPulse * 0.2);
                 ctx.lineWidth = 2;
                 ctx.beginPath(); ctx.roundRect(mainScreen.x - 2, mainScreen.y - 2, mainScreen.w + 4, mainScreen.h + 4, 4);
                 ctx.stroke();
                 ctx.restore();
-
-                ctx.font = 'bold 8px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillStyle = ha('#ef4444', 0.8);
-                ctx.fillText('⚠ НОВЫЙ ЗАПРОС', mainScreen.x + mainScreen.w / 2, mainScreen.y - 6);
-                ctx.textAlign = 'start';
             }
 
             const srvX = rL + 8, srvY = wallBot + 10;
@@ -379,9 +399,11 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.fillStyle = 'rgba(40,35,55,0.6)';
             ctx.fillRect(x - 8, ctrlY + 14, 16, 3);
 
-            ctx.font = 'bold 6px monospace';
+            ctx.font = 'bold 7px monospace';
             ctx.textAlign = 'center';
-            ctx.fillStyle = ha(col, 0.6);
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText('ARCADE', x + 1, y - h2 - 2);
+            ctx.fillStyle = ha(col, 0.7);
             ctx.fillText('ARCADE', x, y - h2 - 3);
             ctx.textAlign = 'start';
         };
@@ -465,8 +487,10 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.globalAlpha = 0.04;
             ctx.fillStyle = col; ctx.fillRect(glassX, glassY, glassW, glassH); ctx.restore();
 
-            ctx.font = 'bold 5px monospace'; ctx.textAlign = 'center';
-            ctx.fillStyle = ha(col, 0.4);
+            ctx.font = 'bold 6px monospace'; ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText('DRINKS', x + 1, y - h2 - 2);
+            ctx.fillStyle = ha(col, 0.5);
             ctx.fillText('DRINKS', x, y - h2 - 3);
             ctx.textAlign = 'start';
         };
@@ -564,16 +588,22 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                     }
                 }
 
-                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = isOrch ? 25 : 14; ctx.globalAlpha = 0.12;
+                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = isOrch ? 30 : 18; ctx.globalAlpha = 0.15;
                 ctx.fillStyle = col; ctx.fillRect(sX, sY, sW, sH); ctx.restore();
 
-                ctx.fillStyle = ha(col, 0.03);
+                ctx.fillStyle = ha(col, 0.04);
                 ctx.beginPath();
-                ctx.moveTo(x - monW * 0.5, monY2 + monH + 10);
-                ctx.lineTo(x + monW * 0.5, monY2 + monH + 10);
-                ctx.lineTo(x + monW * 0.25, y + dH2 / 2);
-                ctx.lineTo(x - monW * 0.25, y + dH2 / 2);
+                ctx.moveTo(x - monW * 0.6, monY2 + monH + 10);
+                ctx.lineTo(x + monW * 0.6, monY2 + monH + 10);
+                ctx.lineTo(x + monW * 0.3, y + dH2 / 2 + 4);
+                ctx.lineTo(x - monW * 0.3, y + dH2 / 2 + 4);
                 ctx.closePath(); ctx.fill();
+
+                const glowR = isOrch ? 45 : 30;
+                const gG = ctx.createRadialGradient(x, y - dH2 / 2, 0, x, y - dH2 / 2, glowR);
+                gG.addColorStop(0, ha(col, 0.06)); gG.addColorStop(1, ha(col, 0));
+                ctx.fillStyle = gG;
+                ctx.beginPath(); ctx.arc(x, y - dH2 / 2, glowR, 0, Math.PI * 2); ctx.fill();
             } else {
                 ctx.fillStyle = 'rgba(12,10,18,0.8)'; ctx.fillRect(sX, sY, sW, sH);
             }
@@ -635,128 +665,143 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const bob = noMo.current ? 0 : (isWalking
                 ? Math.abs(Math.sin(a.walkT * 20 * Math.PI)) * 3
                 : Math.sin(t * 1.5 + a.phase) * 1);
-            const hR = isOrch ? 9 : 7.5;
-            const hY = a.y - (isOrch ? 20 : 16) - bob;
+            const hR = isOrch ? 10 : 8;
+            const hY = a.y - (isOrch ? 24 : 18) - bob;
             const hX = a.x;
 
-            const bW = isOrch ? 16 : 12, bH2 = isOrch ? 12 : 10;
+            const bW = isOrch ? 18 : 14, bH2 = isOrch ? 14 : 11;
             const bY = hY + hR - 2;
 
             const shG = ctx.createLinearGradient(hX, bY, hX, bY + bH2);
-            shG.addColorStop(0, ha(col, 0.6)); shG.addColorStop(1, ha(col, 0.3));
+            shG.addColorStop(0, a.shirt);
+            shG.addColorStop(1, ha(a.shirt, 0.55));
             ctx.fillStyle = shG;
             ctx.beginPath(); ctx.roundRect(hX - bW / 2, bY, bW, bH2, 3); ctx.fill();
 
-            ctx.fillStyle = ha(col, 0.45);
-            ctx.beginPath(); ctx.roundRect(hX - (bW + 3) / 2, bY, bW + 3, 4, 2); ctx.fill();
+            ctx.fillStyle = ha(a.shirt, 0.7);
+            ctx.beginPath(); ctx.roundRect(hX - (bW + 4) / 2, bY, bW + 4, 5, 2); ctx.fill();
+
+            ctx.fillStyle = ha(a.shirt, 0.3);
+            ctx.fillRect(hX - 0.5, bY + 3, 1, bH2 - 4);
 
             if (isWalking && !noMo.current) {
                 const legPhase = Math.sin(a.walkT * 18 * Math.PI);
-                const facingRight = a.deskX > a.loungeX ? (a.state === 'walk_to_desk' ? 1 : -1) : (a.state === 'walk_to_desk' ? -1 : 1);
                 [-1, 1].forEach(side => {
                     const lOff = side * legPhase * 3;
-                    ctx.fillStyle = ha(col, 0.35);
-                    ctx.fillRect(hX + side * 2.5 - 1.5, bY + bH2, 3, 8 + lOff * facingRight * side * 0.3);
-                    ctx.fillStyle = '#1a1520';
-                    ctx.beginPath(); ctx.ellipse(hX + side * 2.5, bY + bH2 + 8 + lOff * facingRight * side * 0.3, 2.5, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#1a1830';
+                    ctx.fillRect(hX + side * 3 - 2, bY + bH2, 4, 9 + lOff * side * 0.3);
+                    ctx.fillStyle = '#151225';
+                    ctx.beginPath(); ctx.ellipse(hX + side * 3, bY + bH2 + 9 + lOff * side * 0.3, 3, 2, 0, 0, Math.PI * 2); ctx.fill();
                 });
 
                 [-1, 1].forEach(side => {
-                    const aOff = -side * legPhase * 0.25;
+                    const aOff = -side * legPhase * 0.3;
                     ctx.save();
-                    ctx.translate(hX + side * (bW / 2), bY + 3);
+                    ctx.translate(hX + side * (bW / 2 + 1), bY + 4);
                     ctx.rotate(aOff);
-                    ctx.fillStyle = ha(col, 0.4);
-                    ctx.beginPath(); ctx.roundRect(-2, 0, 4, bH2 * 0.65, 2); ctx.fill();
+                    ctx.fillStyle = a.shirt;
+                    ctx.beginPath(); ctx.roundRect(-2.5, 0, 5, bH2 * 0.55, 2); ctx.fill();
+                    ctx.fillStyle = a.skin;
+                    ctx.beginPath(); ctx.arc(0, bH2 * 0.55 + 1, 3, 0, Math.PI * 2); ctx.fill();
                     ctx.restore();
                 });
             } else {
                 [-1, 1].forEach(side => {
                     ctx.save();
-                    ctx.translate(hX + side * (bW / 2), bY + 3);
-                    ctx.rotate(a.state === 'working' ? (Math.sin(t * 3.5 + a.phase + side) * 0.12) : 0);
-                    ctx.fillStyle = ha(col, 0.4);
-                    ctx.beginPath(); ctx.roundRect(-2, 0, 4, bH2 * 0.6, 2); ctx.fill();
-                    const skinG = ctx.createRadialGradient(0, bH2 * 0.6, 0, 0, bH2 * 0.6, 3);
-                    skinG.addColorStop(0, '#e8c4a8'); skinG.addColorStop(1, '#c4986e');
-                    ctx.fillStyle = skinG;
-                    ctx.beginPath(); ctx.arc(0, bH2 * 0.6, 3, 0, Math.PI * 2); ctx.fill();
+                    ctx.translate(hX + side * (bW / 2 + 1), bY + 4);
+                    const rot = a.state === 'working' ? (Math.sin(t * 3.5 + a.phase + side) * 0.15) : 0;
+                    ctx.rotate(rot);
+                    ctx.fillStyle = a.shirt;
+                    ctx.beginPath(); ctx.roundRect(-2.5, 0, 5, bH2 * 0.5, 2); ctx.fill();
+                    ctx.fillStyle = a.skin;
+                    ctx.beginPath(); ctx.arc(0, bH2 * 0.5 + 1, 3, 0, Math.PI * 2); ctx.fill();
                     ctx.restore();
                 });
             }
 
-            const hdG = ctx.createRadialGradient(hX - 1, hY - 1, 0, hX, hY, hR);
-            hdG.addColorStop(0, '#f2dcc8'); hdG.addColorStop(0.6, '#d4a984'); hdG.addColorStop(1, '#b88a6c');
+            const hdG = ctx.createRadialGradient(hX - 1, hY - 2, 0, hX, hY, hR);
+            hdG.addColorStop(0, a.skin);
+            hdG.addColorStop(0.8, ha(a.skin, 0.88));
             ctx.fillStyle = hdG;
             ctx.beginPath(); ctx.arc(hX, hY, hR, 0, Math.PI * 2); ctx.fill();
 
-            ctx.fillStyle = '#1a1520';
+            ctx.fillStyle = a.hair;
             const hs = Math.floor(a.phase * 3) % 3;
             if (hs === 0) {
                 ctx.beginPath();
-                ctx.arc(hX, hY - 2, hR + 1, Math.PI + 0.3, Math.PI * 2 - 0.3);
-                ctx.quadraticCurveTo(hX + hR + 2, hY - 2, hX + hR, hY + 1);
-                ctx.quadraticCurveTo(hX, hY - hR - 2, hX - hR, hY + 1);
-                ctx.fill();
+                ctx.ellipse(hX, hY - hR * 0.35, hR + 1.5, hR * 0.7, 0, Math.PI, Math.PI * 2); ctx.fill();
+                ctx.fillRect(hX + hR - 1, hY - hR * 0.35, 2.5, hR * 0.6);
             } else if (hs === 1) {
                 ctx.beginPath();
-                ctx.ellipse(hX, hY - hR * 0.35, hR + 1.5, hR * 0.65, 0, Math.PI, Math.PI * 2);
-                ctx.fill();
+                ctx.arc(hX, hY - 1, hR + 1, Math.PI + 0.4, -0.4); ctx.fill();
             } else {
                 ctx.beginPath();
-                ctx.ellipse(hX, hY - hR * 0.3, hR + 1.5, hR * 0.6, 0, Math.PI + 0.4, Math.PI * 2 - 0.4);
-                ctx.fill();
-                ctx.fillRect(hX - hR - 1, hY - hR * 0.3, 2.5, hR * 0.8);
-                ctx.fillRect(hX + hR - 1, hY - hR * 0.3, 2.5, hR * 0.8);
+                ctx.ellipse(hX, hY - hR * 0.4, hR + 2, hR * 0.6, 0, Math.PI + 0.5, -0.5); ctx.fill();
+                ctx.fillRect(hX - hR - 1, hY - hR * 0.4, 2.5, hR * 0.9);
+                ctx.fillRect(hX + hR - 1, hY - hR * 0.4, 2.5, hR * 0.9);
             }
 
-            const eY = hY + 0.5, eO = hR * 0.28;
+            const eY = hY + 1, eO = hR * 0.3;
             ctx.fillStyle = '#1a1520';
-            ctx.fillRect(hX - eO - 1.5, eY, 2.5, 2);
-            ctx.fillRect(hX + eO - 1, eY, 2.5, 2);
+            ctx.fillRect(hX - eO - 1.8, eY, 3, 2.5);
+            ctx.fillRect(hX + eO - 1, eY, 3, 2.5);
             ctx.fillStyle = 'white';
             ctx.beginPath();
-            ctx.arc(hX - eO - 0.2, eY + 0.5, 0.5, 0, Math.PI * 2);
-            ctx.arc(hX + eO + 0.3, eY + 0.5, 0.5, 0, Math.PI * 2);
+            ctx.arc(hX - eO - 0.2, eY + 0.8, 0.6, 0, Math.PI * 2);
+            ctx.arc(hX + eO + 0.4, eY + 0.8, 0.6, 0, Math.PI * 2);
             ctx.fill();
 
+            ctx.fillStyle = ha(a.skin, 0.6);
+            ctx.beginPath(); ctx.arc(hX, hY + hR * 0.45, 1.2, 0, Math.PI); ctx.fill();
+
             if (a.state === 'working' && !noMo.current && Math.sin(t * 7 + a.phase) > 0.85) {
-                ctx.fillStyle = ha(col, 0.35);
-                ctx.font = '500 6px Inter, sans-serif';
+                ctx.fillStyle = ha(col, 0.45);
+                ctx.font = '600 8px Inter, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('···', hX, hY - hR - 2);
+                ctx.fillText('···', hX, hY - hR - 3);
                 ctx.textAlign = 'start';
             }
 
             if (isOrch) {
-                ctx.strokeStyle = ha(col, 0.35); ctx.lineWidth = 1.5;
-                ctx.beginPath(); ctx.arc(hX, hY, hR + 4, 0, Math.PI * 2); ctx.stroke();
-                ctx.fillStyle = col;
+                ctx.strokeStyle = ha(col, 0.4); ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(hX, hY, hR + 5, 0, Math.PI * 2); ctx.stroke();
+
+                ctx.fillStyle = '#ffd700';
                 ctx.beginPath();
-                ctx.moveTo(hX, hY - hR - 6);
-                ctx.lineTo(hX - 4.5, hY - hR - 0.5);
-                ctx.lineTo(hX + 4.5, hY - hR - 0.5);
+                ctx.moveTo(hX, hY - hR - 8);
+                ctx.lineTo(hX - 5, hY - hR - 2);
+                ctx.lineTo(hX - 2, hY - hR - 3);
+                ctx.lineTo(hX, hY - hR);
+                ctx.lineTo(hX + 2, hY - hR - 3);
+                ctx.lineTo(hX + 5, hY - hR - 2);
                 ctx.closePath(); ctx.fill();
-                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.globalAlpha = 0.12;
-                ctx.beginPath(); ctx.arc(hX, hY, hR + 8, 0, Math.PI * 2);
+
+                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 18; ctx.globalAlpha = 0.15;
+                ctx.beginPath(); ctx.arc(hX, hY, hR + 10, 0, Math.PI * 2);
                 ctx.fillStyle = col; ctx.fill(); ctx.restore();
             }
 
             if (a.state === 'working') {
                 ctx.fillStyle = '#22c55e';
-                ctx.beginPath(); ctx.arc(hX + hR + 2, hY - hR + 1, 3, 0, Math.PI * 2); ctx.fill();
-                ctx.strokeStyle = '#050505'; ctx.lineWidth = 1; ctx.stroke();
-                ctx.fillStyle = 'white'; ctx.font = 'bold 4px Inter, sans-serif';
-                ctx.textAlign = 'center'; ctx.fillText('✓', hX + hR + 2, hY - hR + 2.5); ctx.textAlign = 'start';
+                ctx.beginPath(); ctx.arc(hX + hR + 3, hY - hR + 1, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#050505'; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.fillStyle = 'white'; ctx.font = 'bold 5px Inter, sans-serif';
+                ctx.textAlign = 'center'; ctx.fillText('✓', hX + hR + 3, hY - hR + 3); ctx.textAlign = 'start';
             }
 
             ctx.textAlign = 'center';
-            ctx.font = `bold ${isOrch ? 10 : 9}px Inter, sans-serif`;
-            ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.85 : 0.55})`;
-            ctx.fillText(a.name, hX, hY - hR - (isOrch ? 12 : 6));
-            ctx.font = `500 ${isOrch ? 7 : 6}px Inter, sans-serif`;
-            ctx.fillStyle = ha(col, 0.55);
-            ctx.fillText(a.role, hX, hY - hR - (isOrch ? 21 : 14));
+
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.font = `bold ${isOrch ? 11 : 10}px Inter, sans-serif`;
+            ctx.fillText(a.name, hX + 1, hY - hR - (isOrch ? 14 : 8) + 1);
+            ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.92 : 0.72})`;
+            ctx.fillText(a.name, hX, hY - hR - (isOrch ? 14 : 8));
+
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.font = `600 ${isOrch ? 8 : 7}px Inter, sans-serif`;
+            ctx.fillText(a.role, hX + 1, hY - hR - (isOrch ? 24 : 17) + 1);
+            ctx.fillStyle = ha(col, 0.7);
+            ctx.fillText(a.role, hX, hY - hR - (isOrch ? 24 : 17));
             ctx.textAlign = 'start';
         };
 
@@ -799,7 +844,6 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const t = clk.current;
             const W = cv.width / dpr;
             const H = cv.height / dpr;
-            const cp = (t % CYCLE) / CYCLE;
 
             ctx.clearRect(0, 0, W, H);
 
@@ -808,7 +852,72 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const fH = floorBot - wallBot;
             const lL = W * 0.56, lR = W * 0.93;
 
-            drawRoom(W, H, niche.color, t, cp);
+            const agList = ags.current;
+            const orch = agList[0];
+
+            if (!noMo.current) {
+                agList.forEach((a, i) => {
+                    if (i === 0) { a.state = 'working'; return; }
+
+                    const agentTime = (t + a.cycleOffset) % CYCLE;
+                    const ap = agentTime / CYCLE;
+
+                    if (ap < PH_WALK_TO_END) {
+                        const rawT = clamp01(ap / PH_WALK_TO_END);
+                        a.state = 'walk_to_desk';
+                        a.walkT = rawT;
+                        const e = easeIO(rawT);
+                        a.x = lerp(a.loungeX, a.deskX, e);
+                        a.y = lerp(a.loungeY, a.deskY, e);
+
+                        if (orch && rawT > 0.01 && rawT < 0.06) {
+                            if (!pts.current.some(p => p.idx === i && !p.ret)) {
+                                pts.current.push({
+                                    fx: orch.x, fy: orch.y - 25,
+                                    tx: a.loungeX, ty: a.loungeY - 15,
+                                    p: 0, spd: 1.4, idx: i, ret: false, col: niche.color,
+                                });
+                            }
+                        }
+                    } else if (ap < PH_WORK_END) {
+                        a.state = 'working';
+                        a.x = a.deskX; a.y = a.deskY;
+                        a.workProgress = Math.min(1, a.workProgress + dt * 0.2);
+
+                        if (orch && ap > PH_WORK_END - 0.04 && ap < PH_WORK_END - 0.02) {
+                            if (!pts.current.some(p => p.idx === i && p.ret)) {
+                                pts.current.push({
+                                    fx: a.x, fy: a.y - 15,
+                                    tx: orch.x, ty: orch.y - 25,
+                                    p: 0, spd: 1.6, idx: i, ret: true, col: '#22c55e',
+                                });
+                            }
+                        }
+                    } else if (ap < PH_WALK_BACK_END) {
+                        const rawT = clamp01((ap - PH_WALK_BACK_START) / (PH_WALK_BACK_END - PH_WALK_BACK_START));
+                        a.state = 'walk_back';
+                        a.walkT = rawT;
+                        const e = easeIO(rawT);
+                        a.x = lerp(a.deskX, a.loungeX, e);
+                        a.y = lerp(a.deskY, a.loungeY, e);
+                    } else {
+                        a.state = 'idle';
+                        a.x = a.loungeX; a.y = a.loungeY;
+                        a.walkT = 0; a.workProgress = 0;
+                    }
+                });
+            } else {
+                agList.forEach((a, i) => {
+                    if (i === 0) { a.state = 'working'; return; }
+                    a.state = 'working'; a.x = a.deskX; a.y = a.deskY;
+                });
+            }
+
+            const walkingAgents = agList.filter(a => a.state === 'walk_to_desk' || a.state === 'walk_back').length;
+            const workingAgents = agList.filter(a => a.state === 'working').length;
+            const idleAgents = agList.filter(a => a.state === 'idle').length;
+
+            drawRoom(W, H, niche.color, t, walkingAgents);
 
             const arcadeX = lL + (lR - lL) * 0.15;
             const arcadeY = wallBot + fH * 0.50;
@@ -826,113 +935,21 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const coffeeY = wallBot + fH * 0.45;
             drawCoffeeTable(coffeeX, coffeeY, niche.color, t);
 
-            const agList = ags.current;
-            const orch = agList[0];
-
-            if (!noMo.current) {
-                agList.forEach((a, i) => {
-                    if (i === 0) { a.state = 'working'; return; }
-                    const wd = a.walkDelay;
-
-                    if (cp < PHASE_IDLE_END) {
-                        a.state = 'idle';
-                        a.x = a.loungeX; a.y = a.loungeY;
-                        a.walkT = 0; a.workProgress = 0;
-                    } else if (cp >= PHASE_ALERT_END && cp < PHASE_WALK_TO) {
-                        const walkStart = PHASE_ALERT_END + wd;
-                        const walkDur = 0.10;
-                        const rawT = clamp01((cp - walkStart) / walkDur);
-                        if (rawT > 0 && rawT < 1) {
-                            a.state = 'walk_to_desk';
-                            a.walkT = rawT;
-                            const e = easeIO(rawT);
-                            a.x = lerp(a.loungeX, a.deskX, e);
-                            a.y = lerp(a.loungeY, a.deskY, e);
-                        } else if (rawT >= 1) {
-                            a.state = 'working';
-                            a.x = a.deskX; a.y = a.deskY;
-                        } else {
-                            a.state = 'idle';
-                            a.x = a.loungeX; a.y = a.loungeY;
-                        }
-                    } else if (cp >= PHASE_WALK_TO && cp < PHASE_WORK_END) {
-                        a.state = 'working';
-                        a.x = a.deskX; a.y = a.deskY;
-                        a.workProgress = Math.min(1, a.workProgress + dt * 0.3);
-                    } else if (cp >= PHASE_RESULT_END && cp < PHASE_WALK_BACK) {
-                        const walkStart = PHASE_RESULT_END + wd;
-                        const walkDur = 0.10;
-                        const rawT = clamp01((cp - walkStart) / walkDur);
-                        if (rawT > 0 && rawT < 1) {
-                            a.state = 'walk_back';
-                            a.walkT = rawT;
-                            const e = easeIO(rawT);
-                            a.x = lerp(a.deskX, a.loungeX, e);
-                            a.y = lerp(a.deskY, a.loungeY, e);
-                        } else if (rawT >= 1) {
-                            a.state = 'idle';
-                            a.x = a.loungeX; a.y = a.loungeY;
-                        } else {
-                            a.state = 'working';
-                            a.x = a.deskX; a.y = a.deskY;
-                        }
-                    } else if (cp >= PHASE_WALK_BACK) {
-                        a.state = 'idle';
-                        a.x = a.loungeX; a.y = a.loungeY;
-                    } else if (cp >= PHASE_WORK_END && cp < PHASE_RESULT_END) {
-                        a.state = 'working';
-                        a.x = a.deskX; a.y = a.deskY;
-                    }
-                });
-
-                if (orch && cp >= PHASE_ALERT_END && cp < PHASE_WALK_TO) {
-                    agList.forEach((a, i) => {
-                        if (i === 0) return;
-                        const trigT = PHASE_ALERT_END + a.walkDelay + 0.01;
-                        if (cp >= trigT && cp < trigT + 0.02) {
-                            if (!pts.current.some(p => p.idx === i && !p.ret)) {
-                                pts.current.push({
-                                    fx: orch.x, fy: orch.y - 25,
-                                    tx: a.x, ty: a.y - 15,
-                                    p: 0, spd: 2.0, idx: i, ret: false, col: niche.color,
-                                });
-                            }
-                        }
-                    });
-                }
-
-                if (orch && cp >= PHASE_WORK_END && cp < PHASE_RESULT_END) {
-                    agList.forEach((a, i) => {
-                        if (i === 0) return;
-                        const retT = PHASE_WORK_END + a.walkDelay + 0.005;
-                        if (cp >= retT && cp < retT + 0.015) {
-                            if (!pts.current.some(p => p.idx === i && p.ret)) {
-                                pts.current.push({
-                                    fx: a.x, fy: a.y - 15,
-                                    tx: orch.x, ty: orch.y - 25,
-                                    p: 0, spd: 2.2, idx: i, ret: true, col: '#22c55e',
-                                });
-                            }
-                        }
-                    });
-                }
-            } else {
-                agList.forEach((a, i) => {
-                    if (i === 0) { a.state = 'working'; return; }
-                    a.state = 'working'; a.x = a.deskX; a.y = a.deskY;
-                });
-            }
-
             if (orch) drawConnections(agList, orch, niche.color);
+
+            const desksToRender = [...deskPos.current].sort((a, b) => a.y - b.y);
+            desksToRender.forEach(d => {
+                const sittingAgent = agList.find(a => a.deskX === d.x && a.deskY === d.y && a.state === 'working');
+                const isWorking = !!sittingAgent;
+                const ph = sittingAgent ? sittingAgent.phase : 0;
+                drawChair(d.x, d.y, niche.color, d.isOrch);
+                drawDesk(d.x, d.y, niche.color, d.isOrch, isWorking, t, ph);
+            });
 
             const sorted = [...agList].sort((a, b) => a.y - b.y);
             sorted.forEach(a => {
                 const isO = a === orch;
                 const isWalking = a.state === 'walk_to_desk' || a.state === 'walk_back';
-                if (!isWalking && a.state !== 'idle') {
-                    drawChair(a.x, a.y, niche.color, isO);
-                    drawDesk(a.x, a.y, niche.color, isO, a.state === 'working', t, a.phase);
-                }
                 drawPerson(a, niche.color, isO, t, isWalking);
             });
 
@@ -942,16 +959,17 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 drawParticle(p, t); return true;
             });
 
-            ctx.font = '500 9px Inter, sans-serif';
+            ctx.font = '600 11px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            const stateLabel = cp < PHASE_IDLE_END || cp >= PHASE_WALK_BACK ? 'Ожидание'
-                : cp < PHASE_ALERT_END ? '⚡ Входящий запрос'
-                : cp < PHASE_WALK_TO ? 'Распределение задач'
-                : cp < PHASE_WORK_END ? 'Обработка'
-                : cp < PHASE_RESULT_END ? '✓ Результаты'
-                : 'Возвращение';
-            ctx.fillText(`${agList.length} агентов · ${stateLabel}`, W / 2, H - 6);
+            const parts: string[] = [];
+            if (workingAgents > 0) parts.push(`⚙ ${workingAgents} работают`);
+            if (walkingAgents > 0) parts.push(`→ ${walkingAgents} в пути`);
+            if (idleAgents > 0) parts.push(`☕ ${idleAgents} отдыхают`);
+            const statusText = `${agList.length} AI-агентов · ${parts.join(' · ')}`;
+            ctx.fillStyle = 'rgba(0,0,0,0.45)';
+            ctx.fillText(statusText, W / 2 + 1, H - 7);
+            ctx.fillStyle = 'rgba(255,255,255,0.18)';
+            ctx.fillText(statusText, W / 2, H - 8);
             ctx.textAlign = 'start';
 
             afRef.current = requestAnimationFrame(animate);
