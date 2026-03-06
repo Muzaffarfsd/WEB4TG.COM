@@ -7,7 +7,6 @@ import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Preloader } from './components/ui/preloader';
 import { SoundProvider } from './hooks/use-sound';
-import { SoundToggle } from './components/ui/sound-toggle';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
@@ -181,7 +180,7 @@ const App = () => {
                 <LazySection component={FooterSection} skeleton="default" />
             </main>
             <TelegramFab />
-            <SoundToggle />
+
         </SoundProvider>
     );
 };
