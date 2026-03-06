@@ -1,5 +1,5 @@
 import { Shield, RotateCcw, FileCheck, Infinity } from 'lucide-react';
-import { useScrollReveal, useScaleReveal } from '../../hooks/use-animations';
+import { useScaleReveal } from '../../hooks/use-animations';
 
 const guarantees = [
   {

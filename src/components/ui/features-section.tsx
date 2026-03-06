@@ -1,5 +1,5 @@
 import { CreditCard, BarChart3, MessageSquare, Bell, Heart, Star, Truck, Shield } from "lucide-react";
-import { useScrollReveal, useStaggerGrid, useCharReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useStaggerGrid, useWordReveal } from '../../hooks/use-animations';
 
 const features = [
     { icon: CreditCard, title: "Платежи", desc: "SDK Stripe, ЮKassa, Apple Pay, Google Pay, СБП — PCI DSS Level 1, токенизация карт" },
@@ -13,9 +13,9 @@ const features = [
 ];
 
 export const FeaturesSection = () => {
-    const headerRef = useScrollReveal({ stagger: 0.05 });
+    const headerRef = useScrollReveal({ stagger: 0.05, blur: 15 });
     const gridRef = useStaggerGrid({ stagger: 0.06 });
-    const charRevealRef = useCharReveal({ stagger: 0.025 });
+    const charRevealRef = useWordReveal({ stagger: 0.04 });
 
     return (
         <section className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">

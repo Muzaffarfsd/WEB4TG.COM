@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { useScrollReveal, useSlideReveal } from '../../hooks/use-animations';
+import { useScrubReveal, useDirectionalReveal } from '../../hooks/use-animations';
 
 const steps = [
     {
@@ -26,8 +26,8 @@ const steps = [
 ];
 
 export const ProcessSection = () => {
-    const headerRef = useScrollReveal({ stagger: 0.08 });
-    const cardsRef = useSlideReveal('right', { stagger: 0.15 });
+    const headerRef = useScrubReveal({ y: 50, blur: 10 });
+    const cardsRef = useDirectionalReveal({ stagger: 0.15, distance: 120 });
 
     return (
         <section id="process" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">

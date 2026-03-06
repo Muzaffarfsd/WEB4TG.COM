@@ -6,41 +6,77 @@ gsap.registerPlugin(ScrollTrigger);
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export const useScrollReveal = (options?: { delay?: number; y?: number; duration?: number; stagger?: number }) => {
+const killTriggers = (el: Element | null) => {
+    ScrollTrigger.getAll().forEach(t => {
+        if (t.trigger === el) t.kill();
+    });
+};
+
+const getTargets = (container: HTMLElement) => {
+    const children = container.querySelectorAll('[data-reveal]');
+    return children.length > 0 ? children : [container];
+};
+
+export const useScrollReveal = (options?: {
+    delay?: number;
+    y?: number;
+    duration?: number;
+    stagger?: number;
+    blur?: number;
+    scrub?: boolean;
+}) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!ref.current) return;
-
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, y: 0 });
+            gsap.set(targets, { opacity: 1, y: 0, filter: 'blur(0px)' });
             return;
         }
 
-        gsap.set(targets, { opacity: 0, y: options?.y ?? 40 });
+        const blurAmount = options?.blur ?? 12;
 
-        gsap.to(targets, {
-            opacity: 1,
-            y: 0,
-            duration: options?.duration ?? 1,
-            delay: options?.delay ?? 0,
-            stagger: options?.stagger ?? 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: ref.current,
-                start: 'top 85%',
-                once: true,
-            },
+        gsap.set(targets, {
+            opacity: 0,
+            y: options?.y ?? 60,
+            filter: `blur(${blurAmount}px)`,
+            willChange: 'transform, opacity, filter',
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
+        if (options?.scrub) {
+            gsap.to(targets, {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                stagger: options?.stagger ?? 0.05,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: ref.current,
+                    start: 'top 90%',
+                    end: 'top 40%',
+                    scrub: 1.2,
+                },
             });
-        };
+        } else {
+            gsap.to(targets, {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                duration: options?.duration ?? 1.1,
+                delay: options?.delay ?? 0,
+                stagger: options?.stagger ?? 0.1,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: ref.current,
+                    start: 'top 85%',
+                    once: true,
+                },
+            });
+        }
+
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -181,23 +217,28 @@ export const useSlideReveal = (direction: 'left' | 'right' = 'left', options?: {
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, x: 0 });
+            gsap.set(targets, { opacity: 1, x: 0, filter: 'blur(0px)' });
             return;
         }
 
-        const xVal = direction === 'left' ? -60 : 60;
-        gsap.set(targets, { opacity: 0, x: xVal });
+        const xVal = direction === 'left' ? -80 : 80;
+        gsap.set(targets, {
+            opacity: 0,
+            x: xVal,
+            filter: 'blur(8px)',
+            willChange: 'transform, opacity, filter',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             x: 0,
-            duration: options?.duration ?? 1,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 1.1,
             stagger: options?.stagger ?? 0.12,
-            ease: 'power3.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 85%',
@@ -205,11 +246,7 @@ export const useSlideReveal = (direction: 'left' | 'right' = 'left', options?: {
             },
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -220,23 +257,29 @@ export const useScaleReveal = (options?: { duration?: number; stagger?: number; 
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, scale: 1 });
+            gsap.set(targets, { opacity: 1, scale: 1, filter: 'blur(0px)' });
             return;
         }
 
-        gsap.set(targets, { opacity: 0, scale: options?.scale ?? 0.85, y: 20 });
+        gsap.set(targets, {
+            opacity: 0,
+            scale: options?.scale ?? 0.8,
+            y: 30,
+            filter: 'blur(10px)',
+            willChange: 'transform, opacity, filter',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: options?.duration ?? 0.8,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 0.9,
             stagger: options?.stagger ?? 0.08,
-            ease: 'back.out(1.4)',
+            ease: 'back.out(1.7)',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 85%',
@@ -244,11 +287,7 @@ export const useScaleReveal = (options?: { duration?: number; stagger?: number; 
             },
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -259,26 +298,32 @@ export const useStaggerGrid = (options?: { duration?: number; stagger?: number }
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, y: 0, scale: 1 });
+            gsap.set(targets, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' });
             return;
         }
 
-        gsap.set(targets, { opacity: 0, y: 30, scale: 0.92 });
+        gsap.set(targets, {
+            opacity: 0,
+            y: 40,
+            scale: 0.9,
+            filter: 'blur(8px)',
+            willChange: 'transform, opacity, filter',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: options?.duration ?? 0.7,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 0.8,
             stagger: {
                 each: options?.stagger ?? 0.06,
-                from: 'start',
+                from: 'center',
             },
-            ease: 'power2.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 85%',
@@ -286,11 +331,7 @@ export const useStaggerGrid = (options?: { duration?: number; stagger?: number }
             },
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -301,23 +342,31 @@ export const useFlipReveal = (options?: { duration?: number; stagger?: number })
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, rotateX: 0, y: 0 });
+            gsap.set(targets, { opacity: 1, rotateX: 0, y: 0, filter: 'blur(0px)' });
             return;
         }
 
-        gsap.set(targets, { opacity: 0, rotateX: -15, y: 40, transformPerspective: 800 });
+        gsap.set(targets, {
+            opacity: 0,
+            rotateX: -20,
+            y: 60,
+            filter: 'blur(6px)',
+            transformPerspective: 1000,
+            transformOrigin: 'center bottom',
+            willChange: 'transform, opacity, filter',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             rotateX: 0,
             y: 0,
-            duration: options?.duration ?? 1,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 1.2,
             stagger: options?.stagger ?? 0.1,
-            ease: 'power3.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 85%',
@@ -325,11 +374,7 @@ export const useFlipReveal = (options?: { duration?: number; stagger?: number })
             },
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -337,11 +382,13 @@ export const useFlipReveal = (options?: { duration?: number; stagger?: number })
 
 export const useCharReveal = (options?: { duration?: number; stagger?: number; start?: string }) => {
     const ref = useRef<HTMLElement>(null);
+    const savedHTML = useRef<string>('');
 
     useEffect(() => {
         if (!ref.current) return;
 
         const el = ref.current;
+        savedHTML.current = el.innerHTML;
 
         if (prefersReducedMotion()) {
             el.style.opacity = '1';
@@ -363,8 +410,9 @@ export const useCharReveal = (options?: { duration?: number; stagger?: number; s
                     span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
                     span.style.display = 'inline-block';
                     span.style.opacity = '0';
-                    span.style.transform = 'translateY(20px)';
-                    span.style.willChange = 'transform, opacity';
+                    span.style.transform = 'translateY(30px) rotateX(-40deg)';
+                    span.style.filter = 'blur(4px)';
+                    span.style.willChange = 'transform, opacity, filter';
                     if (text[i] === ' ') {
                         span.style.width = '0.3em';
                     }
@@ -387,9 +435,11 @@ export const useCharReveal = (options?: { duration?: number; stagger?: number; s
         gsap.to(chars, {
             opacity: 1,
             y: 0,
-            duration: options?.duration ?? 0.5,
+            rotateX: 0,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 0.6,
             stagger: options?.stagger ?? 0.02,
-            ease: 'power3.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: el,
                 start: options?.start ?? 'top 85%',
@@ -398,9 +448,10 @@ export const useCharReveal = (options?: { duration?: number; stagger?: number; s
         });
 
         return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === el) t.kill();
-            });
+            killTriggers(el);
+            if (savedHTML.current && el) {
+                el.innerHTML = savedHTML.current;
+            }
         };
     }, []);
 
@@ -416,14 +467,21 @@ export const useDirectionalReveal = (options?: { duration?: number; stagger?: nu
         const targets = children.length > 0 ? Array.from(children) : [ref.current];
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, x: 0, y: 0 });
+            gsap.set(targets, { opacity: 1, x: 0, y: 0, filter: 'blur(0px)' });
             return;
         }
 
-        const dist = options?.distance ?? 80;
+        const dist = options?.distance ?? 100;
         targets.forEach((el, i) => {
             const fromLeft = i % 2 === 0;
-            gsap.set(el, { opacity: 0, x: fromLeft ? -dist : dist, y: 15 });
+            gsap.set(el, {
+                opacity: 0,
+                x: fromLeft ? -dist : dist,
+                y: 20,
+                rotate: fromLeft ? -2 : 2,
+                filter: 'blur(10px)',
+                willChange: 'transform, opacity, filter',
+            });
         });
 
         targets.forEach((el, i) => {
@@ -431,9 +489,11 @@ export const useDirectionalReveal = (options?: { duration?: number; stagger?: nu
                 opacity: 1,
                 x: 0,
                 y: 0,
-                duration: options?.duration ?? 0.9,
+                rotate: 0,
+                filter: 'blur(0px)',
+                duration: options?.duration ?? 1.1,
                 delay: i * (options?.stagger ?? 0.12),
-                ease: 'power3.out',
+                ease: 'expo.out',
                 scrollTrigger: {
                     trigger: ref.current,
                     start: 'top 82%',
@@ -442,11 +502,7 @@ export const useDirectionalReveal = (options?: { duration?: number; stagger?: nu
             });
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -457,8 +513,7 @@ export const useClipReveal = (direction: 'up' | 'down' | 'left' | 'right' = 'up'
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
             gsap.set(targets, { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' });
@@ -471,14 +526,18 @@ export const useClipReveal = (direction: 'up' | 'down' | 'left' | 'right' = 'up'
             direction === 'left' ? 'inset(0% 100% 0% 0%)' :
             'inset(0% 0% 0% 100%)';
 
-        gsap.set(targets, { opacity: 0, clipPath: clipStart });
+        gsap.set(targets, {
+            opacity: 0,
+            clipPath: clipStart,
+            willChange: 'clip-path, opacity',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             clipPath: 'inset(0% 0% 0% 0%)',
-            duration: options?.duration ?? 1,
+            duration: options?.duration ?? 1.2,
             stagger: options?.stagger ?? 0.1,
-            ease: 'power4.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 82%',
@@ -486,11 +545,7 @@ export const useClipReveal = (direction: 'up' | 'down' | 'left' | 'right' = 'up'
             },
         });
 
-        return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
-        };
+        return () => killTriggers(ref.current);
     }, []);
 
     return ref;
@@ -501,24 +556,32 @@ export const useRotateReveal = (options?: { duration?: number; stagger?: number 
 
     useEffect(() => {
         if (!ref.current) return;
-        const children = ref.current.querySelectorAll('[data-reveal]');
-        const targets = children.length > 0 ? children : [ref.current];
+        const targets = getTargets(ref.current);
 
         if (prefersReducedMotion()) {
-            gsap.set(targets, { opacity: 1, rotate: 0, y: 0, scale: 1 });
+            gsap.set(targets, { opacity: 1, rotate: 0, y: 0, scale: 1, filter: 'blur(0px)' });
             return;
         }
 
-        gsap.set(targets, { opacity: 0, rotate: -3, y: 50, scale: 0.95, transformOrigin: 'left bottom' });
+        gsap.set(targets, {
+            opacity: 0,
+            rotate: -3,
+            y: 60,
+            scale: 0.93,
+            filter: 'blur(8px)',
+            transformOrigin: 'left bottom',
+            willChange: 'transform, opacity, filter',
+        });
 
         gsap.to(targets, {
             opacity: 1,
             rotate: 0,
             y: 0,
             scale: 1,
-            duration: options?.duration ?? 1,
+            filter: 'blur(0px)',
+            duration: options?.duration ?? 1.1,
             stagger: options?.stagger ?? 0.1,
-            ease: 'power3.out',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 82%',
@@ -526,10 +589,123 @@ export const useRotateReveal = (options?: { duration?: number; stagger?: number 
             },
         });
 
+        return () => killTriggers(ref.current);
+    }, []);
+
+    return ref;
+};
+
+export const useScrubReveal = (options?: { 
+    y?: number;
+    scale?: number;
+    blur?: number;
+    rotate?: number;
+    start?: string;
+    end?: string;
+}) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const targets = getTargets(ref.current);
+
+        if (prefersReducedMotion()) {
+            gsap.set(targets, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', rotate: 0 });
+            return;
+        }
+
+        gsap.set(targets, {
+            opacity: 0,
+            y: options?.y ?? 80,
+            scale: options?.scale ?? 0.92,
+            filter: `blur(${options?.blur ?? 15}px)`,
+            rotate: options?.rotate ?? 0,
+            willChange: 'transform, opacity, filter',
+        });
+
+        gsap.to(targets, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: 'blur(0px)',
+            rotate: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: ref.current,
+                start: options?.start ?? 'top 95%',
+                end: options?.end ?? 'top 35%',
+                scrub: 1.5,
+            },
+        });
+
+        return () => killTriggers(ref.current);
+    }, []);
+
+    return ref;
+};
+
+export const useWordReveal = (options?: { stagger?: number; start?: string }) => {
+    const ref = useRef<HTMLElement>(null);
+    const originalHTML = useRef<string>('');
+
+    useEffect(() => {
+        if (!ref.current) return;
+        const el = ref.current;
+        originalHTML.current = el.innerHTML;
+
+        if (prefersReducedMotion()) {
+            el.style.opacity = '1';
+            return;
+        }
+
+        const text = el.textContent || '';
+        const words = text.split(/\s+/).filter(Boolean);
+        el.innerHTML = '';
+        el.style.opacity = '1';
+
+        const spans: HTMLSpanElement[] = [];
+        words.forEach((word, i) => {
+            const wrapper = document.createElement('span');
+            wrapper.style.display = 'inline-block';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.verticalAlign = 'top';
+
+            const inner = document.createElement('span');
+            inner.textContent = word;
+            inner.style.display = 'inline-block';
+            inner.style.opacity = '0';
+            inner.style.transform = 'translateY(110%)';
+            inner.style.filter = 'blur(4px)';
+            inner.style.willChange = 'transform, opacity, filter';
+
+            wrapper.appendChild(inner);
+            el.appendChild(wrapper);
+            spans.push(inner);
+
+            if (i < words.length - 1) {
+                el.appendChild(document.createTextNode(' '));
+            }
+        });
+
+        gsap.to(spans, {
+            opacity: 1,
+            y: '0%',
+            filter: 'blur(0px)',
+            duration: 0.7,
+            stagger: options?.stagger ?? 0.04,
+            ease: 'expo.out',
+            scrollTrigger: {
+                trigger: el,
+                start: options?.start ?? 'top 85%',
+                once: true,
+            },
+        });
+
         return () => {
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === ref.current) t.kill();
-            });
+            killTriggers(el);
+            if (originalHTML.current && el) {
+                el.innerHTML = originalHTML.current;
+            }
         };
     }, []);
 

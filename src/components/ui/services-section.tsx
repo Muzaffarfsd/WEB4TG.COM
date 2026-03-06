@@ -1,10 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
-import { useScrollReveal, useCharReveal } from '../../hooks/use-animations';
+import { useScrubReveal, useWordReveal } from '../../hooks/use-animations';
 import { services } from '../../data/services';
 
 export const ServicesSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.06 });
-    const charRevealRef = useCharReveal({ stagger: 0.025 });
+    const revealRef = useScrubReveal({ y: 60, blur: 12 });
+    const charRevealRef = useWordReveal({ stagger: 0.04 });
 
     return (
         <section id="services" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">

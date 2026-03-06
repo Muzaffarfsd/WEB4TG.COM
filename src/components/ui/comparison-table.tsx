@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Check, X, Minus, ChevronLeft, ChevronRight, Play, Pause, Crown, Trophy } from 'lucide-react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrubReveal } from '../../hooks/use-animations';
 
 type Status = 'good' | 'neutral' | 'bad';
 
@@ -168,7 +168,7 @@ function CompetitorCard({ name, icon, text, status, score, animate, delay }: {
 }
 
 export default function ComparisonTable() {
-  const sectionRef = useScrollReveal();
+  const sectionRef = useScrubReveal({ y: 80, blur: 15, scale: 0.95 });
   const reducedMotion = usePrefersReducedMotion();
   const [active, setActive] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);

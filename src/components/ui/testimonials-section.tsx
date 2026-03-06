@@ -1,5 +1,5 @@
 import { Star, BadgeCheck, Globe } from "lucide-react";
-import { useScrollReveal, useFlipReveal } from '../../hooks/use-animations';
+import { useFlipReveal } from '../../hooks/use-animations';
 import { testimonials } from '../../data/testimonials';
 
 export const TestimonialsSection = () => {
