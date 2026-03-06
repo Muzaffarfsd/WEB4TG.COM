@@ -56,10 +56,10 @@ src/
       ai-agent-section.tsx           - Orchestrator for multi-agent AI showcase
       ai-agent/
         data.ts                      - Niche data with agentTeam arrays
-        isometric-office.tsx         - Main isometric office component (~200 lines, refactored)
-        office-config.ts             - Layout, colors, positions config
+        isometric-office.tsx         - Main isometric office component with drone, roomba, toast systems
+        office-config.ts             - Layout, colors, positions config + Drone/Roomba/Toast interfaces
         office-agents.ts             - Agent movement logic
-        office-renderer.ts           - Canvas drawing logic
+        office-renderer.ts           - Canvas drawing: room, desks, agents, arcade, couch, vending, coffee table, whiteboard (kanban), clock, wifi router, roomba, toasts, water cooler, cables, bookshelf, drone, connections, particles
         phone-mockup.tsx             - iPhone mockup with chat UI
         propensity-bar.tsx           - Animated propensity bar
         before-after-cards.tsx       - Before/after comparison cards

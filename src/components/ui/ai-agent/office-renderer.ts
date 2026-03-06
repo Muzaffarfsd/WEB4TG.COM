@@ -1,4 +1,4 @@
-import type { Agent, Particle } from './office-config';
+import type { Agent, Particle, Drone, Roomba, Toast } from './office-config';
 import { ha } from './office-config';
 
 export function drawRoom(
@@ -681,8 +681,33 @@ export function drawPerson(
     ctx.arc(hX + eO + 0.4, eY + 0.8, 0.6, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = ha(a.skin, 0.6);
-    ctx.beginPath(); ctx.arc(hX, hY + hR * 0.45, 1.2, 0, Math.PI); ctx.fill();
+    if (a.state === 'idle') {
+        ctx.fillStyle = ha(a.skin, 0.6);
+        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.4, 1.8, 0, Math.PI); ctx.fill();
+        ctx.strokeStyle = ha(a.skin, 0.3);
+        ctx.lineWidth = 0.3;
+        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.4, 1.8, 0, Math.PI); ctx.stroke();
+    } else if (a.state === 'working') {
+        ctx.fillStyle = ha(a.skin, 0.5);
+        ctx.beginPath();
+        ctx.moveTo(hX - 1.2, hY + hR * 0.45);
+        ctx.lineTo(hX + 1.2, hY + hR * 0.45);
+        ctx.stroke();
+
+        if (!noMotion) {
+            const blink = Math.sin(t * 0.8 + a.phase * 3);
+            if (blink > 0.97) {
+                ctx.strokeStyle = ha(col, 0.3); ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(hX - eO - 2, eY + 1.5); ctx.lineTo(hX - eO + 1, eY + 1.5);
+                ctx.moveTo(hX + eO - 1.5, eY + 1.5); ctx.lineTo(hX + eO + 1.5, eY + 1.5);
+                ctx.stroke();
+            }
+        }
+    } else {
+        ctx.fillStyle = ha(a.skin, 0.6);
+        ctx.beginPath(); ctx.arc(hX, hY + hR * 0.45, 1.2, 0, Math.PI); ctx.fill();
+    }
 
     if (a.state === 'working' && !noMotion && Math.sin(t * 7 + a.phase) > 0.85) {
         ctx.fillStyle = ha(col, 0.45);
@@ -690,6 +715,21 @@ export function drawPerson(
         ctx.textAlign = 'center';
         ctx.fillText('···', hX, hY - hR - 3);
         ctx.textAlign = 'start';
+    }
+
+    if (a.state === 'working' && !noMotion) {
+        const sparkPhase = (t * 0.4 + a.phase) % 1;
+        if (sparkPhase > 0.85) {
+            const sparkAlpha = (sparkPhase - 0.85) / 0.15;
+            for (let si = 0; si < 4; si++) {
+                const sAng = (si / 4) * Math.PI * 2 + t * 3;
+                const sDist = 4 + sparkAlpha * 6;
+                const sx = hX + hR + 3 + Math.cos(sAng) * sDist;
+                const sy = hY - hR + 1 + Math.sin(sAng) * sDist;
+                ctx.fillStyle = ha('#ffd700', 0.4 * (1 - sparkAlpha));
+                ctx.beginPath(); ctx.arc(sx, sy, 1, 0, Math.PI * 2); ctx.fill();
+            }
+        }
     }
 
     if (isOrch) {
@@ -755,6 +795,451 @@ export function drawParticle(
         ctx.beginPath(); ctx.arc(tx2, ty2, r * (1 - i / 5) * 0.5, 0, Math.PI * 2);
         ctx.fillStyle = ha(p.col, 0.08 * (1 - i / 5)); ctx.fill();
     }
+}
+
+export function drawWhiteboard(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, col: string, t: number, workingCount: number, totalAgents: number,
+) {
+    const w = 56, h = 36;
+    ctx.fillStyle = '#1a1730';
+    ctx.strokeStyle = 'rgba(80,70,110,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
+
+    ctx.font = 'bold 5px Inter, sans-serif';
+    ctx.fillStyle = ha(col, 0.6);
+    ctx.textAlign = 'center';
+    ctx.fillText('KANBAN', x + w / 2, y + 8);
+
+    const colW = (w - 8) / 3;
+    const labels = ['TODO', 'WIP', 'DONE'];
+    const labelCols = ['rgba(255,255,255,0.15)', ha('#f59e0b', 0.5), ha('#22c55e', 0.5)];
+    labels.forEach((lb, i) => {
+        const cx = x + 4 + i * colW;
+        ctx.fillStyle = labelCols[i];
+        ctx.font = 'bold 4px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(lb, cx + colW / 2, y + 14);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 0.3;
+        ctx.beginPath(); ctx.moveTo(cx + colW, y + 10); ctx.lineTo(cx + colW, y + h - 3); ctx.stroke();
+    });
+
+    const done = Math.min(3, workingCount);
+    const wip = Math.min(2, Math.max(0, workingCount - done));
+    const todo = Math.min(3, totalAgents - workingCount);
+
+    const stickerCols = [ha('#ef4444', 0.35), ha('#f59e0b', 0.35), ha('#3b82f6', 0.35), ha('#22c55e', 0.35), ha(col, 0.35)];
+    const drawSticker = (sx: number, sy: number, ci: number, animated: boolean) => {
+        const sc = stickerCols[ci % stickerCols.length];
+        const sOff = animated ? Math.sin(t * 2 + ci * 1.5) * 0.3 : 0;
+        ctx.fillStyle = sc;
+        ctx.beginPath(); ctx.roundRect(sx, sy + sOff, colW - 4, 4.5, 0.8); ctx.fill();
+    };
+
+    for (let i = 0; i < todo; i++) drawSticker(x + 4 + 2, y + 16 + i * 6, i, false);
+    for (let i = 0; i < wip; i++) drawSticker(x + 4 + colW + 2, y + 16 + i * 6, i + 3, true);
+    for (let i = 0; i < done; i++) drawSticker(x + 4 + colW * 2 + 2, y + 16 + i * 6, i + 1, false);
+
+    ctx.textAlign = 'start';
+}
+
+export function drawClock(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, col: string, t: number,
+) {
+    const r = 10;
+    ctx.fillStyle = '#0e0c1a';
+    ctx.strokeStyle = 'rgba(80,70,110,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = 'rgba(20,16,32,0.8)';
+    ctx.beginPath(); ctx.arc(x, y, r - 1.5, 0, Math.PI * 2); ctx.fill();
+
+    for (let i = 0; i < 12; i++) {
+        const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
+        const iR = i % 3 === 0 ? r - 3 : r - 2.5;
+        const oR = r - 1.5;
+        ctx.strokeStyle = i % 3 === 0 ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = i % 3 === 0 ? 0.8 : 0.4;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(ang) * iR, y + Math.sin(ang) * iR);
+        ctx.lineTo(x + Math.cos(ang) * oR, y + Math.sin(ang) * oR);
+        ctx.stroke();
+    }
+
+    const hourAng = (t * 0.02) * Math.PI * 2 - Math.PI / 2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(hourAng) * (r - 5), y + Math.sin(hourAng) * (r - 5));
+    ctx.stroke();
+
+    const minAng = (t * 0.2) * Math.PI * 2 - Math.PI / 2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(minAng) * (r - 3), y + Math.sin(minAng) * (r - 3));
+    ctx.stroke();
+
+    const secAng = (t * 1.0) * Math.PI * 2 - Math.PI / 2;
+    ctx.strokeStyle = ha(col, 0.6);
+    ctx.lineWidth = 0.4;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(secAng) * (r - 2.5), y + Math.sin(secAng) * (r - 2.5));
+    ctx.stroke();
+
+    ctx.fillStyle = ha(col, 0.5);
+    ctx.beginPath(); ctx.arc(x, y, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save();
+    ctx.shadowColor = col; ctx.shadowBlur = 8; ctx.globalAlpha = 0.06;
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(x, y, r + 2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+}
+
+export function drawWifiRouter(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, col: string, t: number,
+) {
+    ctx.fillStyle = '#181428';
+    ctx.strokeStyle = 'rgba(60,50,80,0.3)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.roundRect(x - 8, y - 3, 16, 6, 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = Math.sin(t * 4) > 0 ? '#22c55e' : ha(col, 0.3);
+    ctx.beginPath(); ctx.arc(x - 3, y, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = ha(col, 0.4);
+    ctx.beginPath(); ctx.arc(x + 3, y, 1, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = 'rgba(40,35,55,0.6)';
+    ctx.save(); ctx.translate(x - 4, y - 3); ctx.rotate(-0.3);
+    ctx.fillRect(-0.5, -6, 1, 6); ctx.restore();
+    ctx.save(); ctx.translate(x + 4, y - 3); ctx.rotate(0.3);
+    ctx.fillRect(-0.5, -6, 1, 6); ctx.restore();
+
+    const wavePulse = (t * 1.5) % 3;
+    for (let i = 0; i < 3; i++) {
+        const waveR = 6 + i * 5;
+        const waveAlpha = Math.max(0, 0.12 - Math.abs(wavePulse - i) * 0.06);
+        if (waveAlpha > 0.01) {
+            ctx.strokeStyle = ha(col, waveAlpha);
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.arc(x, y - 6, waveR, -Math.PI * 0.7, -Math.PI * 0.3);
+            ctx.stroke();
+        }
+    }
+}
+
+export function drawRoomba(
+    ctx: CanvasRenderingContext2D,
+    rb: Roomba, col: string, t: number,
+) {
+    const r = 6;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.beginPath(); ctx.ellipse(rb.x, rb.y + 1.5, r + 1, 2, 0, 0, Math.PI * 2); ctx.fill();
+
+    const bodyG = ctx.createRadialGradient(rb.x - 1, rb.y - 1, 0, rb.x, rb.y, r);
+    bodyG.addColorStop(0, '#2a2440');
+    bodyG.addColorStop(1, '#1a1630');
+    ctx.fillStyle = bodyG;
+    ctx.beginPath(); ctx.arc(rb.x, rb.y, r, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = 'rgba(60,50,80,0.3)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(rb.x, rb.y, r, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(80,70,100,0.2)';
+    ctx.lineWidth = 0.3;
+    ctx.beginPath(); ctx.arc(rb.x, rb.y, r - 2, 0, Math.PI * 2); ctx.stroke();
+
+    const ledPulse = 0.4 + Math.sin(t * 3 + rb.ledPhase) * 0.3;
+    ctx.fillStyle = ha(col, ledPulse);
+    ctx.beginPath(); ctx.arc(rb.x, rb.y - 2, 1.5, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save();
+    ctx.shadowColor = col; ctx.shadowBlur = 6;
+    ctx.fillStyle = ha(col, ledPulse * 0.4);
+    ctx.beginPath(); ctx.arc(rb.x, rb.y - 2, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    const dirX = Math.cos(rb.angle) * (r - 1);
+    const dirY = Math.sin(rb.angle) * (r - 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath(); ctx.arc(rb.x + dirX, rb.y + dirY, 1, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = ha(col, 0.03);
+    ctx.lineWidth = 0.3;
+    const trailLen = 5;
+    for (let i = 1; i <= trailLen; i++) {
+        const tx = rb.x - Math.cos(rb.angle) * i * 3;
+        const ty = rb.y - Math.sin(rb.angle) * i * 3;
+        ctx.globalAlpha = 0.3 * (1 - i / trailLen);
+        ctx.beginPath(); ctx.arc(tx, ty, 0.5, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+}
+
+export function drawToast(
+    ctx: CanvasRenderingContext2D,
+    toast: Toast,
+) {
+    if (toast.opacity <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = toast.opacity;
+
+    const tw = ctx.measureText(toast.text).width + 16;
+    const th = 14;
+    const tx = toast.x - tw / 2;
+    const ty = toast.y - toast.life * 8;
+
+    ctx.fillStyle = 'rgba(10,8,18,0.85)';
+    ctx.strokeStyle = ha(toast.col, 0.3);
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.roundRect(tx, ty, tw, th, 4); ctx.fill(); ctx.stroke();
+
+    ctx.save();
+    ctx.shadowColor = toast.col; ctx.shadowBlur = 6;
+    ctx.fillStyle = ha(toast.col, 0.15);
+    ctx.beginPath(); ctx.roundRect(tx, ty, tw, th, 4); ctx.fill();
+    ctx.restore();
+
+    ctx.font = '600 7px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = toast.col === '#22c55e'
+        ? 'rgba(34,197,94,0.9)' : `rgba(255,255,255,0.85)`;
+    ctx.fillText(`${toast.icon} ${toast.text}`, toast.x, ty + 10);
+    ctx.textAlign = 'start';
+
+    ctx.restore();
+}
+
+export function drawWaterCooler(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, col: string, t: number,
+) {
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath(); ctx.ellipse(x, y + 2, 6, 2, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#1a1630';
+    ctx.strokeStyle = 'rgba(60,50,80,0.3)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.roundRect(x - 5, y - 22, 10, 24, 1.5); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = 'rgba(40,120,220,0.12)';
+    ctx.beginPath(); ctx.roundRect(x - 4, y - 20, 8, 10, 1); ctx.fill();
+
+    ctx.fillStyle = 'rgba(60,160,255,0.08)';
+    ctx.beginPath(); ctx.roundRect(x - 3.5, y - 19, 7, 8, 0.5); ctx.fill();
+
+    const bubblePhase = (t * 2) % 4;
+    for (let i = 0; i < 3; i++) {
+        const by = y - 12 - ((bubblePhase + i * 1.3) % 4) * 2;
+        const bx = x - 1.5 + Math.sin(t * 3 + i * 2.1) * 1.5;
+        const ba = 0.12 - ((bubblePhase + i * 1.3) % 4) * 0.025;
+        if (ba > 0.02 && by > y - 20 && by < y - 12) {
+            ctx.fillStyle = `rgba(100,180,255,${ba})`;
+            ctx.beginPath(); ctx.arc(bx, by, 0.8, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    ctx.fillStyle = 'rgba(100,180,255,0.08)';
+    ctx.beginPath();
+    ctx.ellipse(x, y - 22, 4.5, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(100,180,255,0.12)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.ellipse(x, y - 22, 4.5, 6, 0, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.fillStyle = ha(col, 0.08);
+    ctx.fillRect(x - 4, y - 8, 8, 5);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.beginPath(); ctx.arc(x - 1.5, y - 5, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = ha('#3b82f6', 0.15);
+    ctx.beginPath(); ctx.arc(x + 1.5, y - 5, 1.5, 0, Math.PI * 2); ctx.fill();
+
+    ctx.font = '500 4px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.textAlign = 'center';
+    ctx.fillText('H₂O', x, y + 8);
+    ctx.textAlign = 'start';
+}
+
+export function drawCables(
+    ctx: CanvasRenderingContext2D,
+    srvX: number, srvY: number, srvH: number,
+    desks: { x: number; y: number; isOrch: boolean }[],
+    col: string, t: number,
+) {
+    const cableStart = { x: srvX + 16, y: srvY + srvH * 0.3 };
+
+    ctx.strokeStyle = 'rgba(40,35,55,0.12)';
+    ctx.lineWidth = 0.6;
+
+    desks.forEach((d, i) => {
+        if (i > 3) return;
+        const endX = d.x - 20;
+        const endY = d.y + (d.isOrch ? 20 : 16);
+
+        ctx.beginPath();
+        ctx.moveTo(cableStart.x, cableStart.y + i * 6);
+
+        const midX1 = cableStart.x + 8;
+        const floorY = endY + 4;
+        ctx.lineTo(midX1, cableStart.y + i * 6);
+        ctx.lineTo(midX1, floorY);
+        ctx.lineTo(endX, floorY);
+        ctx.lineTo(endX, endY);
+
+        ctx.strokeStyle = `rgba(40,35,55,${0.08 + i * 0.02})`;
+        ctx.stroke();
+
+        const pulsePos = ((t * 0.5 + i * 0.3) % 1);
+        const pathLen = Math.abs(midX1 - cableStart.x) + Math.abs(floorY - (cableStart.y + i * 6)) + Math.abs(endX - midX1) + Math.abs(endY - floorY);
+        const pDist = pulsePos * pathLen;
+        let px = cableStart.x, py = cableStart.y + i * 6;
+
+        const seg1 = Math.abs(midX1 - cableStart.x);
+        const seg2 = Math.abs(floorY - (cableStart.y + i * 6));
+        const seg3 = Math.abs(endX - midX1);
+
+        if (pDist < seg1) {
+            px = cableStart.x + pDist;
+        } else if (pDist < seg1 + seg2) {
+            px = midX1;
+            py = cableStart.y + i * 6 + (pDist - seg1);
+        } else if (pDist < seg1 + seg2 + seg3) {
+            px = midX1 + (pDist - seg1 - seg2);
+            py = floorY;
+        } else {
+            px = endX;
+            py = floorY - (pDist - seg1 - seg2 - seg3);
+        }
+
+        ctx.fillStyle = ha(col, 0.25);
+        ctx.beginPath(); ctx.arc(px, py, 1.2, 0, Math.PI * 2); ctx.fill();
+    });
+}
+
+export function drawBookshelf(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, col: string,
+) {
+    const w = 36, h = 28;
+
+    ctx.fillStyle = '#1a1428';
+    ctx.strokeStyle = 'rgba(60,50,80,0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 1.5); ctx.fill(); ctx.stroke();
+
+    const shelfY1 = y + h * 0.33;
+    const shelfY2 = y + h * 0.66;
+    ctx.fillStyle = 'rgba(40,35,55,0.4)';
+    ctx.fillRect(x + 1, shelfY1, w - 2, 1.5);
+    ctx.fillRect(x + 1, shelfY2, w - 2, 1.5);
+
+    const bookColors = [
+        ha('#ef4444', 0.3), ha('#3b82f6', 0.35), ha(col, 0.3),
+        ha('#22c55e', 0.25), ha('#f59e0b', 0.3), ha('#ec4899', 0.25),
+        ha('#6366f1', 0.3), ha('#14b8a6', 0.3), ha('#f97316', 0.25),
+    ];
+
+    const drawBooks = (sy: number, count: number, startIdx: number) => {
+        const bw = (w - 6) / count;
+        for (let i = 0; i < count; i++) {
+            const bh = 6 + (i * 2.3) % 4;
+            ctx.fillStyle = bookColors[(startIdx + i) % bookColors.length];
+            ctx.beginPath();
+            ctx.roundRect(x + 3 + i * bw, sy - bh - 1, bw - 1.5, bh, 0.5);
+            ctx.fill();
+
+            if (i % 3 === 0) {
+                ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                ctx.fillRect(x + 3 + i * bw + 1, sy - bh, bw - 3.5, 0.5);
+            }
+        }
+    };
+
+    drawBooks(shelfY1, 5, 0);
+    drawBooks(shelfY2, 4, 5);
+
+    const potX = x + w - 8, potY = y + h - 2;
+    ctx.fillStyle = 'rgba(180,100,50,0.25)';
+    ctx.beginPath(); ctx.roundRect(potX - 3, potY - 4, 6, 4, 1); ctx.fill();
+    ctx.fillStyle = '#1a6a1a';
+    ctx.beginPath(); ctx.ellipse(potX, potY - 6, 4, 5, 0, Math.PI + 0.3, -0.3); ctx.fill();
+    ctx.fillStyle = '#22882a';
+    ctx.beginPath(); ctx.ellipse(potX - 1, potY - 7, 3, 4, -0.2, Math.PI + 0.5, -0.5); ctx.fill();
+}
+
+export function drawDrone(
+    ctx: CanvasRenderingContext2D,
+    drone: Drone, col: string, t: number,
+) {
+    const hover = Math.sin(t * 4 + drone.phase) * 1.5;
+    const dx = drone.x;
+    const dy = drone.y + hover;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.beginPath();
+    ctx.ellipse(dx, drone.y + 12, 5, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#2a2440';
+    ctx.strokeStyle = 'rgba(80,70,110,0.4)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.roundRect(dx - 5, dy - 2, 10, 4, 1.5); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#1e1a35';
+    ctx.fillRect(dx - 7, dy - 1, 14, 2);
+
+    const pAngle = drone.propellerAngle;
+    [-7, 7].forEach(off => {
+        const pX = dx + off;
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 0.4;
+        const pLen = 3.5 * Math.abs(Math.cos(pAngle));
+        ctx.beginPath();
+        ctx.moveTo(pX - pLen, dy - 2);
+        ctx.lineTo(pX + pLen, dy - 2);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.beginPath();
+        ctx.ellipse(pX, dy - 2, 4, 1, 0, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.fillStyle = ha(col, 0.5 + Math.sin(t * 6) * 0.2);
+    ctx.beginPath(); ctx.arc(dx, dy + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save();
+    ctx.shadowColor = col; ctx.shadowBlur = 10;
+    ctx.fillStyle = ha(col, 0.15);
+    ctx.beginPath(); ctx.arc(dx, dy + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    const beam = 0.08 + Math.sin(t * 3) * 0.03;
+    ctx.fillStyle = ha(col, beam);
+    ctx.beginPath();
+    ctx.moveTo(dx - 2, dy + 3);
+    ctx.lineTo(dx + 2, dy + 3);
+    ctx.lineTo(dx + 5, drone.y + 12);
+    ctx.lineTo(dx - 5, drone.y + 12);
+    ctx.closePath();
+    ctx.fill();
 }
 
 export function drawConnections(

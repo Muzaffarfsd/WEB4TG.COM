@@ -28,6 +28,33 @@ export interface Particle {
     p: number; spd: number; idx: number; ret: boolean; col: string;
 }
 
+export interface Drone {
+    x: number; y: number;
+    targetX: number; targetY: number;
+    phase: number;
+    speed: number;
+    waitTimer: number;
+    propellerAngle: number;
+}
+
+export interface Roomba {
+    x: number; y: number;
+    angle: number;
+    speed: number;
+    turnTimer: number;
+    ledPhase: number;
+}
+
+export interface Toast {
+    x: number; y: number;
+    text: string;
+    icon: string;
+    opacity: number;
+    life: number;
+    maxLife: number;
+    col: string;
+}
+
 export const SKINS = ['#f0d0b0', '#d4a878', '#c49070', '#e8c4a0', '#b87848', '#f2dcc8'];
 export const HAIRS = ['#1a1420', '#3a2210', '#8a6030', '#c49050', '#582010', '#222'];
 export const SHIRTS = ['#6d5acd', '#4a90d9', '#2ecc71', '#e67e22', '#e74c3c', '#1abc9c', '#9b59b6', '#f39c12'];
