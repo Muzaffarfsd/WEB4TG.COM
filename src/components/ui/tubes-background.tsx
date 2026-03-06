@@ -26,7 +26,14 @@ evts.forEach(function(ev){
 });
 
 try {
+  var _origWarn = console.warn;
+  console.warn = function() {
+    var msg = arguments[0];
+    if (typeof msg === 'string' && (msg.indexOf('WebGPU') !== -1 || msg.indexOf('WebGL') !== -1)) return;
+    _origWarn.apply(console, arguments);
+  };
   var mod = await import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js');
+  console.warn = _origWarn;
   var TubesCursor = mod.default;
 
   var app = TubesCursor(canvas, {

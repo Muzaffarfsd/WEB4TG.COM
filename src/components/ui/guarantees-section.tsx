@@ -1,5 +1,5 @@
 import { Shield, RotateCcw, FileCheck, Infinity } from 'lucide-react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useScaleReveal } from '../../hooks/use-animations';
 
 const guarantees = [
   {
@@ -25,7 +25,7 @@ const guarantees = [
 ];
 
 export default function GuaranteesSection() {
-  const sectionRef = useScrollReveal({ stagger: 0.15 });
+  const sectionRef = useScaleReveal({ stagger: 0.12 });
 
   return (
     <section className="py-20 sm:py-28 md:py-36 px-5 sm:px-8 relative" ref={sectionRef}>

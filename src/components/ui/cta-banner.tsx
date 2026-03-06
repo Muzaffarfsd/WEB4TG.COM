@@ -1,8 +1,8 @@
 import { Zap, ArrowRight, Clock, ShieldCheck, FileText } from 'lucide-react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScaleReveal } from '../../hooks/use-animations';
 
 export default function CtaBanner() {
-  const sectionRef = useScrollReveal();
+  const sectionRef = useScaleReveal({ stagger: 0.1, scale: 0.9 });
 
   return (
     <section ref={sectionRef} className="relative py-20 sm:py-28 md:py-36 px-5 sm:px-8 overflow-hidden">

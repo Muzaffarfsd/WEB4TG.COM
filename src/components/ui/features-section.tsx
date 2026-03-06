@@ -1,5 +1,5 @@
 import { CreditCard, BarChart3, MessageSquare, Bell, Heart, Star, Truck, Shield } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useStaggerGrid } from '../../hooks/use-animations';
 
 const features = [
     { icon: CreditCard, title: "Платежи", desc: "SDK Stripe, ЮKassa, Apple Pay, Google Pay, СБП — PCI DSS Level 1, токенизация карт" },
@@ -13,14 +13,15 @@ const features = [
 ];
 
 export const FeaturesSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.05 });
+    const headerRef = useScrollReveal({ stagger: 0.05 });
+    const gridRef = useStaggerGrid({ stagger: 0.06 });
 
     return (
         <section className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
             <div className="absolute w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/[0.02] blur-[80px] top-[30%] left-[5%] pointer-events-none" />
 
-            <div ref={revealRef} className="max-w-6xl mx-auto relative">
-                <div data-reveal className="text-center mb-12 sm:mb-16">
+            <div className="max-w-6xl mx-auto relative">
+                <div ref={headerRef} data-reveal className="text-center mb-12 sm:mb-16">
                     <span className="section-label justify-center">
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Под капотом
@@ -33,10 +34,11 @@ export const FeaturesSection = () => {
                     </h2>
                 </div>
 
-                <div data-reveal className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.06] glass-panel">
+                <div ref={gridRef} className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.06] glass-panel">
                     {features.map((feature, index) => (
                         <div
                             key={index}
+                            data-reveal
                             className="bg-[#08080c]/80 p-5 sm:p-6 md:p-7 group hover:bg-[#0c0a14]/85 transition-colors duration-500"
                         >
                             <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B5CF6]/40 mb-4 sm:mb-5 group-hover:text-[#8B5CF6] transition-colors duration-500" />

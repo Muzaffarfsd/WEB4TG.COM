@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useSlideReveal } from '../../hooks/use-animations';
 
 const steps = [
     {
@@ -26,12 +26,13 @@ const steps = [
 ];
 
 export const ProcessSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.08 });
+    const headerRef = useScrollReveal({ stagger: 0.08 });
+    const cardsRef = useSlideReveal('right', { stagger: 0.15 });
 
     return (
         <section id="process" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
-            <div ref={revealRef} className="max-w-6xl mx-auto">
-                <div data-reveal className="max-w-xl mb-12 sm:mb-16">
+            <div className="max-w-6xl mx-auto">
+                <div ref={headerRef} data-reveal className="max-w-xl mb-12 sm:mb-16">
                     <span className="section-label">
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Процесс
@@ -43,7 +44,7 @@ export const ProcessSection = () => {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3">
+                <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3">
                     {steps.map((step, index) => (
                         <div
                             key={index}

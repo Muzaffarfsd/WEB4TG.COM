@@ -1,5 +1,5 @@
 import { Check, X, Minus, ChevronRight } from 'lucide-react';
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useSlideReveal } from '../../hooks/use-animations';
 
 const columns = ['WEB4TG Studio', 'Фрилансер', 'No-code', 'Другие студии'] as const;
 
@@ -95,7 +95,7 @@ function StatusIcon({ status }: { status: Status }) {
 }
 
 export default function ComparisonTable() {
-  const sectionRef = useScrollReveal({ stagger: 0.08 });
+  const sectionRef = useSlideReveal('left', { stagger: 0.1 });
 
   return (
     <section className="py-20 sm:py-28 md:py-36 px-5 sm:px-8" ref={sectionRef}>

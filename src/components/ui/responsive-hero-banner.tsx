@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
-import { useCountUp, useStickyNav, useTextReveal } from '../../hooks/use-animations';
+import { useCountUp, useStickyNav } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
+import gsap from 'gsap';
 
 const techItems = [
     "React 19", "TypeScript", "Vite", "Tailwind CSS", "Telegram Bot API", "Stripe", "ЮKassa", "AI-бот", "PWA", "PostgreSQL", "Redis", "framer-motion"
@@ -209,9 +210,52 @@ const DemandIndicator = () => {
     );
 };
 
+const SplitText = ({ text, className, delay = 0 }: { text: string; className: string; delay?: number }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const chars = containerRef.current.querySelectorAll('.split-char');
+
+        if (prefersReduced) {
+            gsap.set(chars, { opacity: 1, y: 0 });
+            return;
+        }
+
+        gsap.set(chars, { opacity: 0, y: 60, rotateX: -90 });
+
+        gsap.to(chars, {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 0.8,
+            delay,
+            stagger: 0.035,
+            ease: 'power4.out',
+        });
+    }, [delay]);
+
+    return (
+        <div ref={containerRef} className={className} style={{ perspective: '600px' }}>
+            {text.split('').map((char, i) => (
+                <span
+                    key={i}
+                    className="split-char"
+                    style={{
+                        display: 'inline-block',
+                        minWidth: char === ' ' ? '0.3em' : undefined,
+                        willChange: 'transform, opacity',
+                    }}
+                >
+                    {char === ' ' ? '\u00A0' : char}
+                </span>
+            ))}
+        </div>
+    );
+};
+
 const ResponsiveHeroBanner = () => {
-    const titleRef1 = useTextReveal({ delay: 0.2 });
-    const titleRef2 = useTextReveal({ delay: 0.5 });
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const scrolledRef = useRef(false);
@@ -251,18 +295,16 @@ const ResponsiveHeroBanner = () => {
                             <DemandIndicator />
 
                             <h1>
-                                <div
-                                    ref={titleRef1}
+                                <SplitText
+                                    text="Хватит кормить"
                                     className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white"
-                                >
-                                    Хватит кормить
-                                </div>
-                                <div
-                                    ref={titleRef2}
+                                    delay={2.2}
+                                />
+                                <SplitText
+                                    text="посредников"
                                     className="text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic"
-                                >
-                                    посредников
-                                </div>
+                                    delay={2.7}
+                                />
                             </h1>
 
                             <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">

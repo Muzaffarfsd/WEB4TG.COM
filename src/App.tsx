@@ -3,7 +3,10 @@ import Lenis from 'lenis';
 import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
+import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
+import { CustomCursor } from './components/ui/custom-cursor';
+import { Preloader } from './components/ui/preloader';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
@@ -19,6 +22,7 @@ const GuaranteesSection = lazy(() => import('./components/ui/guarantees-section'
 const FaqSection = lazy(() => import('./components/ui/faq-section').then(m => ({ default: m.FaqSection })));
 const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marquee'));
 const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
+const ContactForm = lazy(() => import('./components/ui/contact-form'));
 const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
 
 const DefaultSkeleton = () => (
@@ -138,6 +142,9 @@ const App = () => {
 
     return (
         <>
+            <Preloader />
+            <CustomCursor />
+            <ScrollProgress />
             <a href="#main-content" className="skip-link">
                 Перейти к содержимому
             </a>
@@ -159,6 +166,7 @@ const App = () => {
                 <LazySection component={FaqSection} skeleton="accordion" />
                 <LazySection component={IntegrationsMarquee} skeleton="marquee" />
                 <LazySection component={CtaBanner} skeleton="default" />
+                <LazySection component={ContactForm} skeleton="default" />
                 <LazySection component={FooterSection} skeleton="default" />
             </main>
             <TelegramFab />

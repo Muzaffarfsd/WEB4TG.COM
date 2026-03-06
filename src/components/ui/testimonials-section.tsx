@@ -1,9 +1,9 @@
 import { Star, BadgeCheck, Globe } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useFlipReveal } from '../../hooks/use-animations';
 import { testimonials } from '../../data/testimonials';
 
 export const TestimonialsSection = () => {
-    const revealRef = useScrollReveal({ stagger: 0.08 });
+    const revealRef = useFlipReveal({ stagger: 0.12 });
 
     return (
         <section className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">

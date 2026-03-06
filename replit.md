@@ -1,7 +1,7 @@
 # WEB4TG Studio — web4tg.com
 
 ## Overview
-WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full Russian-language landing page with animated neon tubes background (Three.js via iframe), glassmorphic cards, GSAP scroll animations, count-up stats, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, gradient mesh hero. Dark OLED theme with electric violet (#8B5CF6) accents.
+WEB4TG Studio website — premium agency for Telegram Mini Apps development. Full Russian-language landing page with animated neon tubes background (Three.js via iframe), glassmorphic cards, GSAP scroll animations, count-up stats, bento grid, marquee tech stack, noise texture overlay, Lenis smooth scroll, gradient mesh hero. Dark OLED theme with electric violet accents using CSS custom properties.
 
 ## Architecture
 - **Runtime**: Node.js 20
@@ -29,8 +29,8 @@ public/
   og-image.png                       - Open Graph social sharing image (1200x630)
 src/
   main.tsx                           - React root mount
-  App.tsx                            - Main app, Lenis init, TubesBackground, ErrorBoundary, varied skeleton fallbacks
-  index.css                          - Theme, animations, utility classes, glass-panel, gradient mesh, skeleton shimmer
+  App.tsx                            - Main app, Lenis init, Preloader, CustomCursor, ScrollProgress, ErrorBoundary, varied skeleton fallbacks
+  index.css                          - Theme (CSS vars for accent color), animations, utility classes, glass-panel, gradient mesh, skeleton shimmer
   fonts.css                          - Self-hosted @font-face declarations (Inter, Instrument Serif, Montserrat)
   fonts/                             - Local woff2 font files (cyrillic + latin subsets)
   data/
@@ -38,40 +38,49 @@ src/
     services.ts                      - Services data (8 industry cards)
     faq.ts                           - FAQ items (5 questions)
     testimonials.ts                  - Testimonial cards (3 reviews)
+    integration-icons.tsx            - SVG path data for integration badges (extracted from integrations-marquee)
   hooks/
-    use-animations.tsx               - useScrollReveal, useCountUp, useParallax, useTextReveal, useStickyNav
+    use-animations.tsx               - useScrollReveal, useCountUp, useParallax, useTextReveal, useStickyNav, useSlideReveal, useScaleReveal, useStaggerGrid, useFlipReveal
   components/
     ui/
       error-boundary.tsx             - React ErrorBoundary with graceful fallback UI
+      preloader.tsx                  - GSAP-animated preloader (logo + character reveal + fade out ~2s)
+      custom-cursor.tsx              - Dot (8px) + ring (40px) cursor follower with mix-blend-mode:difference, grows on hover over interactive elements, hidden on touch devices
+      scroll-progress.tsx            - Thin gradient progress bar at top of viewport (accent gradient)
+      magnetic-button.tsx            - GSAP spring-physics magnetic button (elastic.out on mouseleave)
+      contact-form.tsx               - Inline contact form (name, phone/telegram, description) with validation, Telegram deep link submit
       tubes-background.tsx           - Iframe-isolated Three.js tubes (requestIdleCallback init, sandbox=allow-scripts only)
-      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + text reveal + DemandIndicator (weekly seed) + mobile menu (focus trap)
-      magnetic-button.tsx            - Plain link/button wrapper
+      responsive-hero-banner.tsx     - Hero + glass sticky nav + GradientMesh + SplitText reveal + DemandIndicator (weekly seed) + mobile menu (focus trap)
       client-logos.tsx               - Two-row client logos marquee
       services-section.tsx           - Bento grid services (imports from data/)
       ai-agent-section.tsx           - Orchestrator for multi-agent AI showcase
       ai-agent/
         data.ts                      - Niche data with agentTeam arrays
+        isometric-office.tsx         - Main isometric office component (~200 lines, refactored)
+        office-config.ts             - Layout, colors, positions config
+        office-agents.ts             - Agent movement logic
+        office-renderer.ts           - Canvas drawing logic
         phone-mockup.tsx             - iPhone mockup with chat UI
         propensity-bar.tsx           - Animated propensity bar
         before-after-cards.tsx       - Before/after comparison cards
         result-panel.tsx             - Hero metric + result cards panel
       iphone-carousel.tsx            - GSAP video carousel with loading spinner states
-      process-section.tsx            - 3-step process glassmorphic cards
-      features-section.tsx           - Technical features grid (8 cells)
-      case-studies.tsx               - 3 case study cards with animated count-up metrics
-      testimonials-section.tsx       - 3 review cards (imports from data/)
-      comparison-table.tsx           - 4-column comparison table with mobile scroll snap
+      process-section.tsx            - 3-step process glassmorphic cards (slideRight animation)
+      features-section.tsx           - Technical features grid (staggerGrid animation)
+      case-studies.tsx               - 3 case study cards with 3D tilt on mousemove, phone mockups, colored metric badges, tech stack pills
+      testimonials-section.tsx       - 3 review cards (flipReveal animation)
+      comparison-table.tsx           - 4-column comparison table with mobile scroll snap (slideLeft animation)
       pricing-section.tsx            - Bento pricing grid (imports from data/)
-      guarantees-section.tsx         - Bento grid with gradient borders
+      guarantees-section.tsx         - Bento grid with gradient borders (scaleReveal animation)
       faq-section.tsx                - Accordion FAQ (imports from data/)
-      integrations-marquee.tsx       - Scrolling integration badges
-      cta-banner.tsx                 - Urgency CTA with capacity badge
-      footer-section.tsx             - Contact CTA + footer
+      integrations-marquee.tsx       - Scrolling integration badges (SVG data from data/integration-icons.tsx)
+      cta-banner.tsx                 - Urgency CTA with capacity badge (scaleReveal animation)
+      footer-section.tsx             - Contact CTA + footer (dynamic year)
       telegram-fab.tsx               - Floating Telegram button
 ```
 
 ## Section Order (App.tsx)
-Hero → ClientLogos → Services → AiAgent → IphoneCarousel → Process → Features → CaseStudies → Testimonials → ComparisonTable → Pricing → Guarantees → FAQ → IntegrationsMarquee → CtaBanner → Footer
+Hero → ClientLogos → Services → AiAgent → IphoneCarousel → Process → Features → CaseStudies → Testimonials → ComparisonTable → Pricing → Guarantees → FAQ → IntegrationsMarquee → CtaBanner → ContactForm → Footer
 
 ## Running
 ```bash
@@ -97,13 +106,25 @@ npm start      # Express server only (requires dist/)
 
 ## Design System
 - Dark OLED: #050505 background
-- Accent: electric violet gradients (#8B5CF6 → #7C3AED → #A78BFA)
+- Accent color via CSS custom properties:
+  - `:root` vars: `--accent` (#8B5CF6), `--accent-dark` (#7C3AED), `--accent-light` (#A78BFA), `--accent-lighter` (#C4B5FD)
+  - Tailwind `@theme` vars: `--color-accent`, `--color-accent-dark`, `--color-accent-light`, `--color-accent-lighter`
 - Niche colors: Shop=#8B5CF6, Restaurant=#f59e0b, Beauty=#ec4899, Fitness=#22c55e
 - Fonts: Instrument Serif (headings), Inter (body), Montserrat (logo) — self-hosted
 - Glassmorphism: backdrop-blur(8px) desktop, rgba(8,8,12,0.92) solid on mobile
 - Section labels: uppercase, tracked, with line decoration
 - All external links: https://t.me/w4tg_bot
 - Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact
+
+## Animation System
+- Preloader: GSAP timeline — logo scale+fade → character stagger reveal → background fade-out (~2s)
+- Hero SplitText: individual character reveal with rotateX, coordinated with preloader timing (2.2s/2.7s delays)
+- CSS fade-slide-in animations: delayed to start after preloader (2.1s-3.8s)
+- Custom cursor: rAF loop with lerp interpolation (dot: 0.35, ring: 0.12), grows 1.8x on interactive hover
+- MagneticButton: GSAP displacement on mousemove (power2.out), elastic spring-back on leave (elastic.out(1, 0.3))
+- Scroll animations (per-section diversity): useScrollReveal (fadeUp), useSlideReveal (left/right), useScaleReveal (scale+rotate), useStaggerGrid (children stagger), useFlipReveal (rotateX flip)
+- Case studies: 3D tilt via GSAP rotateX/Y on mousemove with perspective
+- Scroll progress: rAF-throttled scroll listener, gradient width bar
 
 ## Performance
 - React.lazy + per-section Suspense with contextual skeleton fallbacks (cards, table, accordion, marquee, pricing)
@@ -122,4 +143,6 @@ npm start      # Express server only (requires dist/)
 ## Accessibility
 - Skip-to-content link (#main-content)
 - Mobile menu: focus trap, role="dialog", aria-modal="true", Escape key closes
-- prefers-reduced-motion: all GSAP animations skip, Three.js background disabled, Lenis duration=0
+- prefers-reduced-motion: all GSAP animations skip (gsap.set instead of gsap.to), Three.js background disabled, Lenis duration=0
+- Custom cursor hidden on touch devices
+- Contact form: proper labels, validation errors, noValidate for custom UX
