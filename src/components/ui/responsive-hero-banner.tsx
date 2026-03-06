@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
-import { useCountUp, useStickyNav, useCharReveal } from '../../hooks/use-animations';
+import { useCountUp, useStickyNav } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
 const techItems = [
@@ -213,7 +213,6 @@ const ResponsiveHeroBanner = () => {
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const scrolledRef = useRef(false);
-    const charRevealRef = useCharReveal({ stagger: 0.03, start: 'top 90%' });
 
     useEffect(() => {
         let ticking = false;
@@ -258,7 +257,7 @@ const ResponsiveHeroBanner = () => {
                                 </span>
                             </h1>
 
-                            <p ref={charRevealRef as React.RefObject<HTMLParagraphElement>} className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
+                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
                                 Telegram Mini Apps мирового класса.
                                 <span className="text-white/90"> Ваш бренд, ваши продажи — без комиссий.</span>
                             </p>
