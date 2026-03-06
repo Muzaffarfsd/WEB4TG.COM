@@ -3,8 +3,7 @@ import Lenis from 'lenis';
 import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
-
-import { ScrollNarrative } from './components/ui/scroll-narrative';
+import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Preloader } from './components/ui/preloader';
 import { SoundProvider } from './hooks/use-sound';
@@ -147,8 +146,7 @@ const App = () => {
     return (
         <SoundProvider>
             <Preloader />
-
-            <ScrollNarrative />
+            <ScrollProgress />
             <a href="#main-content" className="skip-link">
                 Перейти к содержимому
             </a>
