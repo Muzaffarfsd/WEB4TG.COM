@@ -9,6 +9,7 @@ import {
     drawDesk, drawChair, drawPerson, drawParticle, drawConnections,
     drawWhiteboard, drawClock, drawWifiRouter, drawRoomba,
     drawToast, drawWaterCooler, drawCables, drawBookshelf, drawDrone,
+    drawDeskAccessories,
 } from './office-renderer';
 
 function createDrone(W: number, H: number): Drone {
@@ -286,15 +287,18 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const desks = sortedDesks.current;
             for (let i = 0; i < desks.length; i++) {
                 const d = desks[i];
-                let isWorking = false, ph = 0;
+                let isWorking = false, ph = 0, agIdx = i;
                 for (let j = 0; j < agList.length; j++) {
                     const a = agList[j];
                     if (a.deskX === d.x && a.deskY === d.y && a.state === 'working') {
-                        isWorking = true; ph = a.phase; break;
+                        isWorking = true; ph = a.phase; agIdx = j; break;
                     }
                 }
                 drawChair(ctx, d.x, d.y, niche.color, d.isOrch);
                 drawDesk(ctx, d.x, d.y, niche.color, d.isOrch, isWorking, t, ph);
+                if (lod !== 'low') {
+                    drawDeskAccessories(ctx, d.x, d.y, d.isOrch, niche.color, agIdx);
+                }
             }
 
             const sorted = [...agList].sort((a, b) => a.y - b.y);
@@ -353,10 +357,19 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             if (walkingAgents > 0) parts.push(`→ ${walkingAgents} в пути`);
             if (idleAgents > 0) parts.push(`☕ ${idleAgents} отдыхают`);
             const statusText = `${agList.length} AI-агентов · ${parts.join(' · ')}`;
-            ctx.fillStyle = 'rgba(0,0,0,0.45)';
-            ctx.fillText(statusText, W / 2 + 1, H - 7);
-            ctx.fillStyle = 'rgba(255,255,255,0.18)';
-            ctx.fillText(statusText, W / 2, H - 8);
+            const stW = ctx.measureText(statusText).width + 24;
+            const stH = 22;
+            const stX = W / 2 - stW / 2;
+            const stY = H - stH - 4;
+            ctx.fillStyle = 'rgba(8,6,16,0.7)';
+            ctx.beginPath(); ctx.roundRect(stX, stY, stW, stH, 8); ctx.fill();
+            ctx.strokeStyle = ha(niche.color, 0.12);
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.roundRect(stX, stY, stW, stH, 8); ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.03)';
+            ctx.fillRect(stX + 2, stY + 1, stW - 4, stH / 2 - 1);
+            ctx.fillStyle = 'rgba(255,255,255,0.22)';
+            ctx.fillText(statusText, W / 2, stY + 15);
             ctx.textAlign = 'start';
         };
 
