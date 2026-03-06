@@ -1,7 +1,7 @@
-import { useRef, useEffect, useCallback } from 'react';
-import type { Agent, Particle, Drone, Roomba, Toast, OfficeCat, IsometricOfficeProps } from './office-config';
+import { useRef, useEffect, useCallback, useState } from 'react';
+import type { Agent, Particle, Drone, Roomba, Toast, OfficeCat, CodeParticle, IsometricOfficeProps } from './office-config';
 import type { LOD } from './office-config';
-import { MAX_DPR, detectLOD } from './office-config';
+import { MAX_DPR, detectLOD, downgradeLOD, ha, FPS_LOW_THRESHOLD, FPS_LOW_DURATION } from './office-config';
 import { buildLayout, updateAgents } from './office-agents';
 import {
     renderStaticLayer, drawRoomDynamic,
@@ -9,7 +9,7 @@ import {
     drawDesk, drawChair, drawPerson, drawParticle, drawConnections,
     drawWhiteboard, drawClock, drawWifiRouter, drawRoomba,
     drawToast, drawWaterCooler, drawCables, drawBookshelf, drawDrone,
-    drawDeskAccessories, drawOfficeCat, drawNeonSign,
+    drawDeskAccessories, drawOfficeCat, drawNeonSign, drawCodeParticle,
 } from './office-renderer';
 
 function createDrone(W: number, H: number): Drone {
@@ -167,6 +167,8 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const roombaRef = useRef<Roomba | null>(null);
     const catRef = useRef<OfficeCat | null>(null);
     const toastsRef = useRef<Toast[]>([]);
+    const codeParticlesRef = useRef<CodeParticle[]>([]);
+    const lastCodeParticleTime = useRef(0);
     const lastToastTime = useRef(0);
     const clk = useRef(0);
     const pN = useRef(-1);
@@ -176,6 +178,13 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const staticCache = useRef<OffscreenCanvas | HTMLCanvasElement | null>(null);
     const cacheSize = useRef({ w: 0, h: 0, col: '' });
     const lodRef = useRef<LOD>('high');
+    const fpsFrames = useRef(0);
+    const fpsAccTime = useRef(0);
+    const fpsLowStart = useRef<number | null>(null);
+    const mouseRef = useRef({ x: 0.5, y: 0.5, active: false });
+    const parallaxSmooth = useRef({ x: 0, y: 0 });
+    const [tooltip, setTooltip] = useState<{ name: string; role: string; left: number; top: number } | null>(null);
+    const tooltipTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -183,6 +192,62 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         const fn = (e: MediaQueryListEvent) => { noMo.current = e.matches; };
         mq.addEventListener('change', fn);
         return () => mq.removeEventListener('change', fn);
+    }, []);
+
+    useEffect(() => {
+        const cv = cvRef.current; if (!cv) return;
+        const AGENT_HIT_RADIUS = 22;
+        const onMove = (e: MouseEvent) => {
+            const r = cv.getBoundingClientRect();
+            const normX = (e.clientX - r.left) / r.width;
+            const normY = (e.clientY - r.top) / r.height;
+            mouseRef.current = { x: normX, y: normY, active: true };
+
+            const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+            const W = cv.width / dpr;
+            const H = cv.height / dpr;
+            const canvasX = normX * W;
+            const canvasY = normY * H;
+
+            let found: Agent | null = null;
+            const agList = ags.current;
+            for (let i = 0; i < agList.length; i++) {
+                const a = agList[i];
+                const dx = canvasX - a.x;
+                const dy = canvasY - (a.y - 10);
+                if (dx * dx + dy * dy < AGENT_HIT_RADIUS * AGENT_HIT_RADIUS) {
+                    found = a;
+                    break;
+                }
+            }
+
+            if (tooltipTimeout.current) { clearTimeout(tooltipTimeout.current); tooltipTimeout.current = null; }
+
+            if (found) {
+                cv.style.cursor = 'pointer';
+                setTooltip({
+                    name: found.name,
+                    role: found.role,
+                    left: e.clientX - r.left,
+                    top: e.clientY - r.top,
+                });
+            } else {
+                cv.style.cursor = '';
+                tooltipTimeout.current = setTimeout(() => setTooltip(null), 60);
+            }
+        };
+        const onLeave = () => {
+            mouseRef.current = { x: 0.5, y: 0.5, active: false };
+            cv.style.cursor = '';
+            setTooltip(null);
+        };
+        cv.addEventListener('mousemove', onMove);
+        cv.addEventListener('mouseleave', onLeave);
+        return () => {
+            cv.removeEventListener('mousemove', onMove);
+            cv.removeEventListener('mouseleave', onLeave);
+            if (tooltipTimeout.current) clearTimeout(tooltipTimeout.current);
+        };
     }, []);
 
     const startLoop = useRef<(() => void) | null>(null);
@@ -228,6 +293,7 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             roombaRef.current = createRoomba(W, H);
             catRef.current = createCat(W, H);
             toastsRef.current = [];
+            codeParticlesRef.current = [];
             invalidateCache();
         }
     }, [activeNiche, currentStage, niche.agentTeam, rebuildLayout, invalidateCache]);
@@ -255,6 +321,30 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
 
             const dt = Math.min((ts - prev) / 1000, 0.05);
             prev = ts;
+
+            fpsFrames.current++;
+            fpsAccTime.current += dt;
+            if (fpsAccTime.current >= 0.5) {
+                const fps = fpsFrames.current / fpsAccTime.current;
+                fpsFrames.current = 0;
+                fpsAccTime.current = 0;
+
+                if (fps < FPS_LOW_THRESHOLD) {
+                    if (fpsLowStart.current === null) {
+                        fpsLowStart.current = ts / 1000;
+                    } else if ((ts / 1000) - fpsLowStart.current >= FPS_LOW_DURATION) {
+                        const next = downgradeLOD(lodRef.current);
+                        if (next !== lodRef.current) {
+                            lodRef.current = next;
+                            staticCache.current = null;
+                        }
+                        fpsLowStart.current = null;
+                    }
+                } else {
+                    fpsLowStart.current = null;
+                }
+            }
+
             clk.current += dt;
             const t = clk.current;
             const W = cv.width / dpr;
@@ -262,6 +352,19 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const lod = lodRef.current;
 
             ctx.clearRect(0, 0, W, H);
+
+            const PARALLAX_MAX = 4;
+            const mx = mouseRef.current.x;
+            const my = mouseRef.current.y;
+            const targetPX = (mx - 0.5) * 2 * PARALLAX_MAX;
+            const targetPY = (my - 0.5) * 2 * PARALLAX_MAX;
+            const smoothFactor = 1 - Math.pow(0.05, dt);
+            parallaxSmooth.current.x += (targetPX - parallaxSmooth.current.x) * smoothFactor;
+            parallaxSmooth.current.y += (targetPY - parallaxSmooth.current.y) * smoothFactor;
+            if (!noMo.current) {
+                ctx.save();
+                ctx.translate(parallaxSmooth.current.x, parallaxSmooth.current.y);
+            }
 
             if (!staticCache.current || cacheSize.current.w !== W || cacheSize.current.h !== H || cacheSize.current.col !== niche.color) {
                 staticCache.current = renderStaticLayer(W, H, niche.color, lod);
@@ -432,6 +535,44 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 drawParticle(ctx, p, t); return true;
             });
 
+            if (!noMo.current && lod !== 'low' && t - lastCodeParticleTime.current > 0.3) {
+                const workingAg: Agent[] = [];
+                for (let i = 0; i < agList.length; i++) {
+                    if (agList[i].state === 'working') workingAg.push(agList[i]);
+                }
+                if (workingAg.length > 0 && codeParticlesRef.current.length < 20) {
+                    const ag = workingAg[Math.floor(Math.random() * workingAg.length)];
+                    const symbols = ['{', '}', '0', '1', '</', '>', '()', '=>', '[]', '&&', '||', '+=', 'fn', 'if', '**', ';;', '!=', '<<', '::', '01'];
+                    const sym = symbols[Math.floor(Math.random() * symbols.length)];
+                    const dH2 = ag === orch ? 24 : 20;
+                    const monH = ag === orch ? 28 : 22;
+                    const monY = ag.deskY - dH2 / 2 - monH - 4;
+                    codeParticlesRef.current.push({
+                        x: ag.deskX + (Math.random() - 0.5) * 30,
+                        y: ag.deskY - 15 + (Math.random() - 0.5) * 10,
+                        targetX: ag.deskX + (Math.random() - 0.5) * 10,
+                        targetY: monY + monH / 2,
+                        symbol: sym,
+                        alpha: 1,
+                        speed: 0.6 + Math.random() * 0.4,
+                        progress: 0,
+                        col: niche.color,
+                        size: 5 + Math.random() * 3,
+                    });
+                    lastCodeParticleTime.current = t;
+                }
+            }
+
+            codeParticlesRef.current = codeParticlesRef.current.filter(cp => {
+                cp.progress += dt * cp.speed;
+                if (cp.progress > 0.7) {
+                    cp.alpha = Math.max(0, 1 - (cp.progress - 0.7) / 0.3);
+                }
+                if (cp.progress >= 1) return false;
+                drawCodeParticle(ctx, cp);
+                return true;
+            });
+
             ctx.font = '600 11px Inter, sans-serif';
             ctx.textAlign = 'center';
             const parts: string[] = [];
@@ -453,6 +594,10 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             ctx.fillStyle = 'rgba(255,255,255,0.22)';
             ctx.fillText(statusText, W / 2, stY + 15);
             ctx.textAlign = 'start';
+
+            if (!noMo.current) {
+                ctx.restore();
+            }
         };
 
         startLoop.current = () => {
@@ -472,6 +617,32 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
                 aria-label={`Офис AI-агентов: ${niche.agentTeam.map(a => a.name).join(', ')}`}
                 role="img"
             />
+            {tooltip && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        left: tooltip.left,
+                        top: tooltip.top - 48,
+                        transform: 'translateX(-50%)',
+                        pointerEvents: 'none',
+                        zIndex: 20,
+                        background: 'rgba(8,6,16,0.88)',
+                        border: `1px solid ${ha(niche.color, 0.3)}`,
+                        borderRadius: 8,
+                        padding: '6px 12px',
+                        whiteSpace: 'nowrap',
+                        boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 8px ${ha(niche.color, 0.15)}`,
+                        backdropFilter: 'blur(8px)',
+                    }}
+                >
+                    <div style={{ color: '#fff', fontSize: 12, fontWeight: 600, lineHeight: '16px' }}>
+                        {tooltip.name}
+                    </div>
+                    <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 10, lineHeight: '14px' }}>
+                        {tooltip.role}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

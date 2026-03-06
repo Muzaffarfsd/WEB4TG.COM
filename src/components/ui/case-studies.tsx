@@ -10,6 +10,11 @@ const caseStudies = [
     title: 'Flowershop.tg',
     description: 'Магазин цветов с каталогом, корзиной и доставкой по Москве',
     metrics: ['Конверсия +40%', 'Запуск за 10 дней'],
+    roiMetrics: [
+      { label: 'Рост выручки', value: '+320%', sublabel: 'за 3 месяца' },
+      { label: 'Средний чек', value: '+25%', sublabel: '₽4 200 → ₽5 250' },
+      { label: 'ROI', value: '780%', sublabel: 'за первый квартал' },
+    ],
     icon: ShoppingBag,
     gradient: 'from-[#8B5CF6]/20 via-[#A78BFA]/10 to-transparent',
     accentColor: '#A78BFA',
@@ -22,6 +27,11 @@ const caseStudies = [
     title: 'FitLife App',
     description: 'Приложение для фитнес-студии: абонементы, расписание, онлайн-запись',
     metrics: ['Записи +65%', 'Отток −30%'],
+    roiMetrics: [
+      { label: 'Онлайн-записи', value: '+65%', sublabel: 'vs оффлайн' },
+      { label: 'Удержание', value: '+30%', sublabel: 'отток снижен' },
+      { label: 'Экономия', value: '15ч', sublabel: 'в неделю на админ' },
+    ],
     icon: Dumbbell,
     gradient: 'from-emerald-500/20 via-emerald-400/10 to-transparent',
     accentColor: '#34D399',
@@ -34,6 +44,11 @@ const caseStudies = [
     title: 'DeliveryBot',
     description: 'Сервис доставки еды с трекингом, оплатой и AI-поддержкой',
     metrics: ['Заказы +120%', 'NPS 92'],
+    roiMetrics: [
+      { label: 'Заказы/день', value: '+120%', sublabel: '80 → 176' },
+      { label: 'Время доставки', value: '−18%', sublabel: 'AI-маршруты' },
+      { label: 'NPS', value: '92', sublabel: 'из 100' },
+    ],
     icon: Truck,
     gradient: 'from-amber-500/20 via-amber-400/10 to-transparent',
     accentColor: '#FBBF24',
@@ -183,7 +198,7 @@ export default function CaseStudies() {
           >
             Реальные <em className="gradient-text italic">результаты</em>
           </h2>
-          <p className="text-[13px] sm:text-[14px] text-white/50 max-w-lg leading-relaxed mb-12 sm:mb-16">
+          <p className="text-[13px] sm:text-[14px] text-white/70 max-w-lg leading-relaxed mb-12 sm:mb-16">
             Каждый проект — это рост метрик клиента. Вот несколько примеров из нашего портфолио.
           </p>
         </div>
@@ -217,13 +232,25 @@ export default function CaseStudies() {
                   <PhoneMockup colors={study.mockupColors} />
                 </div>
 
-                <p className="text-[13px] text-white/50 leading-relaxed mb-5 flex-1">
+                <p className="text-[13px] text-white/70 leading-relaxed mb-5 flex-1">
                   {study.description}
                 </p>
 
+                <div className="grid grid-cols-3 gap-2 mb-5 p-3 rounded-xl border border-white/[0.04] bg-white/[0.02]">
+                  {study.roiMetrics.map((roi) => (
+                    <div key={roi.label} className="text-center">
+                      <div className="text-[15px] sm:text-[16px] font-bold leading-tight" style={{ color: study.accentColor }}>
+                        <AnimatedMetric text={roi.value} animate={visible} />
+                      </div>
+                      <div className="text-[10px] text-white/70 font-medium mt-0.5 leading-tight">{roi.label}</div>
+                      <div className="text-[9px] text-white/60 mt-0.5 leading-tight">{roi.sublabel}</div>
+                    </div>
+                  ))}
+                </div>
+
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {study.techStack.map(tech => (
-                    <span key={tech} className="text-[10px] px-2 py-0.5 rounded-full border border-white/[0.06] text-white/40 font-medium">
+                    <span key={tech} className="text-[10px] px-2 py-0.5 rounded-full border border-white/[0.06] text-white/60 font-medium">
                       {tech}
                     </span>
                   ))}

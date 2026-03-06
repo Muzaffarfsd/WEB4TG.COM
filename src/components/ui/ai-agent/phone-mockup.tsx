@@ -23,7 +23,7 @@ const VoiceMessage = ({ color = '#8B5CF6' }: { color?: string }) => (
                 <div key={i} className="w-[2.5px] rounded-full" style={{ height: `${h}px`, backgroundColor: `${color}50`, animation: `typingBounce 2s ease-in-out ${i * 0.08}s infinite` }} />
             ))}
         </div>
-        <span className="text-[10px] text-white/40 flex-shrink-0">0:08</span>
+        <span className="text-[10px] text-white/60 flex-shrink-0">0:08</span>
     </div>
 );
 
@@ -89,14 +89,14 @@ export const PhoneMockup = ({ niche, activeNiche, allPreviousMessages, visibleMe
                                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#34C759] border-[1.5px] border-black" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-[12px] text-white/90 font-medium font-sans leading-tight">{niche.agentName} <span className="text-white/30 font-normal">+ {niche.agentTeam.length - 1} агентов</span></div>
+                                <div className="text-[12px] text-white/90 font-medium font-sans leading-tight">{niche.agentName} <span className="text-white/60 font-normal">+ {niche.agentTeam.length - 1} агентов</span></div>
                                 <div className="flex items-center gap-1">
-                                    <span className="text-[9px] text-white/30">{niche.agentRole}</span>
-                                    <span className="text-[7px] text-white/12">·</span>
+                                    <span className="text-[9px] text-white/60">{niche.agentRole}</span>
+                                    <span className="text-[7px] text-white/60">·</span>
                                     <span className="text-[9px] text-[#34C759]/80">все онлайн</span>
                                 </div>
                             </div>
-                            <div className="px-1.5 py-0.5 rounded-full text-[7px] font-bold font-sans border text-white/20 flex-shrink-0" style={{ borderColor: `${niche.color}20`, backgroundColor: `${niche.color}06` }}>
+                            <div className="px-1.5 py-0.5 rounded-full text-[7px] font-bold font-sans border text-white/60 flex-shrink-0" style={{ borderColor: `${niche.color}20`, backgroundColor: `${niche.color}06` }}>
                                 <span className="flex items-center gap-0.5">{niche.agentTeam.length} <span className="text-[6px]">AI</span></span>
                             </div>
                         </div>
@@ -107,7 +107,7 @@ export const PhoneMockup = ({ niche, activeNiche, allPreviousMessages, visibleMe
                                 </div>
                             ))}
                             {niche.agentTeam.length > 5 && (
-                                <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[6px] font-bold font-sans bg-white/[0.06] text-white/40 border border-white/[0.08]" style={{ marginLeft: '-4px' }}>
+                                <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[6px] font-bold font-sans bg-white/[0.06] text-white/60 border border-white/[0.08]" style={{ marginLeft: '-4px' }}>
                                     +{niche.agentTeam.length - 5}
                                 </div>
                             )}
@@ -123,8 +123,8 @@ export const PhoneMockup = ({ niche, activeNiche, allPreviousMessages, visibleMe
 
                     <div className="px-2.5 pb-2.5 pt-1.5 flex-shrink-0">
                         <div className="flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-2">
-                            <MessageSquare className="w-3.5 h-3.5 text-white/12 flex-shrink-0" />
-                            <span className="text-[11px] text-white/12 font-sans flex-1">Сообщение...</span>
+                            <MessageSquare className="w-3.5 h-3.5 text-white/60 flex-shrink-0" />
+                            <span className="text-[11px] text-white/60 font-sans flex-1">Сообщение...</span>
                             <Send className="w-3.5 h-3.5 flex-shrink-0" style={{ color: `${niche.color}35` }} />
                         </div>
                     </div>

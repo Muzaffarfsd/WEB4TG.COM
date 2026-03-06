@@ -119,15 +119,15 @@ export const AiAgentSection = () => {
                         <br />
                         <span className="italic gradient-text">команда до 20 AI-агентов</span>
                     </h2>
-                    <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/50 mt-4 sm:mt-5 font-sans font-light leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/70 mt-4 sm:mt-5 font-sans font-light leading-relaxed max-w-2xl mx-auto">
                         Разрабатываем <span className="text-white/80 font-medium">мультиагентную систему под ваш бизнес за 14–21 день</span>. Оркестратор координирует до 20 специализированных агентов: продажи, поддержка, аналитика, логистика, CRM — каждый делает своё дело, вместе закрывают <span className="text-white/80 font-medium">89% задач без менеджеров</span>.
                     </p>
                 </div>
 
-                <div data-reveal className="flex gap-2 sm:gap-3 justify-center flex-wrap mb-3 sm:mb-4">
+                <div data-reveal className="flex gap-2 sm:gap-3 justify-center flex-wrap mb-3 sm:mb-4" role="tablist" aria-label="Выбор ниши">
                     {niches.map((n, i) => (
-                        <button key={n.id} onClick={() => handleNicheClick(i)} aria-label={n.name}
-                            className={`group flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[12px] sm:text-[13px] font-sans font-medium transition-all duration-300 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] ${i === activeNiche ? 'text-white/90 shadow-lg' : 'bg-white/[0.02] border-white/[0.06] text-white/35 hover:text-white/55 hover:border-white/[0.12]'}`}
+                        <button key={n.id} onClick={() => handleNicheClick(i)} role="tab" aria-selected={i === activeNiche} aria-controls={`niche-tabpanel-${n.id}`} id={`niche-tab-${n.id}`} aria-label={n.name}
+                            className={`group flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[12px] sm:text-[13px] font-sans font-medium transition-all duration-300 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] ${i === activeNiche ? 'text-white/90 shadow-lg' : 'bg-white/[0.02] border-white/[0.06] text-white/60 hover:text-white/80 hover:border-white/[0.12]'}`}
                             style={i === activeNiche ? { backgroundColor: `${n.color}12`, borderColor: `${n.color}30`, boxShadow: `0 4px 24px ${n.color}15` } : undefined}
                         >
                             <n.icon className="w-4 h-4 transition-colors" style={{ color: i === activeNiche ? n.color : undefined }} />
@@ -141,16 +141,16 @@ export const AiAgentSection = () => {
                     <div className="flex gap-1.5 sm:gap-2 justify-center flex-wrap mb-3">
                         {stagesData.map((s, i) => (
                             <button key={`${activeNiche}-${i}`} onClick={() => handleStageClick(i)} aria-label={`Этап ${i + 1}: ${s.title}`} aria-current={i === currentStage ? 'step' : undefined}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-sans font-medium transition-all duration-300 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50 ${i === currentStage ? 'text-white/80' : i < currentStage ? 'bg-white/[0.02] border-white/[0.06] text-white/40' : 'bg-white/[0.01] border-white/[0.04] text-white/20 hover:text-white/40'}`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-sans font-medium transition-all duration-300 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50 ${i === currentStage ? 'text-white/80' : i < currentStage ? 'bg-white/[0.02] border-white/[0.06] text-white/60' : 'bg-white/[0.01] border-white/[0.04] text-white/60 hover:text-white/80'}`}
                                 style={i === currentStage ? { backgroundColor: `${niche.color}10`, borderColor: `${niche.color}25` } : undefined}
                             >
-                                <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold transition-all ${i === currentStage ? 'text-white' : i < currentStage ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-white/[0.05] text-white/20'}`} style={i === currentStage ? { backgroundColor: niche.color } : undefined}>
+                                <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold transition-all ${i === currentStage ? 'text-white' : i < currentStage ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-white/[0.05] text-white/60'}`} style={i === currentStage ? { backgroundColor: niche.color } : undefined}>
                                     {i < currentStage ? '✓' : i + 1}
                                 </span>
                                 <span className="hidden sm:inline">{s.title}</span>
                             </button>
                         ))}
-                        <button onClick={() => setIsPaused(p => !p)} aria-label={isPaused ? 'Продолжить' : 'Пауза'} className="ml-1 px-3 py-1.5 sm:py-2 rounded-full text-[11px] font-sans border bg-white/[0.02] border-white/[0.06] text-white/30 hover:text-white/50 transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50">
+                        <button onClick={() => setIsPaused(p => !p)} aria-label={isPaused ? 'Продолжить' : 'Пауза'} className="ml-1 px-3 py-1.5 sm:py-2 rounded-full text-[11px] font-sans border bg-white/[0.02] border-white/[0.06] text-white/60 hover:text-white/80 transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/50">
                             {isPaused ? '▶' : '⏸'}
                         </button>
                     </div>
@@ -161,7 +161,7 @@ export const AiAgentSection = () => {
                     )}
                 </div>
 
-                <div data-reveal className="max-w-3xl mx-auto mb-8 sm:mb-10">
+                <div data-reveal className="max-w-3xl mx-auto mb-8 sm:mb-10" role="tabpanel" id={`niche-tabpanel-${niche.id}`} aria-labelledby={`niche-tab-${niche.id}`}>
                     <BeforeAfterCards niche={niche} activeNiche={activeNiche} />
                 </div>
 
@@ -180,7 +180,7 @@ export const AiAgentSection = () => {
                 </div>
 
                 <div data-reveal className="mt-10 sm:mt-14">
-                    <p className="text-center text-[11px] sm:text-[12px] text-white/25 font-sans mb-3 tracking-wide uppercase">Архитектура мультиагентной системы</p>
+                    <p className="text-center text-[11px] sm:text-[12px] text-white/60 font-sans mb-3 tracking-wide uppercase">Архитектура мультиагентной системы</p>
                     <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
                         {[
                             { label: 'Оркестратор', icon: Brain },
@@ -192,7 +192,7 @@ export const AiAgentSection = () => {
                             { label: 'Голосовой агент', icon: Mic },
                             { label: 'Контент-агент', icon: Sparkles },
                         ].map((t, i) => (
-                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/60 font-sans">
                                 <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
                                 {t.label}
                             </div>
@@ -207,7 +207,7 @@ export const AiAgentSection = () => {
                             { label: '0.3с ответ', icon: Timer },
                             { label: '24/7', icon: Clock },
                         ].map((t, i) => (
-                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/35 font-sans">
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-[10px] sm:text-[11px] text-white/60 font-sans">
                                 <t.icon className="w-3 h-3 text-[#8B5CF6]/40" />
                                 {t.label}
                             </div>
@@ -224,7 +224,7 @@ export const AiAgentSection = () => {
                     ].map((s, i) => (
                         <div key={i} className="text-center">
                             <div className="text-[clamp(1.1rem,2vw,1.4rem)] font-instrument-serif gradient-text font-normal">{s.value}</div>
-                            <div className="text-[10px] text-white/30 mt-0.5 font-sans">{s.label}</div>
+                            <div className="text-[10px] text-white/60 mt-0.5 font-sans">{s.label}</div>
                         </div>
                     ))}
                 </div>
@@ -234,7 +234,7 @@ export const AiAgentSection = () => {
                         Запустить мультиагентную систему
                         <ArrowUpRight className="w-[18px] h-[18px]" />
                     </a>
-                    <p className="text-[12px] text-white/30 mt-3 font-sans">Бесплатная консультация 15 мин · NDA · Демо на ваших данных</p>
+                    <p className="text-[12px] text-white/60 mt-3 font-sans">Бесплатная консультация 15 мин · NDA · Демо на ваших данных</p>
                 </div>
             </div>
         </section>

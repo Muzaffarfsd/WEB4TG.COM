@@ -122,7 +122,7 @@ export default function ComparisonTable() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="text-left p-4 sm:p-5 text-[13px] sm:text-[14px] text-white/40 font-medium border-b border-white/[0.06]" />
+                    <th className="text-left p-4 sm:p-5 text-[13px] sm:text-[14px] text-white/60 font-medium border-b border-white/[0.06]" />
                     {columns.map((col, i) => (
                       <th
                         key={col}
@@ -170,7 +170,7 @@ export default function ComparisonTable() {
             </div>
           </div>
           <div className="flex items-center justify-center gap-1.5 mt-3 sm:hidden">
-            <span className="text-white/40 text-[12px]">Листайте</span>
+            <span className="text-white/60 text-[12px]">Листайте</span>
             <span className="inline-flex animate-[scrollArrow_1.2s_ease-in-out_infinite]">
               <ChevronRight className="w-4 h-4 text-[#A78BFA]" />
             </span>

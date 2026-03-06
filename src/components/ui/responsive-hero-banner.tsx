@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
-import { useCountUp, useStickyNav } from '../../hooks/use-animations';
+import { useCountUp, useStickyNav, useCharReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
 const techItems = [
@@ -213,6 +213,7 @@ const ResponsiveHeroBanner = () => {
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const scrolledRef = useRef(false);
+    const charRevealRef = useCharReveal({ stagger: 0.03, start: 'top 90%' });
 
     useEffect(() => {
         let ticking = false;
@@ -257,7 +258,7 @@ const ResponsiveHeroBanner = () => {
                                 </span>
                             </h1>
 
-                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
+                            <p ref={charRevealRef as React.RefObject<HTMLParagraphElement>} className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
                                 Telegram Mini Apps мирового класса.
                                 <span className="text-white/90"> Ваш бренд, ваши продажи — без комиссий.</span>
                             </p>
@@ -281,7 +282,7 @@ const ResponsiveHeroBanner = () => {
                             </div>
 
                             <div className="mt-8 sm:mt-12 animate-fade-slide-in-5 relative overflow-hidden max-w-[600px] mx-auto">
-                                <p className="text-[10px] sm:text-[11px] text-white/50 font-sans uppercase tracking-[0.15em] mb-3 sm:mb-4 text-center">
+                                <p className="text-[10px] sm:text-[11px] text-white/70 font-sans uppercase tracking-[0.15em] mb-3 sm:mb-4 text-center">
                                     Стек технологий
                                 </p>
                                 <div className="relative overflow-hidden">
@@ -313,7 +314,7 @@ const ResponsiveHeroBanner = () => {
 
                 {!scrolledPastHero && (
                     <div className="relative z-10 flex justify-center pb-2 sm:pb-3 animate-fade-slide-in-5">
-                        <div className="scroll-indicator flex flex-col items-center gap-1 text-white/40">
+                        <div className="scroll-indicator flex flex-col items-center gap-1 text-white/60">
                             <ChevronDown className="w-5 h-5 animate-bounce-slow" />
                         </div>
                     </div>

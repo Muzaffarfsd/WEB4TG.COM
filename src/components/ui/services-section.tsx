@@ -1,9 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
-import { useScrollReveal } from '../../hooks/use-animations';
+import { useScrollReveal, useCharReveal } from '../../hooks/use-animations';
 import { services } from '../../data/services';
 
 export const ServicesSection = () => {
     const revealRef = useScrollReveal({ stagger: 0.06 });
+    const charRevealRef = useCharReveal({ stagger: 0.025 });
 
     return (
         <section id="services" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
@@ -13,7 +14,7 @@ export const ServicesSection = () => {
                         <span className="w-8 h-px bg-[#8B5CF6]/40 mr-3" />
                         Услуги
                     </span>
-                    <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
+                    <h2 ref={charRevealRef as React.RefObject<HTMLHeadingElement>} className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
                         Telegram Mini Apps
                         <br />
                         <span className="italic gradient-text">для любого бизнеса</span>

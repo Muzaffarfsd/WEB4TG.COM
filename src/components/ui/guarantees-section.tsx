@@ -58,7 +58,7 @@ export default function GuaranteesSection() {
                   <item.icon className="w-5 h-5 text-[#8B5CF6] transition-colors duration-300 group-hover:text-[#A78BFA]" />
                 </div>
                 <h3 className="text-white font-semibold text-base sm:text-lg">{item.title}</h3>
-                <p className="text-[13px] sm:text-[14px] text-white/50 leading-relaxed">
+                <p className="text-[13px] sm:text-[14px] text-white/70 leading-relaxed">
                   {item.description}
                 </p>
               </div>

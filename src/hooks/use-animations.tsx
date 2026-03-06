@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/all';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -328,6 +328,78 @@ export const useFlipReveal = (options?: { duration?: number; stagger?: number })
         return () => {
             ScrollTrigger.getAll().forEach(t => {
                 if (t.trigger === ref.current) t.kill();
+            });
+        };
+    }, []);
+
+    return ref;
+};
+
+export const useCharReveal = (options?: { duration?: number; stagger?: number; start?: string }) => {
+    const ref = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+
+        const el = ref.current;
+
+        if (prefersReducedMotion()) {
+            el.style.opacity = '1';
+            return;
+        }
+
+        const originalHTML = el.innerHTML;
+
+        el.innerHTML = '';
+        el.style.opacity = '1';
+
+        const chars: HTMLSpanElement[] = [];
+
+        const processNode = (node: Node, parent: HTMLElement) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent || '';
+                for (let i = 0; i < text.length; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+                    span.style.display = 'inline-block';
+                    span.style.opacity = '0';
+                    span.style.transform = 'translateY(20px)';
+                    span.style.willChange = 'transform, opacity';
+                    if (text[i] === ' ') {
+                        span.style.width = '0.3em';
+                    }
+                    parent.appendChild(span);
+                    chars.push(span);
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const clone = (node as HTMLElement).cloneNode(false) as HTMLElement;
+                parent.appendChild(clone);
+                node.childNodes.forEach(child => processNode(child, clone));
+            }
+        };
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = originalHTML;
+        tempDiv.childNodes.forEach(child => processNode(child, el));
+
+        if (chars.length === 0) return;
+
+        gsap.to(chars, {
+            opacity: 1,
+            y: 0,
+            duration: options?.duration ?? 0.5,
+            stagger: options?.stagger ?? 0.02,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: el,
+                start: options?.start ?? 'top 85%',
+                once: true,
+            },
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach(t => {
+                if (t.trigger === el) t.kill();
             });
         };
     }, []);

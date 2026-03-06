@@ -67,6 +67,17 @@ export interface OfficeCat {
     tailPhase: number;
 }
 
+export interface CodeParticle {
+    x: number; y: number;
+    targetX: number; targetY: number;
+    symbol: string;
+    alpha: number;
+    speed: number;
+    progress: number;
+    col: string;
+    size: number;
+}
+
 export const SKINS = ['#f0d0b0', '#d4a878', '#c49070', '#e8c4a0', '#b87848', '#f2dcc8'];
 export const HAIRS = ['#1a1420', '#3a2210', '#8a6030', '#c49050', '#582010', '#222'];
 export const SHIRTS = ['#6d5acd', '#4a90d9', '#2ecc71', '#e67e22', '#e74c3c', '#1abc9c', '#9b59b6', '#f39c12'];
@@ -81,11 +92,50 @@ export const PH_IDLE_END = 1.0;
 
 export type LOD = 'high' | 'medium' | 'low';
 
-export function detectLOD(W: number): LOD {
-    if (W < 400) return 'low';
-    if (W < 700) return 'medium';
-    return 'high';
+const LOD_LEVELS: LOD[] = ['high', 'medium', 'low'];
+
+export function lodIndex(lod: LOD): number {
+    return LOD_LEVELS.indexOf(lod);
 }
+
+export function downgradeLOD(lod: LOD): LOD {
+    const idx = lodIndex(lod);
+    return idx < LOD_LEVELS.length - 1 ? LOD_LEVELS[idx + 1] : lod;
+}
+
+export function detectLOD(W: number): LOD {
+    let level: LOD = 'high';
+    if (W < 400) level = 'low';
+    else if (W < 700) level = 'medium';
+
+    const nav = navigator as any;
+    const mem: number | undefined = nav.deviceMemory;
+    const cores: number | undefined = nav.hardwareConcurrency;
+
+    if (mem !== undefined && mem <= 2) {
+        level = 'low';
+    } else if (mem !== undefined && mem <= 4 && level === 'high') {
+        level = 'medium';
+    }
+
+    if (cores !== undefined && cores <= 2) {
+        level = 'low';
+    } else if (cores !== undefined && cores <= 4 && level === 'high') {
+        level = 'medium';
+    }
+
+    return level;
+}
+
+export const FPS_LOW_THRESHOLD = 30;
+export const FPS_LOW_DURATION = 2;
+
+export const ROOM_LEFT_PCT = 0.04;
+export const ROOM_RIGHT_PCT = 0.96;
+export const WALL_TOP_PCT = 0.04;
+export const WALL_BOT_PCT = 0.30;
+export const FLOOR_BOT_PCT = 0.93;
+export const DIV_X_PCT = 0.54;
 
 export const MAX_DPR = 2;
 

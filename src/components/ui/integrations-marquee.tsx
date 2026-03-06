@@ -37,7 +37,7 @@ export default function IntegrationsMarquee() {
                 className="flex items-center gap-2.5 px-5 py-2.5 mx-2 rounded-full border border-white/[0.08] bg-white/[0.03] whitespace-nowrap"
               >
                 <item.icon />
-                <span className="text-[14px] sm:text-[15px] text-white/50 font-medium tracking-wide">
+                <span className="text-[14px] sm:text-[15px] text-white/70 font-medium tracking-wide">
                   {item.name}
                 </span>
               </div>

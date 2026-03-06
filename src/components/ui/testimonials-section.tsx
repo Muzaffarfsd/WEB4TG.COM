@@ -38,12 +38,12 @@ export const TestimonialsSection = () => {
                                         </p>
                                         <BadgeCheck className="w-3.5 h-3.5 text-[#8B5CF6]" />
                                     </div>
-                                    <p className="text-[12px] sm:text-[13px] text-white/50 font-sans font-light">
+                                    <p className="text-[12px] sm:text-[13px] text-white/70 font-sans font-light">
                                         {t.role}, {t.company}
                                     </p>
                                     <div className="flex items-center gap-1 mt-0.5">
-                                        <Globe className="w-2.5 h-2.5 text-white/30" />
-                                        <span className="text-[11px] text-white/30 font-sans">{t.companyUrl}</span>
+                                        <Globe className="w-2.5 h-2.5 text-white/60" />
+                                        <span className="text-[11px] text-white/60 font-sans">{t.companyUrl}</span>
                                     </div>
                                 </div>
                             </div>

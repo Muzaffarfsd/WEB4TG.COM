@@ -45,7 +45,7 @@ export const FooterSection = () => {
                 <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
                     <div className="flex items-center">
                         <span className="text-white/80 text-[12px] sm:text-[13px] font-medium tracking-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                            WEB4TG <span className="font-normal text-white/50">STUDIO</span>
+                            WEB4TG <span className="font-normal text-white/70">STUDIO</span>
                         </span>
                     </div>
 
@@ -53,12 +53,12 @@ export const FooterSection = () => {
                         <a href="https://t.me/w4tg_bot" target="_blank" rel="noopener noreferrer" className="text-[11px] sm:text-[12px] text-white/60 hover:text-white font-sans transition-colors duration-300">
                             @w4tg_bot
                         </a>
-                        <span className="text-[11px] sm:text-[12px] text-white/50 font-sans">
+                        <span className="text-[11px] sm:text-[12px] text-white/70 font-sans">
                             Пн-Пт 10:00-19:00
                         </span>
                     </div>
 
-                    <p className="text-[10px] sm:text-[11px] text-white/50 font-sans">
+                    <p className="text-[10px] sm:text-[11px] text-white/70 font-sans">
                         © {new Date().getFullYear()} WEB4TG Studio
                     </p>
                 </div>

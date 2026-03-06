@@ -1,38 +1,48 @@
 import { useState, useCallback, FormEvent } from 'react';
 
-const TELEGRAM_BOT_USERNAME = 'w4tg_bot';
-
 interface FormData {
   name: string;
-  contact: string;
+  email: string;
+  phone: string;
   description: string;
 }
 
 interface FormErrors {
   name?: string;
-  contact?: string;
+  email?: string;
+  phone?: string;
   description?: string;
 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validate = (data: FormData): FormErrors => {
   const errors: FormErrors = {};
   if (!data.name.trim()) errors.name = 'Укажите ваше имя';
-  if (!data.contact.trim()) errors.contact = 'Укажите телефон или Telegram';
+  if (!data.email.trim()) {
+    errors.email = 'Укажите email';
+  } else if (!EMAIL_RE.test(data.email.trim())) {
+    errors.email = 'Некорректный email';
+  }
+  if (!data.phone.trim()) errors.phone = 'Укажите телефон или Telegram';
   if (!data.description.trim()) errors.description = 'Опишите ваш проект';
   return errors;
 };
 
 const ContactForm = () => {
-  const [form, setForm] = useState<FormData>({ name: '', contact: '', description: '' });
+  const [form, setForm] = useState<FormData>({ name: '', email: '', phone: '', description: '' });
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const handleChange = useCallback((field: keyof FormData, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: undefined }));
+    setServerError(null);
   }, []);
 
-  const handleSubmit = useCallback((e: FormEvent) => {
+  const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
     const validationErrors = validate(form);
     if (Object.keys(validationErrors).length > 0) {
@@ -40,12 +50,34 @@ const ContactForm = () => {
       return;
     }
 
-    const message = `Заявка с сайта:\n\nИмя: ${form.name}\nКонтакт: ${form.contact}\nПроект: ${form.description}`;
-    const encoded = encodeURIComponent(message);
-    const telegramUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${encoded}`;
+    setSubmitting(true);
+    setServerError(null);
 
-    window.open(telegramUrl, '_blank', 'noopener,noreferrer');
-    setSubmitted(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          description: form.description.trim(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setServerError(data.error || 'Ошибка отправки. Попробуйте позже.');
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setServerError('Ошибка сети. Проверьте подключение и попробуйте снова.');
+    } finally {
+      setSubmitting(false);
+    }
   }, [form]);
 
   if (submitted) {
@@ -60,10 +92,10 @@ const ContactForm = () => {
             </div>
             <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Заявка отправлена</h3>
             <p className="text-[var(--text-300)] text-base leading-relaxed mb-8">
-              Мы получили вашу заявку и свяжемся с вами в ближайшее время через Telegram.
+              Мы получили вашу заявку и свяжемся с вами в ближайшее время.
             </p>
             <button
-              onClick={() => { setSubmitted(false); setForm({ name: '', contact: '', description: '' }); }}
+              onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', description: '' }); }}
               className="btn-secondary"
             >
               Отправить ещё
@@ -74,6 +106,8 @@ const ContactForm = () => {
     );
   }
 
+  const inputClass = "w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[var(--text-400)] text-base outline-none transition-colors focus:border-[var(--accent)] focus:bg-[rgba(255,255,255,0.06)]";
+
   return (
     <section id="contact" className="relative px-5 sm:px-8 py-20 md:py-28">
       <div className="max-w-2xl mx-auto">
@@ -83,7 +117,7 @@ const ContactForm = () => {
             Обсудим <span className="font-instrument-serif italic text-[var(--accent-light)]">ваш проект</span>
           </h2>
           <p className="mt-4 text-[var(--text-300)] text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-            Оставьте заявку, и мы свяжемся с вами в Telegram для обсуждения деталей
+            Оставьте заявку, и мы свяжемся с вами для обсуждения деталей
           </p>
         </div>
 
@@ -96,22 +130,35 @@ const ContactForm = () => {
               value={form.name}
               onChange={e => handleChange('name', e.target.value)}
               placeholder="Как к вам обращаться"
-              className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[var(--text-400)] text-base outline-none transition-colors focus:border-[var(--accent)] focus:bg-[rgba(255,255,255,0.06)]"
+              className={inputClass}
             />
             {errors.name && <p className="mt-1.5 text-sm text-red-400">{errors.name}</p>}
           </div>
 
           <div>
-            <label htmlFor="cf-contact" className="block text-sm font-medium text-[var(--text-200)] mb-2">Телефон или Telegram</label>
+            <label htmlFor="cf-email" className="block text-sm font-medium text-[var(--text-200)] mb-2">Email</label>
             <input
-              id="cf-contact"
-              type="text"
-              value={form.contact}
-              onChange={e => handleChange('contact', e.target.value)}
-              placeholder="+7 (999) 123-45-67 или @username"
-              className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[var(--text-400)] text-base outline-none transition-colors focus:border-[var(--accent)] focus:bg-[rgba(255,255,255,0.06)]"
+              id="cf-email"
+              type="email"
+              value={form.email}
+              onChange={e => handleChange('email', e.target.value)}
+              placeholder="you@company.com"
+              className={inputClass}
             />
-            {errors.contact && <p className="mt-1.5 text-sm text-red-400">{errors.contact}</p>}
+            {errors.email && <p className="mt-1.5 text-sm text-red-400">{errors.email}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="cf-phone" className="block text-sm font-medium text-[var(--text-200)] mb-2">Телефон или Telegram</label>
+            <input
+              id="cf-phone"
+              type="text"
+              value={form.phone}
+              onChange={e => handleChange('phone', e.target.value)}
+              placeholder="+7 (999) 123-45-67 или @username"
+              className={inputClass}
+            />
+            {errors.phone && <p className="mt-1.5 text-sm text-red-400">{errors.phone}</p>}
           </div>
 
           <div>
@@ -122,17 +169,35 @@ const ContactForm = () => {
               onChange={e => handleChange('description', e.target.value)}
               placeholder="Расскажите о вашем проекте, задачах и сроках"
               rows={4}
-              className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[var(--text-400)] text-base outline-none transition-colors focus:border-[var(--accent)] focus:bg-[rgba(255,255,255,0.06)] resize-none"
+              className={inputClass + " resize-none"}
             />
             {errors.description && <p className="mt-1.5 text-sm text-red-400">{errors.description}</p>}
           </div>
 
-          <button type="submit" className="btn-primary w-full justify-center mt-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 2L11 13" />
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-            </svg>
-            Отправить заявку
+          {serverError && (
+            <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+              {serverError}
+            </div>
+          )}
+
+          <button type="submit" disabled={submitting} className="btn-primary w-full justify-center mt-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            {submitting ? (
+              <>
+                <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Отправка...
+              </>
+            ) : (
+              <>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2L11 13" />
+                  <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                </svg>
+                Отправить заявку
+              </>
+            )}
           </button>
         </form>
       </div>

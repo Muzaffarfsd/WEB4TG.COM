@@ -4,8 +4,11 @@ import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
 import { ScrollProgress } from './components/ui/scroll-progress';
+import { ScrollNarrative } from './components/ui/scroll-narrative';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Preloader } from './components/ui/preloader';
+import { SoundProvider } from './hooks/use-sound';
+import { SoundToggle } from './components/ui/sound-toggle';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
@@ -129,8 +132,10 @@ const App = () => {
     useEffect(() => {
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+        if (prefersReduced) return;
+
         const lenis = new Lenis({
-            duration: prefersReduced ? 0 : 1.2,
+            duration: 1.2,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             touchMultiplier: 1.5,
             autoRaf: true,
@@ -140,9 +145,10 @@ const App = () => {
     }, []);
 
     return (
-        <>
+        <SoundProvider>
             <Preloader />
             <ScrollProgress />
+            <ScrollNarrative />
             <a href="#main-content" className="skip-link">
                 Перейти к содержимому
             </a>
@@ -150,25 +156,35 @@ const App = () => {
             <div className="noise-overlay" />
             <main id="main-content" className="relative z-[2]">
                 <ResponsiveHeroBanner />
+                <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={ClientLogos} skeleton="marquee" />
                 <LazySection component={ServicesSection} skeleton="cards" />
+                <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={AiAgentSection} skeleton="cards" />
+                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
                 <LazySection component={IphoneCarousel} skeleton="default" />
                 <LazySection component={ProcessSection} skeleton="cards" />
+                <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={FeaturesSection} skeleton="cards" />
+                <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={CaseStudies} skeleton="cards" />
                 <LazySection component={TestimonialsSection} skeleton="cards" />
+                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
                 <LazySection component={ComparisonTable} skeleton="table" />
                 <LazySection component={PricingSection} skeleton="pricing" />
+                <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={GuaranteesSection} skeleton="cards" />
+                <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={FaqSection} skeleton="accordion" />
                 <LazySection component={IntegrationsMarquee} skeleton="marquee" />
+                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
                 <LazySection component={CtaBanner} skeleton="default" />
                 <LazySection component={ContactForm} skeleton="default" />
                 <LazySection component={FooterSection} skeleton="default" />
             </main>
             <TelegramFab />
-        </>
+            <SoundToggle />
+        </SoundProvider>
     );
 };
 

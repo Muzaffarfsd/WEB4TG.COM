@@ -23,7 +23,7 @@ export const ResultPanel = ({ niche, stage, activeNiche, currentStage, totalStag
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="text-[14px] sm:text-[15px] text-white/80 font-sans font-medium">{niche.heroMetric.label}</div>
-                        <div className="text-[11px] sm:text-[12px] text-white/35 mt-0.5">{niche.heroMetric.sub}</div>
+                        <div className="text-[11px] sm:text-[12px] text-white/60 mt-0.5">{niche.heroMetric.sub}</div>
                     </div>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${niche.color}10` }}>
                         <niche.icon className="w-5 h-5" style={{ color: niche.color }} />
@@ -40,7 +40,7 @@ export const ResultPanel = ({ niche, stage, activeNiche, currentStage, totalStag
                     </div>
                     <div>
                         <span className="text-[12px] text-white/70 font-sans font-medium">{stage.title}</span>
-                        <span className="text-[10px] text-white/25 ml-2 hidden sm:inline">{stage.subtitle}</span>
+                        <span className="text-[10px] text-white/60 ml-2 hidden sm:inline">{stage.subtitle}</span>
                     </div>
                 </div>
                 <div className="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono" style={{ backgroundColor: `${niche.color}10`, color: `${niche.color}90`, border: `1px solid ${niche.color}20` }}>
@@ -56,9 +56,9 @@ export const ResultPanel = ({ niche, stage, activeNiche, currentStage, totalStag
                                 <card.icon className="w-3.5 h-3.5" style={{ color: card.color }} />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <div className="text-[9px] text-white/30 uppercase tracking-wider mb-0.5">{card.label}</div>
+                                <div className="text-[9px] text-white/60 uppercase tracking-wider mb-0.5">{card.label}</div>
                                 <div className="text-[13px] text-white/85 font-medium">{card.value}</div>
-                                {card.detail && <div className="text-[10px] text-white/30 mt-0.5 leading-snug">{card.detail}</div>}
+                                {card.detail && <div className="text-[10px] text-white/60 mt-0.5 leading-snug">{card.detail}</div>}
                             </div>
                         </div>
                     </div>

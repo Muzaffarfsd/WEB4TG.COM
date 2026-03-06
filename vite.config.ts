@@ -31,7 +31,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'gsap-vendor': ['gsap', '@gsap/react', 'gsap/all'],
+          'gsap-vendor': ['gsap', 'gsap/ScrollTrigger'],
           'lenis-vendor': ['lenis'],
         },
       },

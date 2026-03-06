@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/all";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import { useEffect, useRef, useState } from "react";
 import { Play, Pause, RotateCcw, ArrowUpRight } from "lucide-react";
@@ -215,16 +215,16 @@ export const VideoCarousel = () => {
 
     return (
         <>
-            <div className="flex items-center">
+            <div className="flex items-center" aria-live="polite">
                 {hightlightsSlides.map((list, i) => (
-                    <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20">
+                    <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20" role="group" aria-roledescription="slide" aria-label={`Слайд ${i + 1} из ${hightlightsSlides.length}: ${list.textLists[0]}`}>
                         <div className="relative w-[85vw] sm:w-[70vw] h-[45vh] sm:h-[55vh] md:h-[70vh]">
                             <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black/50 border border-white/[0.04] relative">
                                 {videoLoading.has(i) && !videoErrors.has(i) && (
                                     <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0a10]">
                                         <div className="flex flex-col items-center gap-4">
                                             <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-[#8B5CF6] animate-spin" />
-                                            <span className="text-[11px] text-white/40 font-sans uppercase tracking-wider">
+                                            <span className="text-[11px] text-white/60 font-sans uppercase tracking-wider">
                                                 {list.textLists[0]}
                                             </span>
                                         </div>
@@ -235,7 +235,7 @@ export const VideoCarousel = () => {
                                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.15)_0%,_transparent_70%)]" />
                                         <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center gap-3">
                                             <div className="w-12 h-12 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mb-2">
-                                                <Play className="w-5 h-5 text-white/30" />
+                                                <Play className="w-5 h-5 text-white/60" />
                                             </div>
                                             {list.textLists.map((text, idx) => (
                                                 <p key={idx} className="text-sm sm:text-lg md:text-xl font-medium text-white/70 font-sans tracking-tight leading-snug">
@@ -305,6 +305,7 @@ export const VideoCarousel = () => {
                 </div>
 
                 <button
+                    aria-label={isLastVideo ? 'Перезапустить' : !isPlaying ? 'Воспроизвести' : 'Пауза'}
                     className="ml-3 sm:ml-4 p-3 sm:p-3.5 rounded-full bg-[#0a0a10]/80 border border-white/[0.06] flex items-center justify-center min-w-[44px] min-h-[44px] hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-300"
                     onClick={
                         isLastVideo
@@ -344,7 +345,7 @@ export const IphoneCarousel = () => {
     }, []);
 
     return (
-        <section id='highlights' className='relative w-full overflow-x-hidden py-20 sm:py-28 md:py-36 px-5 sm:px-8'>
+        <section id='highlights' className='relative w-full overflow-x-hidden py-20 sm:py-28 md:py-36 px-5 sm:px-8' role="group" aria-roledescription="carousel" aria-label="Портфолио видео">
             <div className='max-w-[1120px] mx-auto relative overflow-hidden'>
                 <div className='mb-8 sm:mb-14 w-full md:flex items-end justify-between'>
                     <div>

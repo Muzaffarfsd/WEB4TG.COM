@@ -4,14 +4,14 @@ import { appDevelopmentFeatures, subscriptionPlans, aiAgentFeatures, aiAgentStat
 
 const SectionDivider = ({ number, title, subtitle }: { number: string; title: string; subtitle: string }) => (
     <div data-reveal className="flex items-center gap-4 mb-5 sm:mb-6">
-        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-semibold text-white/40 font-sans flex-shrink-0">
+        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-semibold text-white/60 font-sans flex-shrink-0">
             {number}
         </span>
         <div>
             <h3 className="text-[14px] sm:text-base font-medium text-white/90 font-sans tracking-tight m-0 leading-tight">
                 {title}
             </h3>
-            <p className="text-[11px] sm:text-[12px] text-white/40 font-sans font-light m-0 mt-0.5">
+            <p className="text-[11px] sm:text-[12px] text-white/60 font-sans font-light m-0 mt-0.5">
                 {subtitle}
             </p>
         </div>
@@ -36,7 +36,7 @@ export const PricingSection = () => {
                         <br />
                         <span className="italic gradient-text">без сюрпризов</span>
                     </h2>
-                    <p className="text-[clamp(0.8125rem,1.3vw,0.95rem)] text-white/50 mt-4 sm:mt-5 font-sans font-light max-w-xl mx-auto">
+                    <p className="text-[clamp(0.8125rem,1.3vw,0.95rem)] text-white/70 mt-4 sm:mt-5 font-sans font-light max-w-xl mx-auto">
                         Три понятных блока: разработка, подписка на поддержку и мультиагентная AI-система
                     </p>
                 </div>
@@ -73,13 +73,13 @@ export const PricingSection = () => {
                         <div className="pb-2 lg:w-[30%] lg:pr-6">
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-4xl sm:text-5xl md:text-6xl font-semibold gradient-text font-sans tracking-tight">от 150К</span>
-                                <span className="text-sm sm:text-base text-white/40 font-sans">₽</span>
+                                <span className="text-sm sm:text-base text-white/60 font-sans">₽</span>
                             </div>
-                            <p className="text-[11px] sm:text-[12px] text-white/40 mt-3 font-sans leading-relaxed">
+                            <p className="text-[11px] sm:text-[12px] text-white/60 mt-3 font-sans leading-relaxed">
                                 7-14 дней • предоплата 35%
                                 <br />остаток после сдачи проекта
                             </p>
-                            <p className="text-[11px] text-white/30 mt-2 font-sans">
+                            <p className="text-[11px] text-white/60 mt-2 font-sans">
                                 Финальная стоимость зависит от сложности. Рассчитаем за 15 минут.
                             </p>
                         </div>
@@ -134,13 +134,13 @@ export const PricingSection = () => {
                             </div>
                             <div className="flex items-baseline gap-1 px-4 sm:px-5 pb-2">
                                 <span className="text-3xl sm:text-4xl font-semibold gradient-text-white font-sans tracking-tight">{plan.price}</span>
-                                <span className="text-[12px] text-white/40 font-sans">₽/мес</span>
+                                <span className="text-[12px] text-white/60 font-sans">₽/мес</span>
                             </div>
                             <ul className="grid gap-3 p-4 sm:p-5 pt-2 text-[12px] sm:text-[13px]">
                                 {plan.features.map((f, i) => (
                                     <li key={i} className={`flex items-center gap-2.5 font-sans font-light ${plan.popular ? 'text-white/70' : 'text-white/60'}`}>
                                         <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0 ${plan.popular ? 'bg-[#8B5CF6]' : 'bg-white/[0.08]'}`}>
-                                            <Check className={`w-2.5 h-2.5 ${plan.popular ? 'text-white' : 'text-white/50'}`} strokeWidth={3} />
+                                            <Check className={`w-2.5 h-2.5 ${plan.popular ? 'text-white' : 'text-white/70'}`} strokeWidth={3} />
                                         </div>
                                         <span>{f}</span>
                                     </li>
@@ -182,9 +182,9 @@ export const PricingSection = () => {
                         <div className="lg:w-[30%]">
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-4xl sm:text-5xl md:text-6xl font-semibold font-sans tracking-tight" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>от 200К</span>
-                                <span className="text-sm sm:text-base text-white/40 font-sans">₽</span>
+                                <span className="text-sm sm:text-base text-white/60 font-sans">₽</span>
                             </div>
-                            <p className="text-[11px] sm:text-[12px] text-white/40 mt-3 font-sans leading-relaxed">
+                            <p className="text-[11px] sm:text-[12px] text-white/60 mt-3 font-sans leading-relaxed">
                                 Разработка 14-21 день
                                 <br />+ подписка от 19 900₽/мес
                             </p>
@@ -207,13 +207,13 @@ export const PricingSection = () => {
                         {aiAgentStats.map((s, i) => (
                             <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#22c55e]/[0.06] border border-[#22c55e]/10">
                                 <span className="text-[12px] sm:text-[13px] font-semibold font-sans" style={{ color: '#22c55e' }}>{s.value}</span>
-                                <span className="text-[10px] sm:text-[11px] text-white/40 font-sans">{s.label}</span>
+                                <span className="text-[10px] sm:text-[11px] text-white/60 font-sans">{s.label}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <p data-reveal className="text-[11px] sm:text-[12px] text-white/30 text-center mt-8 font-sans">
+                <p data-reveal className="text-[11px] sm:text-[12px] text-white/60 text-center mt-8 font-sans">
                     Все цены указаны без НДС. Годовая оплата подписки — скидка 20%.
                 </p>
             </div>

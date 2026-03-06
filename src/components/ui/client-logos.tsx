@@ -13,7 +13,7 @@ const companies = [
 ];
 
 const LogoPill = ({ name }: { name: string }) => (
-  <span className="inline-flex items-center px-5 py-2 rounded-full border border-white/[0.06] bg-white/[0.03] text-white/40 text-[13px] font-medium whitespace-nowrap select-none">
+  <span className="inline-flex items-center px-5 py-2 rounded-full border border-white/[0.06] bg-white/[0.03] text-white/60 text-[13px] font-medium whitespace-nowrap select-none">
     {name}
   </span>
 );
