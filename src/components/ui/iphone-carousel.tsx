@@ -75,6 +75,7 @@ export const VideoCarousel = () => {
 
     const [loadedData, setLoadedData] = useState<Event[]>([]);
     const [videoErrors, setVideoErrors] = useState<Set<number>>(new Set());
+    const [videoLoading, setVideoLoading] = useState<Set<number>>(new Set([0, 1, 2, 3]));
     const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
 
     const handleVideoError = (index: number) => {
@@ -203,8 +204,13 @@ export const VideoCarousel = () => {
         }
     };
 
-    const handleLoadedMetaData = (_i: number, e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    const handleLoadedMetaData = (i: number, e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
         setLoadedData((pre) => [...pre, e.nativeEvent]);
+        setVideoLoading((prev) => {
+            const next = new Set(prev);
+            next.delete(i);
+            return next;
+        });
     };
 
     return (
@@ -213,7 +219,17 @@ export const VideoCarousel = () => {
                 {hightlightsSlides.map((list, i) => (
                     <div key={list.id} id="slider" className="pr-5 sm:pr-10 md:pr-20">
                         <div className="relative w-[85vw] sm:w-[70vw] h-[45vh] sm:h-[55vh] md:h-[70vh]">
-                            <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black/50 border border-white/[0.04]">
+                            <div className="w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden bg-black/50 border border-white/[0.04] relative">
+                                {videoLoading.has(i) && !videoErrors.has(i) && (
+                                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0a10]">
+                                        <div className="flex flex-col items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-[#8B5CF6] animate-spin" />
+                                            <span className="text-[11px] text-white/40 font-sans uppercase tracking-wider">
+                                                {list.textLists[0]}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                                 {videoErrors.has(i) ? (
                                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] relative">
                                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.15)_0%,_transparent_70%)]" />

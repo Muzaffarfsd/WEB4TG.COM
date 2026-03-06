@@ -3,6 +3,7 @@ import Lenis from 'lenis';
 import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
+import { ErrorBoundary } from './components/ui/error-boundary';
 
 const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
@@ -20,26 +21,106 @@ const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marq
 const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
 const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
 
-const SectionSkeleton = () => (
+const DefaultSkeleton = () => (
     <div className="min-h-[20vh] px-5 sm:px-8 py-16">
         <div className="max-w-6xl mx-auto space-y-4">
             <div className="skeleton-shimmer h-3 w-24 rounded-full" />
             <div className="skeleton-shimmer h-8 w-64 rounded-lg" />
             <div className="skeleton-shimmer h-4 w-96 max-w-full rounded-lg" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-8">
-                <div className="skeleton-shimmer h-32 rounded-2xl" />
-                <div className="skeleton-shimmer h-32 rounded-2xl" />
-                <div className="skeleton-shimmer h-32 rounded-2xl hidden sm:block" />
+        </div>
+    </div>
+);
+
+const CardsSkeleton = () => (
+    <div className="min-h-[20vh] px-5 sm:px-8 py-16">
+        <div className="max-w-6xl mx-auto space-y-6">
+            <div className="skeleton-shimmer h-3 w-20 rounded-full" />
+            <div className="skeleton-shimmer h-8 w-72 rounded-lg" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="skeleton-shimmer h-40 rounded-2xl" />
+                ))}
             </div>
         </div>
     </div>
 );
 
-const LazySection = ({ component: Component }: { component: ComponentType }) => (
-    <Suspense fallback={<SectionSkeleton />}>
-        <Component />
-    </Suspense>
+const TableSkeleton = () => (
+    <div className="min-h-[20vh] px-5 sm:px-8 py-16">
+        <div className="max-w-6xl mx-auto space-y-4">
+            <div className="skeleton-shimmer h-3 w-28 rounded-full" />
+            <div className="skeleton-shimmer h-8 w-56 rounded-lg" />
+            <div className="mt-8 space-y-2">
+                <div className="skeleton-shimmer h-12 w-full rounded-xl" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="skeleton-shimmer h-14 w-full rounded-xl" />
+                ))}
+            </div>
+        </div>
+    </div>
 );
+
+const AccordionSkeleton = () => (
+    <div className="min-h-[20vh] px-5 sm:px-8 py-16">
+        <div className="max-w-3xl mx-auto space-y-4">
+            <div className="skeleton-shimmer h-3 w-16 rounded-full mx-auto" />
+            <div className="skeleton-shimmer h-8 w-48 rounded-lg mx-auto" />
+            <div className="mt-8 space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="skeleton-shimmer h-16 w-full rounded-2xl" />
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+const MarqueeSkeleton = () => (
+    <div className="min-h-[8vh] px-5 sm:px-8 py-8">
+        <div className="max-w-6xl mx-auto">
+            <div className="flex gap-3 overflow-hidden">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="skeleton-shimmer h-10 w-28 rounded-full shrink-0" />
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+const PricingSkeleton = () => (
+    <div className="min-h-[20vh] px-5 sm:px-8 py-16">
+        <div className="max-w-6xl mx-auto space-y-6">
+            <div className="skeleton-shimmer h-3 w-16 rounded-full" />
+            <div className="skeleton-shimmer h-8 w-48 rounded-lg" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="skeleton-shimmer h-72 rounded-2xl" />
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+type SkeletonType = 'default' | 'cards' | 'table' | 'accordion' | 'marquee' | 'pricing';
+
+const skeletonMap: Record<SkeletonType, () => JSX.Element> = {
+    default: DefaultSkeleton,
+    cards: CardsSkeleton,
+    table: TableSkeleton,
+    accordion: AccordionSkeleton,
+    marquee: MarqueeSkeleton,
+    pricing: PricingSkeleton,
+};
+
+const LazySection = ({ component: Component, skeleton = 'default' }: { component: ComponentType; skeleton?: SkeletonType }) => {
+    const Skeleton = skeletonMap[skeleton];
+    return (
+        <ErrorBoundary>
+            <Suspense fallback={<Skeleton />}>
+                <Component />
+            </Suspense>
+        </ErrorBoundary>
+    );
+};
 
 const App = () => {
     useEffect(() => {
@@ -64,21 +145,21 @@ const App = () => {
             <div className="noise-overlay" />
             <main id="main-content" className="relative z-[2]">
                 <ResponsiveHeroBanner />
-                <LazySection component={ClientLogos} />
-                <LazySection component={ServicesSection} />
-                <LazySection component={AiAgentSection} />
-                <LazySection component={IphoneCarousel} />
-                <LazySection component={ProcessSection} />
-                <LazySection component={FeaturesSection} />
-                <LazySection component={CaseStudies} />
-                <LazySection component={TestimonialsSection} />
-                <LazySection component={ComparisonTable} />
-                <LazySection component={PricingSection} />
-                <LazySection component={GuaranteesSection} />
-                <LazySection component={FaqSection} />
-                <LazySection component={IntegrationsMarquee} />
-                <LazySection component={CtaBanner} />
-                <LazySection component={FooterSection} />
+                <LazySection component={ClientLogos} skeleton="marquee" />
+                <LazySection component={ServicesSection} skeleton="cards" />
+                <LazySection component={AiAgentSection} skeleton="cards" />
+                <LazySection component={IphoneCarousel} skeleton="default" />
+                <LazySection component={ProcessSection} skeleton="cards" />
+                <LazySection component={FeaturesSection} skeleton="cards" />
+                <LazySection component={CaseStudies} skeleton="cards" />
+                <LazySection component={TestimonialsSection} skeleton="cards" />
+                <LazySection component={ComparisonTable} skeleton="table" />
+                <LazySection component={PricingSection} skeleton="pricing" />
+                <LazySection component={GuaranteesSection} skeleton="cards" />
+                <LazySection component={FaqSection} skeleton="accordion" />
+                <LazySection component={IntegrationsMarquee} skeleton="marquee" />
+                <LazySection component={CtaBanner} skeleton="default" />
+                <LazySection component={FooterSection} skeleton="default" />
             </main>
             <TelegramFab />
         </>

@@ -1,5 +1,6 @@
-import { Check, ArrowRight, Sparkles, Bot, Smartphone, Zap, Brain, MessageSquare, BarChart3 } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Bot, Smartphone, Brain } from "lucide-react";
 import { useScrollReveal } from '../../hooks/use-animations';
+import { appDevelopmentFeatures, subscriptionPlans, aiAgentFeatures, aiAgentStats } from '../../data/pricing';
 
 const SectionDivider = ({ number, title, subtitle }: { number: string; title: string; subtitle: string }) => (
     <div data-reveal className="flex items-center gap-4 mb-5 sm:mb-6">
@@ -83,14 +84,7 @@ export const PricingSection = () => {
                             </p>
                         </div>
                         <ul className="grid sm:grid-cols-2 gap-3 text-[12px] sm:text-[13px] lg:w-[70%]">
-                            {[
-                                "Дизайн интерфейса премиум-класса",
-                                "Полная интеграция с Telegram Bot API",
-                                "Платежи: Stripe, ЮKassa, Apple Pay, СБП",
-                                "Каталог, корзина, заказы, CRM",
-                                "Push-уведомления (95% открытие)",
-                                "PWA — работает офлайн",
-                            ].map((f, i) => (
+                            {appDevelopmentFeatures.map((f, i) => (
                                 <li key={i} className="flex items-center gap-2.5 text-white/70 font-sans font-light">
                                     <div className="w-[18px] h-[18px] rounded-full bg-[#8B5CF6] flex items-center justify-center flex-shrink-0">
                                         <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
@@ -108,41 +102,7 @@ export const PricingSection = () => {
                 <SectionDivider number="02" title="Подписка на поддержку" subtitle="Ежемесячное обслуживание после запуска" />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-14 sm:mb-20">
-                    {[
-                        {
-                            name: "Минимальный",
-                            price: "9 900",
-                            popular: false,
-                            features: [
-                                "Хостинг (99.9% uptime)",
-                                "Мелкие правки и фиксы",
-                                "Поддержка по email",
-                                "Бэкапы — раз в месяц",
-                            ]
-                        },
-                        {
-                            name: "Стандартный",
-                            price: "14 900",
-                            popular: true,
-                            features: [
-                                "Ответ за 2 часа в рабочее время",
-                                "Бесплатные обновления и доработки",
-                                "Бэкапы — раз в неделю",
-                                "Аналитика, отчёты, мониторинг",
-                            ]
-                        },
-                        {
-                            name: "Премиум",
-                            price: "24 900",
-                            popular: false,
-                            features: [
-                                "Персональный менеджер проекта",
-                                "Бизнес-консалтинг и стратегия",
-                                "Ежедневные бэкапы + мониторинг",
-                                "Приоритет в очереди разработки",
-                            ]
-                        }
-                    ].map((plan, idx) => (
+                    {subscriptionPlans.map((plan, idx) => (
                         <div key={idx} data-reveal className={`relative overflow-hidden rounded-2xl glow-card ${plan.popular ? 'border-[#8B5CF6]/20 shadow-[0_0_40px_-12px_rgba(139,92,246,0.12)]' : ''}`}>
                             {plan.popular && (
                                 <div className="absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-[#8B5CF6]/40 to-transparent" />
@@ -231,12 +191,7 @@ export const PricingSection = () => {
                         </div>
                         <div className="lg:w-[70%]">
                             <div className="grid sm:grid-cols-2 gap-3 text-[12px] sm:text-[13px]">
-                                {[
-                                    { icon: MessageSquare, text: "До 20 агентов: продажи, поддержка, аналитика, логистика — параллельно 24/7" },
-                                    { icon: Brain, text: "Оркестратор координирует команду агентов, каждый специализирован под свою задачу" },
-                                    { icon: Zap, text: "17 AI-инструментов: корзина, оплата, CRM, бронирование, голос" },
-                                    { icon: BarChart3, text: "Аналитика: конверсия, LTV, propensity score в реальном времени" },
-                                ].map((f, i) => (
+                                {aiAgentFeatures.map((f, i) => (
                                     <div key={i} className="flex items-start gap-2.5 text-white/70 font-sans font-light">
                                         <div className="w-[18px] h-[18px] rounded-full bg-[#22c55e] flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <f.icon className="w-2.5 h-2.5 text-white" strokeWidth={2.5} />
@@ -249,11 +204,7 @@ export const PricingSection = () => {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4 px-4 sm:px-6 pb-5 sm:pb-6">
-                        {[
-                            { value: '73%', label: 'диалогов → продажа' },
-                            { value: '0.3с', label: 'время ответа' },
-                            { value: '96.8%', label: 'конверсия оплаты' },
-                        ].map((s, i) => (
+                        {aiAgentStats.map((s, i) => (
                             <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#22c55e]/[0.06] border border-[#22c55e]/10">
                                 <span className="text-[12px] sm:text-[13px] font-semibold font-sans" style={{ color: '#22c55e' }}>{s.value}</span>
                                 <span className="text-[10px] sm:text-[11px] text-white/40 font-sans">{s.label}</span>

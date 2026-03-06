@@ -186,8 +186,11 @@ const stats = [
 
 const DemandIndicator = () => {
     const daysOut = useMemo(() => {
-        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-        return (dayOfYear % 4) + 2;
+        const now = new Date();
+        const weekStart = new Date(now.getFullYear(), 0, 1);
+        const weekNum = Math.floor((now.getTime() - weekStart.getTime()) / (7 * 86400000));
+        const seed = weekNum * 2654435761;
+        return ((seed >>> 0) % 3) + 3;
     }, []);
 
     return (

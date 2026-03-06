@@ -129,8 +129,14 @@ export function TubesBackground() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReduced) return;
 
-    const timer = setTimeout(() => setReady(true), 1500);
-    return () => clearTimeout(timer);
+    const init = () => setReady(true);
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(init, { timeout: 2000 });
+      return () => cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(init, 1500);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   useEffect(() => {
@@ -164,7 +170,7 @@ export function TubesBackground() {
             background: '#050505',
             colorScheme: 'normal',
           }}
-          sandbox="allow-scripts allow-same-origin"
+          sandbox="allow-scripts"
           tabIndex={-1}
           aria-hidden="true"
           inert
