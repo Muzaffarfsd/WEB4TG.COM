@@ -10,13 +10,14 @@ interface IsometricOfficeProps {
 interface Agent {
     name: string;
     role: string;
-    sx: number;
-    sy: number;
-    working: boolean;
-    progress: number;
-    delay: number;
+    deskX: number; deskY: number;
+    loungeX: number; loungeY: number;
+    x: number; y: number;
     phase: number;
-    row: number;
+    walkDelay: number;
+    state: 'idle' | 'walk_to_desk' | 'working' | 'walk_back';
+    walkT: number;
+    workProgress: number;
 }
 
 interface Particle {
@@ -27,6 +28,18 @@ interface Particle {
 const ha = (hex: string, a: number) =>
     hex + Math.round(Math.max(0, Math.min(1, a)) * 255).toString(16).padStart(2, '0');
 
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeIO = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
+
+const CYCLE = 10;
+const PHASE_IDLE_END = 0.15;
+const PHASE_ALERT_END = 0.20;
+const PHASE_WALK_TO = 0.38;
+const PHASE_WORK_END = 0.68;
+const PHASE_RESULT_END = 0.73;
+const PHASE_WALK_BACK = 0.90;
+
 export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricOfficeProps) => {
     const cvRef = useRef<HTMLCanvasElement>(null);
     const afRef = useRef(0);
@@ -35,70 +48,64 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
     const clk = useRef(0);
     const pN = useRef(-1);
     const pS = useRef(-1);
-    const noMotion = useRef(false);
+    const noMo = useRef(false);
 
     useEffect(() => {
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-        noMotion.current = mq.matches;
-        const fn = (e: MediaQueryListEvent) => { noMotion.current = e.matches; };
+        noMo.current = mq.matches;
+        const fn = (e: MediaQueryListEvent) => { noMo.current = e.matches; };
         mq.addEventListener('change', fn);
         return () => mq.removeEventListener('change', fn);
     }, []);
 
     const buildLayout = useCallback((team: NicheScenario['agentTeam'], W: number, H: number) => {
-        const roomLeft = W * 0.12;
-        const roomRight = W * 0.88;
-        const roomTop = H * 0.38;
-        const roomBottom = H * 0.88;
-        const rW = roomRight - roomLeft;
-        const rH = roomBottom - roomTop;
+        const wallBot = H * 0.30;
+        const floorBot = H * 0.93;
+        const fH = floorBot - wallBot;
 
-        const orchX = roomLeft + rW * 0.5;
-        const orchY = roomTop + rH * 0.08;
+        const wL = W * 0.07, wR = W * 0.52;
+        const lL = W * 0.56, lR = W * 0.93;
 
-        const positions: { x: number; y: number; row: number }[] = [
-            { x: orchX, y: orchY, row: 0 },
+        const orchDesk = { x: (wL + wR) / 2, y: wallBot + fH * 0.12 };
+
+        const desks = [
+            { x: wL + (wR - wL) * 0.22, y: wallBot + fH * 0.40 },
+            { x: wL + (wR - wL) * 0.78, y: wallBot + fH * 0.40 },
+            { x: wL + (wR - wL) * 0.22, y: wallBot + fH * 0.68 },
+            { x: wL + (wR - wL) * 0.78, y: wallBot + fH * 0.68 },
+            { x: wL + (wR - wL) * 0.50, y: wallBot + fH * 0.54 },
         ];
 
-        const workers = team.length - 1;
-        if (workers <= 3) {
-            const spacing = rW / (workers + 1);
-            for (let i = 0; i < workers; i++) {
-                positions.push({ x: roomLeft + spacing * (i + 1), y: roomTop + rH * 0.55, row: 1 });
-            }
-        } else if (workers <= 5) {
-            const row1 = Math.ceil(workers / 2);
-            const row2 = workers - row1;
-            const s1 = rW / (row1 + 1);
-            for (let i = 0; i < row1; i++) {
-                positions.push({ x: roomLeft + s1 * (i + 1), y: roomTop + rH * 0.4, row: 1 });
-            }
-            const s2 = rW / (row2 + 1);
-            for (let i = 0; i < row2; i++) {
-                positions.push({ x: roomLeft + s2 * (i + 1), y: roomTop + rH * 0.72, row: 2 });
-            }
-        } else {
-            const row1 = Math.ceil(workers / 2);
-            const row2 = workers - row1;
-            const s1 = rW / (row1 + 1);
-            for (let i = 0; i < row1; i++) {
-                positions.push({ x: roomLeft + s1 * (i + 1), y: roomTop + rH * 0.38, row: 1 });
-            }
-            const s2 = rW / (row2 + 1);
-            for (let i = 0; i < row2; i++) {
-                positions.push({ x: roomLeft + s2 * (i + 1), y: roomTop + rH * 0.72, row: 2 });
-            }
-        }
+        const lounges = [
+            { x: lL + (lR - lL) * 0.18, y: wallBot + fH * 0.30 },
+            { x: lL + (lR - lL) * 0.55, y: wallBot + fH * 0.58 },
+            { x: lL + (lR - lL) * 0.85, y: wallBot + fH * 0.35 },
+            { x: lL + (lR - lL) * 0.35, y: wallBot + fH * 0.62 },
+            { x: lL + (lR - lL) * 0.70, y: wallBot + fH * 0.55 },
+        ];
 
         ags.current = team.map((a, i) => {
-            const pos = positions[i] || positions[positions.length - 1];
+            if (i === 0) {
+                return {
+                    name: a.name, role: a.role,
+                    deskX: orchDesk.x, deskY: orchDesk.y,
+                    loungeX: orchDesk.x, loungeY: orchDesk.y,
+                    x: orchDesk.x, y: orchDesk.y,
+                    phase: Math.random() * Math.PI * 2,
+                    walkDelay: 0, state: 'working' as const,
+                    walkT: 0, workProgress: 0,
+                };
+            }
+            const di = (i - 1) % desks.length;
+            const li = (i - 1) % lounges.length;
             return {
                 name: a.name, role: a.role,
-                sx: pos.x, sy: pos.y,
-                working: false, progress: 0,
-                delay: i * 380 + 500,
+                deskX: desks[di].x, deskY: desks[di].y,
+                loungeX: lounges[li].x, loungeY: lounges[li].y,
+                x: lounges[li].x, y: lounges[li].y,
                 phase: Math.random() * Math.PI * 2,
-                row: pos.row,
+                walkDelay: (i - 1) * 0.025,
+                state: 'idle' as const, walkT: 0, workProgress: 0,
             };
         });
     }, []);
@@ -110,7 +117,6 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const dpr = window.devicePixelRatio || 1;
             buildLayout(niche.agentTeam, c.width / dpr, c.height / dpr);
             pts.current = []; clk.current = 0;
-            ags.current.forEach(a => { a.working = false; a.progress = 0; });
         }
     }, [activeNiche, currentStage, niche.agentTeam, buildLayout]);
 
@@ -128,625 +134,661 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
         resize();
         const ro = new ResizeObserver(resize);
         ro.observe(cv);
-
         let prev = 0;
 
-        const drawRoom = (W: number, H: number, col: string, t: number) => {
-            const rL = W * 0.08, rR = W * 0.92;
-            const wallTop = H * 0.06;
-            const wallBot = H * 0.36;
-            const floorBot = H * 0.92;
+        const drawRoom = (W: number, H: number, col: string, t: number, cp: number) => {
+            const rL = W * 0.04, rR = W * 0.96;
+            const wallTop = H * 0.04, wallBot = H * 0.30, floorBot = H * 0.93;
 
-            const wallGradL = ctx.createLinearGradient(rL, wallTop, rL, wallBot);
-            wallGradL.addColorStop(0, '#12101a');
-            wallGradL.addColorStop(0.5, '#161322');
-            wallGradL.addColorStop(1, '#0e0c16');
-            ctx.fillStyle = wallGradL;
-            ctx.fillRect(rL, wallTop, (rR - rL) / 2, wallBot - wallTop);
+            const wG = ctx.createLinearGradient(rL, wallTop, rL, wallBot);
+            wG.addColorStop(0, '#100e18');
+            wG.addColorStop(0.5, '#141020');
+            wG.addColorStop(1, '#0c0a14');
+            ctx.fillStyle = wG;
+            ctx.fillRect(rL, wallTop, rR - rL, wallBot - wallTop);
 
-            const wallGradR = ctx.createLinearGradient(rL + (rR - rL) / 2, wallTop, rR, wallBot);
-            wallGradR.addColorStop(0, '#161322');
-            wallGradR.addColorStop(0.5, '#1a1628');
-            wallGradR.addColorStop(1, '#12101a');
-            ctx.fillStyle = wallGradR;
-            ctx.fillRect(rL + (rR - rL) / 2, wallTop, (rR - rL) / 2, wallBot - wallTop);
+            ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+            ctx.lineWidth = 0.5;
+            const bH = 14, bW = 26;
+            for (let row = 0; row < Math.ceil((wallBot - wallTop) / bH); row++) {
+                const y = wallTop + row * bH;
+                const off = row % 2 === 0 ? 0 : bW / 2;
+                for (let x = rL + off; x < rR; x += bW) {
+                    ctx.strokeRect(x, y, bW, bH);
+                }
+            }
 
-            ctx.strokeStyle = ha(col, 0.08);
+            ctx.fillStyle = ha(col, 0.05);
+            ctx.fillRect(rL, wallBot - 3, rR - rL, 3);
+
+            ctx.strokeStyle = ha(col, 0.1);
             ctx.lineWidth = 1;
             ctx.strokeRect(rL, wallTop, rR - rL, wallBot - wallTop);
 
-            const brickH = 16;
-            const brickW = 28;
-            ctx.strokeStyle = 'rgba(255,255,255,0.015)';
-            ctx.lineWidth = 0.5;
-            for (let row = 0; row < Math.ceil((wallBot - wallTop) / brickH); row++) {
-                const y = wallTop + row * brickH;
-                const offset = row % 2 === 0 ? 0 : brickW / 2;
-                for (let x = rL + offset; x < rR; x += brickW) {
-                    ctx.strokeRect(x, y, brickW, brickH);
-                }
-            }
-
-            const moldH = 4;
-            ctx.fillStyle = ha(col, 0.06);
-            ctx.fillRect(rL, wallBot - moldH, rR - rL, moldH);
-            ctx.fillStyle = '#0a0812';
-            ctx.fillRect(rL, wallBot - 1, rR - rL, 2);
-
-            const floorGrad = ctx.createLinearGradient(rL, wallBot, rL, floorBot);
-            floorGrad.addColorStop(0, '#0c0a14');
-            floorGrad.addColorStop(1, '#080610');
-            ctx.fillStyle = floorGrad;
+            const fG = ctx.createLinearGradient(rL, wallBot, rL, floorBot);
+            fG.addColorStop(0, '#0a0812');
+            fG.addColorStop(1, '#06050c');
+            ctx.fillStyle = fG;
             ctx.fillRect(rL, wallBot, rR - rL, floorBot - wallBot);
 
-            const tileSize = 32;
-            for (let tx = rL; tx < rR; tx += tileSize) {
-                for (let ty = wallBot; ty < floorBot; ty += tileSize) {
-                    const checker = (Math.floor((tx - rL) / tileSize) + Math.floor((ty - wallBot) / tileSize)) % 2 === 0;
-                    ctx.fillStyle = checker ? 'rgba(139,92,246,0.02)' : 'rgba(255,255,255,0.008)';
-                    ctx.fillRect(tx + 0.5, ty + 0.5, tileSize - 1, tileSize - 1);
+            const ts = 28;
+            for (let tx2 = rL; tx2 < rR; tx2 += ts) {
+                for (let ty = wallBot; ty < floorBot; ty += ts) {
+                    const chk = (Math.floor((tx2 - rL) / ts) + Math.floor((ty - wallBot) / ts)) % 2 === 0;
+                    ctx.fillStyle = chk ? 'rgba(139,92,246,0.018)' : 'rgba(255,255,255,0.006)';
+                    ctx.fillRect(tx2 + 0.3, ty + 0.3, ts - 0.6, ts - 0.6);
                 }
             }
-            ctx.strokeStyle = 'rgba(139,92,246,0.03)';
-            ctx.lineWidth = 0.5;
-            for (let tx = rL; tx <= rR; tx += tileSize) {
-                ctx.beginPath(); ctx.moveTo(tx, wallBot); ctx.lineTo(tx, floorBot); ctx.stroke();
-            }
-            for (let ty = wallBot; ty <= floorBot; ty += tileSize) {
-                ctx.beginPath(); ctx.moveTo(rL, ty); ctx.lineTo(rR, ty); ctx.stroke();
-            }
+            ctx.strokeStyle = 'rgba(139,92,246,0.025)';
+            ctx.lineWidth = 0.3;
+            for (let x = rL; x <= rR; x += ts) { ctx.beginPath(); ctx.moveTo(x, wallBot); ctx.lineTo(x, floorBot); ctx.stroke(); }
+            for (let y = wallBot; y <= floorBot; y += ts) { ctx.beginPath(); ctx.moveTo(rL, y); ctx.lineTo(rR, y); ctx.stroke(); }
 
-            ctx.strokeStyle = ha(col, 0.04);
-            ctx.lineWidth = 1;
-            ctx.strokeRect(rL, wallBot, rR - rL, floorBot - wallBot);
-
-            const wScreens = [
-                { x: rL + (rR - rL) * 0.15, y: wallTop + 12, w: 60, h: 36 },
-                { x: rL + (rR - rL) * 0.42, y: wallTop + 8, w: 72, h: 42 },
-                { x: rL + (rR - rL) * 0.72, y: wallTop + 14, w: 56, h: 34 },
-            ];
-
-            wScreens.forEach((s, si) => {
-                ctx.fillStyle = '#060510';
-                ctx.strokeStyle = 'rgba(60,50,80,0.5)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.roundRect(s.x, s.y, s.w, s.h, 3);
-                ctx.fill(); ctx.stroke();
-
-                ctx.fillStyle = 'rgba(50,45,65,0.3)';
-                ctx.fillRect(s.x + s.w / 2 - 1.5, s.y + s.h, 3, 8);
-                ctx.fillRect(s.x + s.w / 2 - 8, s.y + s.h + 8, 16, 3);
-
-                const innerX = s.x + 3, innerY = s.y + 3;
-                const innerW = s.w - 6, innerH = s.h - 6;
-                const sGrad = ctx.createLinearGradient(innerX, innerY, innerX + innerW, innerY + innerH);
-                sGrad.addColorStop(0, ha(col, 0.15));
-                sGrad.addColorStop(1, ha(col, 0.06));
-                ctx.fillStyle = sGrad;
-                ctx.fillRect(innerX, innerY, innerW, innerH);
-
-                if (si === 1) {
-                    const bars = 6;
-                    const barW = (innerW - 8) / bars - 2;
-                    for (let i = 0; i < bars; i++) {
-                        const bh = innerH * (0.2 + 0.6 * Math.abs(Math.sin(t * 0.8 + i * 0.9)));
-                        ctx.fillStyle = ha(col, 0.4);
-                        ctx.fillRect(innerX + 4 + i * (barW + 2), innerY + innerH - bh - 2, barW, bh);
-                    }
-                    ctx.font = '600 7px Inter, sans-serif';
-                    ctx.fillStyle = ha(col, 0.6);
-                    ctx.fillText('ANALYTICS', innerX + 4, innerY + 9);
-                } else if (si === 0) {
-                    for (let i = 0; i < 5; i++) {
-                        ctx.fillStyle = 'rgba(255,255,255,0.12)';
-                        const lw = innerW * (0.3 + 0.5 * Math.abs(Math.sin(t * 0.5 + i)));
-                        ctx.fillRect(innerX + 4, innerY + 6 + i * 6, lw - 4, 2);
-                    }
-                    ctx.font = '600 7px Inter, sans-serif';
-                    ctx.fillStyle = ha(col, 0.6);
-                    ctx.fillText('TASKS', innerX + 4, innerY + 9);
-                } else {
-                    const circR = Math.min(innerW, innerH) * 0.28;
-                    const circX = innerX + innerW / 2;
-                    const circY = innerY + innerH / 2 + 4;
-                    ctx.beginPath();
-                    ctx.arc(circX, circY, circR, 0, Math.PI * 2);
-                    ctx.strokeStyle = ha(col, 0.2);
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.arc(circX, circY, circR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 1.4);
-                    ctx.strokeStyle = ha(col, 0.5);
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-                    ctx.font = 'bold 10px Inter, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillStyle = ha(col, 0.7);
-                    ctx.fillText('89%', circX, circY + 4);
-                    ctx.textAlign = 'start';
-                    ctx.font = '600 6px Inter, sans-serif';
-                    ctx.fillStyle = ha(col, 0.5);
-                    ctx.textAlign = 'center';
-                    ctx.fillText('EFFICIENCY', circX, circY + circR + 8);
-                    ctx.textAlign = 'start';
-                }
-
-                ctx.save();
-                ctx.shadowColor = col;
-                ctx.shadowBlur = 20;
-                ctx.globalAlpha = 0.08;
-                ctx.fillStyle = col;
-                ctx.fillRect(innerX, innerY, innerW, innerH);
-                ctx.restore();
-            });
-
-            const serverX = rR - 30;
-            const serverY = wallBot + 8;
-            const serverW = 18;
-            const serverH = floorBot - wallBot - 16;
-            ctx.fillStyle = '#0a0814';
-            ctx.strokeStyle = 'rgba(60,50,80,0.4)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.roundRect(serverX, serverY, serverW, serverH, 2);
-            ctx.fill(); ctx.stroke();
-
-            for (let i = 0; i < 6; i++) {
-                const ry = serverY + 6 + i * (serverH / 7);
-                ctx.fillStyle = 'rgba(30,25,45,0.6)';
-                ctx.fillRect(serverX + 3, ry, serverW - 6, 8);
-                ctx.fillStyle = Math.sin(t * 3 + i * 1.5) > 0 ? '#22c55e' : ha(col, 0.5);
-                ctx.beginPath();
-                ctx.arc(serverX + serverW - 5, ry + 4, 1.5, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.font = '500 5px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.textAlign = 'center';
-            ctx.fillText('SERVER', serverX + serverW / 2, serverY + serverH + 8);
-            ctx.textAlign = 'start';
-
-            const plantX = rL + 14;
-            const plantY = floorBot - 10;
-            ctx.fillStyle = '#2a1a0e';
-            ctx.fillRect(plantX - 6, plantY - 12, 12, 14);
-            ctx.fillStyle = '#3a2a18';
-            ctx.beginPath();
-            ctx.ellipse(plantX, plantY - 12, 7, 3, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#1a4a1a';
-            ctx.save();
-            const leafAngles = [-0.6, -0.2, 0.15, 0.5, 0.8];
-            leafAngles.forEach((ang, i) => {
-                ctx.save();
-                ctx.translate(plantX, plantY - 14);
-                ctx.rotate(ang);
-                ctx.beginPath();
-                ctx.ellipse(0, -12 - i * 2, 4, 10 + i, 0, 0, Math.PI * 2);
-                ctx.fillStyle = i % 2 === 0 ? '#1a5a1a' : '#226a22';
-                ctx.fill();
-                ctx.restore();
-            });
-            ctx.restore();
-
-            const cableStartX = serverX;
-            const cableY1 = serverY + serverH * 0.3;
-            const cableY2 = serverY + serverH * 0.6;
+            const divX = W * 0.54;
             ctx.strokeStyle = ha(col, 0.06);
             ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(cableStartX, cableY1);
-            ctx.quadraticCurveTo(cableStartX - 20, cableY1 + 15, cableStartX - 15, wallBot);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(cableStartX, cableY2);
-            ctx.quadraticCurveTo(cableStartX - 30, cableY2 + 10, cableStartX - 25, wallBot);
-            ctx.stroke();
-        };
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath(); ctx.moveTo(divX, wallBot + 4); ctx.lineTo(divX, floorBot - 4); ctx.stroke();
+            ctx.setLineDash([]);
 
-        const drawWorkstation = (x: number, y: number, col: string, isOrch: boolean, working: boolean, t: number, phase: number) => {
-            const dW = isOrch ? 90 : 68;
-            const dH = isOrch ? 28 : 22;
-            const dTop = y;
-            const legH = isOrch ? 24 : 20;
+            ctx.font = '600 7px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = ha(col, 0.25);
+            ctx.fillText('⚡ WORK ZONE', (rL + divX) / 2, wallBot + 12);
+            ctx.fillText('☕ LOUNGE', (divX + rR) / 2, wallBot + 12);
+            ctx.textAlign = 'start';
 
-            ctx.fillStyle = 'rgba(0,0,0,0.25)';
-            ctx.beginPath();
-            ctx.ellipse(x, y + legH + 4, dW * 0.45, 4, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            const legW = 3;
-            const legColor = isOrch ? 'rgba(60,50,80,0.7)' : 'rgba(45,38,58,0.7)';
-            ctx.fillStyle = legColor;
-            ctx.fillRect(x - dW / 2 + 6, dTop + 2, legW, legH);
-            ctx.fillRect(x + dW / 2 - 6 - legW, dTop + 2, legW, legH);
-            ctx.fillRect(x - dW / 4, dTop + 2, legW, legH);
-            ctx.fillRect(x + dW / 4 - legW, dTop + 2, legW, legH);
-
-            const topGrad = ctx.createLinearGradient(x - dW / 2, dTop - dH / 2, x + dW / 2, dTop + dH / 2);
-            if (isOrch) {
-                topGrad.addColorStop(0, '#201838');
-                topGrad.addColorStop(0.5, '#1c1432');
-                topGrad.addColorStop(1, '#18102c');
-            } else {
-                topGrad.addColorStop(0, '#1a1528');
-                topGrad.addColorStop(0.5, '#161222');
-                topGrad.addColorStop(1, '#120e1c');
+            const stripY = wallTop + 2;
+            for (let lx = rL + 30; lx < rR - 30; lx += 80) {
+                ctx.fillStyle = ha(col, 0.03);
+                ctx.fillRect(lx, stripY, 50, 2);
+                ctx.save();
+                ctx.shadowColor = col;
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = ha(col, 0.08);
+                ctx.fillRect(lx + 5, stripY, 40, 1);
+                ctx.restore();
             }
 
-            ctx.fillStyle = topGrad;
-            ctx.strokeStyle = isOrch ? ha(col, 0.2) : 'rgba(60,50,80,0.25)';
+            const screens = [
+                { x: rL + (divX - rL) * 0.18, y: wallTop + 10, w: 52, h: 32, type: 'tasks' },
+                { x: rL + (divX - rL) * 0.55, y: wallTop + 8, w: 62, h: 38, type: 'analytics' },
+                { x: rL + (divX - rL) * 0.88, y: wallTop + 12, w: 48, h: 30, type: 'efficiency' },
+            ];
+            screens.forEach(s => {
+                ctx.fillStyle = '#06050c';
+                ctx.strokeStyle = 'rgba(60,50,80,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(s.x, s.y, s.w, s.h, 3); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = 'rgba(40,35,55,0.3)';
+                ctx.fillRect(s.x + s.w / 2 - 1, s.y + s.h, 2, 6);
+                ctx.fillRect(s.x + s.w / 2 - 6, s.y + s.h + 6, 12, 2);
+
+                const ix = s.x + 3, iy = s.y + 3, iw = s.w - 6, ih = s.h - 6;
+                const sG = ctx.createLinearGradient(ix, iy, ix + iw, iy + ih);
+                sG.addColorStop(0, ha(col, 0.12)); sG.addColorStop(1, ha(col, 0.04));
+                ctx.fillStyle = sG; ctx.fillRect(ix, iy, iw, ih);
+
+                ctx.font = '600 6px Inter, sans-serif';
+                ctx.fillStyle = ha(col, 0.5);
+                ctx.textAlign = 'left';
+
+                if (s.type === 'analytics') {
+                    ctx.fillText('ANALYTICS', ix + 2, iy + 8);
+                    const bars = 7;
+                    const bw2 = (iw - 6) / bars - 1.5;
+                    for (let i = 0; i < bars; i++) {
+                        const bh2 = (ih - 14) * (0.15 + 0.7 * Math.abs(Math.sin(t * 0.6 + i * 0.8)));
+                        ctx.fillStyle = ha(col, 0.35);
+                        ctx.fillRect(ix + 3 + i * (bw2 + 1.5), iy + ih - bh2 - 2, bw2, bh2);
+                    }
+                } else if (s.type === 'tasks') {
+                    ctx.fillText('TASKS', ix + 2, iy + 8);
+                    for (let i = 0; i < 4; i++) {
+                        const lw = iw * (0.25 + 0.55 * Math.abs(Math.sin(t * 0.4 + i * 1.1)));
+                        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                        ctx.fillRect(ix + 3, iy + 12 + i * 5, lw - 4, 2);
+                        ctx.fillStyle = i < 2 ? ha('#22c55e', 0.4) : ha(col, 0.3);
+                        ctx.beginPath(); ctx.arc(ix + iw - 6, iy + 13 + i * 5, 2, 0, Math.PI * 2); ctx.fill();
+                    }
+                } else {
+                    ctx.fillText('STATUS', ix + 2, iy + 8);
+                    const cR = Math.min(iw, ih) * 0.25;
+                    const cX = ix + iw / 2, cY = iy + ih / 2 + 3;
+                    ctx.beginPath(); ctx.arc(cX, cY, cR, 0, Math.PI * 2);
+                    ctx.strokeStyle = ha(col, 0.15); ctx.lineWidth = 2; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cX, cY, cR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 1.5);
+                    ctx.strokeStyle = ha(col, 0.5); ctx.lineWidth = 3; ctx.stroke();
+                    ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillStyle = ha(col, 0.7); ctx.fillText('92%', cX, cY + 3);
+                    ctx.textAlign = 'start';
+                }
+
+                ctx.save();
+                ctx.shadowColor = col; ctx.shadowBlur = 15; ctx.globalAlpha = 0.06;
+                ctx.fillStyle = col; ctx.fillRect(ix, iy, iw, ih);
+                ctx.restore();
+            });
+
+            if (cp >= PHASE_IDLE_END && cp < PHASE_ALERT_END) {
+                const alertPulse = Math.sin((cp - PHASE_IDLE_END) / (PHASE_ALERT_END - PHASE_IDLE_END) * Math.PI * 4);
+                const mainScreen = screens[1];
+                ctx.save();
+                ctx.shadowColor = '#ef4444';
+                ctx.shadowBlur = 20 + alertPulse * 10;
+                ctx.strokeStyle = ha('#ef4444', 0.6 + alertPulse * 0.3);
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.roundRect(mainScreen.x - 2, mainScreen.y - 2, mainScreen.w + 4, mainScreen.h + 4, 4);
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.font = 'bold 8px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = ha('#ef4444', 0.8);
+                ctx.fillText('⚠ НОВЫЙ ЗАПРОС', mainScreen.x + mainScreen.w / 2, mainScreen.y - 6);
+                ctx.textAlign = 'start';
+            }
+
+            const srvX = rL + 8, srvY = wallBot + 10;
+            const srvW = 16, srvH = floorBot - wallBot - 20;
+            ctx.fillStyle = '#08060e';
+            ctx.strokeStyle = 'rgba(50,42,65,0.4)';
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.roundRect(x - dW / 2, dTop - dH / 2, dW, dH, 3);
-            ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.roundRect(srvX, srvY, srvW, srvH, 2); ctx.fill(); ctx.stroke();
+            for (let i = 0; i < 5; i++) {
+                const ry = srvY + 5 + i * (srvH / 6);
+                ctx.fillStyle = 'rgba(25,20,38,0.6)';
+                ctx.fillRect(srvX + 2, ry, srvW - 4, 7);
+                ctx.fillStyle = Math.sin(t * 3 + i * 1.3) > 0 ? '#22c55e' : ha(col, 0.4);
+                ctx.beginPath(); ctx.arc(srvX + srvW - 4, ry + 3.5, 1.5, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.font = '500 5px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            ctx.textAlign = 'center'; ctx.fillText('SRV', srvX + srvW / 2, srvY + srvH + 8); ctx.textAlign = 'start';
+
+            const plX = rL + 32, plY = floorBot - 8;
+            ctx.fillStyle = '#2a1a0e';
+            ctx.fillRect(plX - 5, plY - 10, 10, 12);
+            ctx.fillStyle = '#3a2818';
+            ctx.beginPath(); ctx.ellipse(plX, plY - 10, 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+            [-.5, -.15, .2, .55].forEach((ang, i) => {
+                ctx.save(); ctx.translate(plX, plY - 12); ctx.rotate(ang);
+                ctx.fillStyle = i % 2 === 0 ? '#1a5a1a' : '#22882a';
+                ctx.beginPath(); ctx.ellipse(0, -10 - i * 1.5, 3.5, 9, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            });
+        };
+
+        const drawArcade = (x: number, y: number, col: string, t: number) => {
+            const w2 = 32, h2 = 56;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath(); ctx.ellipse(x, y + 2, w2 * 0.5, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+            const cabG = ctx.createLinearGradient(x - w2 / 2, y - h2, x + w2 / 2, y);
+            cabG.addColorStop(0, '#1a1530');
+            cabG.addColorStop(0.5, '#12102a');
+            cabG.addColorStop(1, '#0e0c1e');
+            ctx.fillStyle = cabG;
+            ctx.beginPath(); ctx.roundRect(x - w2 / 2, y - h2, w2, h2, 3); ctx.fill();
+            ctx.strokeStyle = ha(col, 0.2);
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(x - w2 / 2, y - h2, w2, h2, 3); ctx.stroke();
+
+            ctx.fillStyle = ha(col, 0.15);
+            ctx.fillRect(x - w2 / 2 + 1, y - h2, w2 - 2, 3);
+
+            const scrX = x - 11, scrY = y - h2 + 8, scrW = 22, scrH = 18;
+            ctx.fillStyle = '#040308';
+            ctx.fillRect(scrX, scrY, scrW, scrH);
+            const sG = ctx.createLinearGradient(scrX, scrY, scrX + scrW, scrY + scrH);
+            sG.addColorStop(0, ha(col, 0.25)); sG.addColorStop(1, ha('#22c55e', 0.15));
+            ctx.fillStyle = sG;
+            ctx.fillRect(scrX + 1, scrY + 1, scrW - 2, scrH - 2);
+
+            const px = 3;
+            for (let py = 0; py < 4; py++) {
+                for (let ppx = 0; ppx < 5; ppx++) {
+                    if (Math.sin(t * 2 + py * 3 + ppx * 1.7) > 0.3) {
+                        ctx.fillStyle = ha(col, 0.5);
+                        ctx.fillRect(scrX + 2 + ppx * (px + 1), scrY + 2 + py * (px + 1), px, px);
+                    }
+                }
+            }
+
+            const invY = scrY + 14;
+            ctx.fillStyle = ha('#22c55e', 0.6);
+            ctx.fillRect(scrX + 8, invY, 3, 2);
+            const bulletOff = (t * 30) % 12;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(scrX + 9, invY - bulletOff, 1, 2);
+
+            ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.globalAlpha = 0.1;
+            ctx.fillStyle = col; ctx.fillRect(scrX, scrY, scrW, scrH); ctx.restore();
+
+            const ctrlY = y - h2 + 30;
+            ctx.fillStyle = '#0a0816';
+            ctx.fillRect(x - 10, ctrlY, 20, 12);
+
+            ctx.fillStyle = ha(col, 0.5);
+            ctx.beginPath(); ctx.arc(x - 4, ctrlY + 6, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath(); ctx.arc(x + 4, ctrlY + 4, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath(); ctx.arc(x + 4, ctrlY + 9, 2, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = 'rgba(40,35,55,0.6)';
+            ctx.fillRect(x - 8, ctrlY + 14, 16, 3);
+
+            ctx.font = 'bold 6px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = ha(col, 0.6);
+            ctx.fillText('ARCADE', x, y - h2 - 3);
+            ctx.textAlign = 'start';
+        };
+
+        const drawCouch = (x: number, y: number, col: string) => {
+            const cW = 60, cH = 20, backH = 14;
 
             ctx.fillStyle = 'rgba(0,0,0,0.15)';
-            ctx.fillRect(x - dW / 2 + 2, dTop - dH / 2 + 2, dW - 4, 1);
+            ctx.beginPath(); ctx.ellipse(x, y + 3, cW * 0.5, 4, 0, 0, Math.PI * 2); ctx.fill();
 
-            if (isOrch) {
-                ctx.strokeStyle = ha(col, 0.08);
-                ctx.lineWidth = 0.5;
+            const seatG = ctx.createLinearGradient(x - cW / 2, y - cH, x + cW / 2, y);
+            seatG.addColorStop(0, '#201838'); seatG.addColorStop(1, '#18122c');
+            ctx.fillStyle = seatG;
+            ctx.beginPath(); ctx.roundRect(x - cW / 2, y - cH / 2, cW, cH, 4); ctx.fill();
+            ctx.strokeStyle = ha(col, 0.12); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(x - cW / 2, y - cH / 2, cW, cH, 4); ctx.stroke();
+
+            ctx.fillStyle = '#1a1430';
+            ctx.beginPath(); ctx.roundRect(x - cW / 2, y - cH / 2 - backH, cW, backH + 2, [4, 4, 0, 0]); ctx.fill();
+            ctx.strokeStyle = ha(col, 0.08); ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.roundRect(x - cW / 2, y - cH / 2 - backH, cW, backH + 2, [4, 4, 0, 0]); ctx.stroke();
+
+            [x - cW / 2 - 4, x + cW / 2 - 2].forEach(ax => {
+                ctx.fillStyle = '#1c1632';
+                ctx.beginPath(); ctx.roundRect(ax, y - cH / 2 - 4, 6, cH + 4, 2); ctx.fill();
+            });
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(x - 10, y - cH / 2 + 2); ctx.lineTo(x - 10, y + cH / 2 - 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 10, y - cH / 2 + 2); ctx.lineTo(x + 10, y + cH / 2 - 2); ctx.stroke();
+
+            ctx.fillStyle = ha(col, 0.08);
+            ctx.beginPath(); ctx.ellipse(x - 15, y - 4, 7, 5, -0.2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(x + 15, y - 4, 7, 5, 0.2, 0, Math.PI * 2); ctx.fill();
+        };
+
+        const drawVending = (x: number, y: number, col: string, t: number) => {
+            const w2 = 24, h2 = 50;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath(); ctx.ellipse(x, y + 2, w2 * 0.45, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = '#0c0a18';
+            ctx.strokeStyle = 'rgba(60,50,80,0.35)';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(x - w2 / 2, y - h2, w2, h2, 2); ctx.fill(); ctx.stroke();
+
+            const glassX = x - w2 / 2 + 2, glassY = y - h2 + 3;
+            const glassW = w2 - 4, glassH = h2 * 0.55;
+            ctx.fillStyle = 'rgba(139,92,246,0.04)';
+            ctx.fillRect(glassX, glassY, glassW, glassH);
+            ctx.strokeStyle = 'rgba(60,50,80,0.3)';
+            ctx.lineWidth = 0.5;
+            ctx.strokeRect(glassX, glassY, glassW, glassH);
+
+            const itemColors = ['#8B5CF6', '#ef4444', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899'];
+            const cols2 = 3, rows = 3;
+            const iw = (glassW - 4) / cols2, ih2 = (glassH - 4) / rows;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols2; c++) {
+                    const ci = (r * cols2 + c) % itemColors.length;
+                    ctx.fillStyle = ha(itemColors[ci], 0.4);
+                    ctx.beginPath();
+                    ctx.roundRect(glassX + 2 + c * iw + 1, glassY + 2 + r * ih2 + 1, iw - 2, ih2 - 2, 1.5);
+                    ctx.fill();
+                }
+            }
+
+            const panelY = y - h2 + 3 + glassH + 3;
+            ctx.fillStyle = 'rgba(20,16,30,0.8)';
+            ctx.fillRect(x - 8, panelY, 16, 10);
+            ctx.fillStyle = ha('#22c55e', 0.5);
+            ctx.font = 'bold 5px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(Math.sin(t) > 0 ? '₽50' : 'OK', x, panelY + 7);
+            ctx.textAlign = 'start';
+
+            ctx.fillStyle = 'rgba(40,35,55,0.5)';
+            ctx.fillRect(x - 6, y - 8, 12, 6);
+
+            ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.globalAlpha = 0.04;
+            ctx.fillStyle = col; ctx.fillRect(glassX, glassY, glassW, glassH); ctx.restore();
+
+            ctx.font = 'bold 5px monospace'; ctx.textAlign = 'center';
+            ctx.fillStyle = ha(col, 0.4);
+            ctx.fillText('DRINKS', x, y - h2 - 3);
+            ctx.textAlign = 'start';
+        };
+
+        const drawCoffeeTable = (x: number, y: number, col: string, t: number) => {
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.beginPath(); ctx.ellipse(x, y + 2, 14, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = 'rgba(35,28,50,0.7)';
+            ctx.fillRect(x - 1.5, y - 8, 3, 12);
+
+            ctx.fillStyle = '#1a1430';
+            ctx.strokeStyle = 'rgba(50,42,65,0.4)'; ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.roundRect(x - 14, y - 12, 28, 6, 2); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = 'rgba(80,60,40,0.35)';
+            ctx.beginPath(); ctx.ellipse(x - 4, y - 12, 3, 4, 0, Math.PI, Math.PI * 2); ctx.fill();
+            ctx.fillRect(x - 7, y - 12, 6, 4);
+            ctx.fillStyle = ha(col, 0.12);
+            ctx.beginPath(); ctx.ellipse(x - 4, y - 12, 2.5, 3, 0, 0, Math.PI); ctx.fill();
+            if (Math.sin(t * 2) > 0.5) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 0.5;
                 ctx.beginPath();
-                ctx.roundRect(x - dW / 2 + 4, dTop - dH / 2 + 3, dW - 8, dH - 6, 1);
+                ctx.moveTo(x - 3, y - 16);
+                ctx.quadraticCurveTo(x - 4, y - 20, x - 2, y - 22);
                 ctx.stroke();
             }
 
-            const monW = isOrch ? 42 : 30;
-            const monH = isOrch ? 32 : 24;
-            const monX = x;
-            const monY = dTop - dH / 2 - monH - 6;
+            ctx.fillStyle = 'rgba(30,120,200,0.15)';
+            ctx.fillRect(x + 3, y - 14, 8, 5);
+            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            for (let li = 0; li < 3; li++) {
+                ctx.fillRect(x + 4, y - 13 + li * 1.5, 5, 0.8);
+            }
+        };
 
-            ctx.fillStyle = 'rgba(35,30,50,0.6)';
-            ctx.fillRect(monX - 2, monY + monH, 4, 8);
-            ctx.beginPath();
-            ctx.ellipse(monX, monY + monH + 8, 8, 3, 0, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(35,30,50,0.5)';
-            ctx.fill();
+        const drawDesk = (x: number, y: number, col: string, isOrch: boolean, working: boolean, t: number, ph: number) => {
+            const dW = isOrch ? 82 : 62, dH2 = isOrch ? 24 : 20, legH = isOrch ? 22 : 18;
 
-            ctx.fillStyle = '#08060e';
-            ctx.strokeStyle = isOrch ? ha(col, 0.3) : 'rgba(60,50,80,0.4)';
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath(); ctx.ellipse(x, y + legH + 2, dW * 0.42, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = 'rgba(45,38,60,0.6)';
+            ctx.fillRect(x - dW / 2 + 5, y + 1, 2.5, legH);
+            ctx.fillRect(x + dW / 2 - 7, y + 1, 2.5, legH);
+            ctx.fillRect(x - dW / 4, y + 1, 2, legH);
+            ctx.fillRect(x + dW / 4 - 2, y + 1, 2, legH);
+
+            const topG = ctx.createLinearGradient(x - dW / 2, y - dH2 / 2, x + dW / 2, y + dH2 / 2);
+            topG.addColorStop(0, isOrch ? '#201838' : '#181328');
+            topG.addColorStop(1, isOrch ? '#16102c' : '#100c1e');
+            ctx.fillStyle = topG;
+            ctx.beginPath(); ctx.roundRect(x - dW / 2, y - dH2 / 2, dW, dH2, 3); ctx.fill();
+            ctx.strokeStyle = isOrch ? ha(col, 0.2) : 'rgba(55,48,72,0.25)';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(x - dW / 2, y - dH2 / 2, dW, dH2, 3); ctx.stroke();
+
+            if (isOrch) {
+                ctx.fillStyle = ha(col, 0.04);
+                ctx.beginPath(); ctx.roundRect(x - dW / 2 + 3, y - dH2 / 2 + 2, dW - 6, dH2 - 4, 1); ctx.fill();
+            }
+
+            const monW = isOrch ? 38 : 28, monH = isOrch ? 28 : 22;
+            const monY2 = y - dH2 / 2 - monH - 4;
+
+            ctx.fillStyle = 'rgba(30,25,42,0.5)';
+            ctx.fillRect(x - 1.5, monY2 + monH, 3, 6);
+            ctx.beginPath(); ctx.ellipse(x, monY2 + monH + 6, 7, 2.5, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(30,25,42,0.4)'; ctx.fill();
+
+            ctx.fillStyle = '#07060c';
+            ctx.strokeStyle = isOrch ? ha(col, 0.3) : 'rgba(55,48,72,0.4)';
             ctx.lineWidth = isOrch ? 2 : 1.5;
-            ctx.beginPath();
-            ctx.roundRect(monX - monW / 2, monY, monW, monH, 3);
-            ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.roundRect(x - monW / 2, monY2, monW, monH, 3); ctx.fill(); ctx.stroke();
 
-            const bevelSize = 3;
-            ctx.fillStyle = 'rgba(30,25,42,0.4)';
-            ctx.fillRect(monX - monW / 2, monY, monW, bevelSize);
-            ctx.fillStyle = 'rgba(10,8,16,0.4)';
-            ctx.fillRect(monX - monW / 2, monY + monH - bevelSize, monW, bevelSize);
-
-            const sX = monX - monW / 2 + 3;
-            const sY = monY + 3;
-            const sW = monW - 6;
-            const sH = monH - 6;
-
+            const sX = x - monW / 2 + 3, sY = monY2 + 3, sW = monW - 6, sH = monH - 6;
             if (working || isOrch) {
-                const pulse = 0.4 + Math.sin(t * 2 + phase) * 0.15;
-                const sGrad = ctx.createLinearGradient(sX, sY, sX + sW, sY + sH);
-                sGrad.addColorStop(0, ha(col, pulse * 0.6));
-                sGrad.addColorStop(1, ha(col, pulse * 0.25));
-                ctx.fillStyle = sGrad;
-                ctx.fillRect(sX, sY, sW, sH);
+                const pulse = 0.4 + Math.sin(t * 2 + ph) * 0.15;
+                const scG = ctx.createLinearGradient(sX, sY, sX + sW, sY + sH);
+                scG.addColorStop(0, ha(col, pulse * 0.55)); scG.addColorStop(1, ha(col, pulse * 0.2));
+                ctx.fillStyle = scG; ctx.fillRect(sX, sY, sW, sH);
 
                 if (working) {
-                    const lines = isOrch ? 6 : 4;
+                    const lines = isOrch ? 5 : 3;
                     for (let i = 0; i < lines; i++) {
-                        const lw = sW * (0.2 + 0.6 * Math.abs(Math.sin(t * 3.5 + i * 1.3 + phase)));
+                        const lw = sW * (0.2 + 0.55 * Math.abs(Math.sin(t * 3 + i * 1.3 + ph)));
                         ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                        ctx.fillRect(sX + 3, sY + 4 + i * (isOrch ? 4 : 4.5), lw - 3, 1.5);
+                        ctx.fillRect(sX + 2, sY + 3 + i * (isOrch ? 4 : 5), lw - 2, 1.5);
                     }
-                    if (Math.sin(t * 5 + phase) > 0) {
-                        const ci = Math.floor(t * 2 + phase) % (isOrch ? 6 : 4);
-                        const cxPos = sX + 3 + sW * (0.2 + 0.6 * Math.abs(Math.sin(t * 3.5 + ci * 1.3 + phase))) - 3;
+                    if (Math.sin(t * 5 + ph) > 0) {
+                        const ci = Math.floor(t * 2 + ph) % (isOrch ? 5 : 3);
+                        const cxP = sX + 2 + sW * (0.2 + 0.55 * Math.abs(Math.sin(t * 3 + ci * 1.3 + ph))) - 2;
                         ctx.fillStyle = 'rgba(255,255,255,0.7)';
-                        ctx.fillRect(cxPos, sY + 4 + ci * (isOrch ? 4 : 4.5), 1, 5);
+                        ctx.fillRect(cxP, sY + 3 + ci * (isOrch ? 4 : 5), 1, 4);
                     }
                 }
 
-                ctx.save();
-                ctx.shadowColor = col;
-                ctx.shadowBlur = isOrch ? 30 : 18;
-                ctx.globalAlpha = 0.15;
-                ctx.fillStyle = col;
-                ctx.fillRect(sX, sY, sW, sH);
-                ctx.restore();
+                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = isOrch ? 25 : 14; ctx.globalAlpha = 0.12;
+                ctx.fillStyle = col; ctx.fillRect(sX, sY, sW, sH); ctx.restore();
 
-                ctx.fillStyle = ha(col, 0.04);
+                ctx.fillStyle = ha(col, 0.03);
                 ctx.beginPath();
-                ctx.moveTo(monX - monW * 0.6, monY + monH + 15);
-                ctx.lineTo(monX + monW * 0.6, monY + monH + 15);
-                ctx.lineTo(monX + monW * 0.3, dTop + dH / 2);
-                ctx.lineTo(monX - monW * 0.3, dTop + dH / 2);
-                ctx.closePath();
-                ctx.fill();
+                ctx.moveTo(x - monW * 0.5, monY2 + monH + 10);
+                ctx.lineTo(x + monW * 0.5, monY2 + monH + 10);
+                ctx.lineTo(x + monW * 0.25, y + dH2 / 2);
+                ctx.lineTo(x - monW * 0.25, y + dH2 / 2);
+                ctx.closePath(); ctx.fill();
             } else {
-                ctx.fillStyle = 'rgba(15,12,22,0.8)';
-                ctx.fillRect(sX, sY, sW, sH);
+                ctx.fillStyle = 'rgba(12,10,18,0.8)'; ctx.fillRect(sX, sY, sW, sH);
             }
 
             if (isOrch) {
-                [-22, 22].forEach(off => {
-                    const smW = 18; const smH = 14;
-                    const smX = monX + off; const smY = monY + 4;
-                    ctx.fillStyle = '#08060e';
-                    ctx.strokeStyle = ha(col, 0.2);
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.roundRect(smX - smW / 2, smY, smW, smH, 2);
-                    ctx.fill(); ctx.stroke();
+                [-18, 18].forEach(off => {
+                    const sw = 16, sh = 12;
+                    ctx.fillStyle = '#07060c';
+                    ctx.strokeStyle = ha(col, 0.18); ctx.lineWidth = 1;
+                    ctx.beginPath(); ctx.roundRect(x + off - sw / 2, monY2 + 4, sw, sh, 2); ctx.fill(); ctx.stroke();
                     if (working) {
-                        ctx.fillStyle = ha(col, 0.2);
-                        ctx.fillRect(smX - smW / 2 + 2, smY + 2, smW - 4, smH - 4);
+                        ctx.fillStyle = ha(col, 0.18);
+                        ctx.fillRect(x + off - sw / 2 + 2, monY2 + 6, sw - 4, sh - 4);
                     }
-                    ctx.fillStyle = 'rgba(35,30,50,0.5)';
-                    ctx.fillRect(smX - 1, smY + smH, 2, 4);
+                    ctx.fillStyle = 'rgba(30,25,42,0.4)'; ctx.fillRect(x + off - 1, monY2 + 4 + sh, 2, 3);
                 });
             }
 
-            const kbW = isOrch ? 26 : 20;
-            const kbH = isOrch ? 10 : 8;
-            const kbX = x - kbW / 2;
-            const kbY = dTop - 3;
-            ctx.fillStyle = 'rgba(35,30,48,0.8)';
-            ctx.strokeStyle = 'rgba(55,48,72,0.4)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.roundRect(kbX, kbY, kbW, kbH, 2);
-            ctx.fill(); ctx.stroke();
-
-            const keySize = 2.5;
-            const keyGap = 1;
-            const keysPerRow = Math.floor((kbW - 4) / (keySize + keyGap));
-            for (let row = 0; row < 3; row++) {
-                for (let k = 0; k < keysPerRow; k++) {
-                    const kx = kbX + 2 + k * (keySize + keyGap) + (row === 2 ? 2 : 0);
-                    const ky = kbY + 2 + row * (keySize + keyGap);
-                    if (kx + keySize > kbX + kbW - 2) continue;
-                    ctx.fillStyle = working && Math.sin(t * 15 + k * 0.7 + row * 2.1 + phase) > 0.7
-                        ? ha(col, 0.35) : 'rgba(55,48,72,0.5)';
-                    ctx.fillRect(kx, ky, keySize, keySize);
+            const kbW = isOrch ? 24 : 18, kbH = isOrch ? 8 : 7;
+            const kbX = x - kbW / 2, kbY = y - 2;
+            ctx.fillStyle = 'rgba(30,25,45,0.7)';
+            ctx.beginPath(); ctx.roundRect(kbX, kbY, kbW, kbH, 1.5); ctx.fill();
+            const ks = 2.2, kg = 0.8;
+            const kpr = Math.floor((kbW - 3) / (ks + kg));
+            for (let r = 0; r < 3; r++) {
+                for (let k = 0; k < kpr; k++) {
+                    const kx2 = kbX + 1.5 + k * (ks + kg);
+                    const ky2 = kbY + 1.5 + r * (ks + kg);
+                    if (kx2 + ks > kbX + kbW - 1) continue;
+                    ctx.fillStyle = working && Math.sin(t * 14 + k * 0.8 + r * 2.3 + ph) > 0.75
+                        ? ha(col, 0.35) : 'rgba(50,42,65,0.45)';
+                    ctx.fillRect(kx2, ky2, ks, ks);
                 }
             }
 
-            const mX = x + kbW / 2 + 8;
-            const mY = kbY + 2;
-            ctx.fillStyle = 'rgba(40,35,55,0.7)';
-            ctx.beginPath();
-            ctx.roundRect(mX, mY, 6, 9, 3);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(60,55,75,0.5)';
-            ctx.fillRect(mX + 2, mY + 1, 2, 3);
+            const mX = x + kbW / 2 + 6, mY = kbY + 1;
+            ctx.fillStyle = 'rgba(35,28,48,0.6)';
+            ctx.beginPath(); ctx.roundRect(mX, mY, 5, 7, 2); ctx.fill();
         };
 
         const drawChair = (x: number, y: number, col: string, isOrch: boolean) => {
-            const cY = y + (isOrch ? 18 : 14);
-
-            ctx.fillStyle = 'rgba(30,25,42,0.5)';
-            ctx.fillRect(x - 1.5, cY - 2, 3, 8);
-
-            const seatW = isOrch ? 22 : 18;
-            const seatH = isOrch ? 8 : 6;
-            ctx.fillStyle = isOrch ? ha(col, 0.12) : 'rgba(35,30,48,0.8)';
-            ctx.strokeStyle = isOrch ? ha(col, 0.2) : 'rgba(50,42,65,0.4)';
+            const cY = y + (isOrch ? 16 : 12);
+            const sW = isOrch ? 20 : 16, sH = 6;
+            ctx.fillStyle = isOrch ? ha(col, 0.1) : 'rgba(30,25,45,0.7)';
+            ctx.beginPath(); ctx.roundRect(x - sW / 2, cY, sW, sH, 3); ctx.fill();
+            const bW = isOrch ? 18 : 14, bH2 = isOrch ? 18 : 14;
+            ctx.fillStyle = isOrch ? ha(col, 0.12) : 'rgba(35,28,48,0.7)';
+            ctx.strokeStyle = isOrch ? ha(col, 0.2) : 'rgba(50,42,65,0.3)';
             ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.roundRect(x - seatW / 2, cY + 4, seatW, seatH, 3);
-            ctx.fill(); ctx.stroke();
-
-            const backW = isOrch ? 20 : 16;
-            const backH = isOrch ? 22 : 18;
-            const backY = cY - backH + 2;
-            ctx.fillStyle = isOrch ? ha(col, 0.15) : 'rgba(38,32,52,0.85)';
-            ctx.strokeStyle = isOrch ? ha(col, 0.25) : 'rgba(55,48,72,0.4)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.roundRect(x - backW / 2, backY, backW, backH, 4);
-            ctx.fill(); ctx.stroke();
-
-            if (isOrch) {
-                ctx.fillStyle = ha(col, 0.08);
-                ctx.beginPath();
-                ctx.roundRect(x - backW / 2 + 3, backY + 3, backW - 6, backH - 6, 2);
-                ctx.fill();
-            }
-
-            const wheelPositions = [
-                [x - seatW / 2 + 2, cY + seatH + 3],
-                [x + seatW / 2 - 2, cY + seatH + 3],
-                [x, cY + seatH + 4],
-            ];
-            wheelPositions.forEach(([wx, wy]) => {
-                ctx.fillStyle = 'rgba(25,20,35,0.8)';
-                ctx.beginPath();
-                ctx.arc(wx, wy, 2, 0, Math.PI * 2);
-                ctx.fill();
+            ctx.beginPath(); ctx.roundRect(x - bW / 2, cY - bH2, bW, bH2, 3); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = 'rgba(25,20,38,0.5)'; ctx.fillRect(x - 1, cY + sH, 2, 6);
+            [x - sW / 2 + 2, x + sW / 2 - 2, x].forEach(wx => {
+                ctx.fillStyle = 'rgba(20,16,32,0.7)';
+                ctx.beginPath(); ctx.arc(wx, cY + sH + 6, 1.5, 0, Math.PI * 2); ctx.fill();
             });
         };
 
-        const drawPerson = (a: Agent, col: string, isOrch: boolean, t: number) => {
-            const bob = noMotion.current ? 0 : Math.sin(t * 1.5 + a.phase) * 1.2;
-            const baseY = a.sy + (isOrch ? 6 : 4) + bob;
-            const headR = isOrch ? 10 : 8;
-            const headY = baseY - (isOrch ? 18 : 14);
+        const drawPerson = (a: Agent, col: string, isOrch: boolean, t: number, isWalking: boolean) => {
+            const bob = noMo.current ? 0 : (isWalking
+                ? Math.abs(Math.sin(a.walkT * 20 * Math.PI)) * 3
+                : Math.sin(t * 1.5 + a.phase) * 1);
+            const hR = isOrch ? 9 : 7.5;
+            const hY = a.y - (isOrch ? 20 : 16) - bob;
+            const hX = a.x;
 
-            const bodyW = isOrch ? 18 : 14;
-            const bodyH = isOrch ? 14 : 11;
-            const bodyY = headY + headR - 2;
+            const bW = isOrch ? 16 : 12, bH2 = isOrch ? 12 : 10;
+            const bY = hY + hR - 2;
 
-            const torsoGrad = ctx.createLinearGradient(a.sx, bodyY, a.sx, bodyY + bodyH);
-            torsoGrad.addColorStop(0, ha(col, 0.65));
-            torsoGrad.addColorStop(1, ha(col, 0.35));
-            ctx.fillStyle = torsoGrad;
-            ctx.beginPath();
-            ctx.roundRect(a.sx - bodyW / 2, bodyY, bodyW, bodyH, 3);
-            ctx.fill();
+            const shG = ctx.createLinearGradient(hX, bY, hX, bY + bH2);
+            shG.addColorStop(0, ha(col, 0.6)); shG.addColorStop(1, ha(col, 0.3));
+            ctx.fillStyle = shG;
+            ctx.beginPath(); ctx.roundRect(hX - bW / 2, bY, bW, bH2, 3); ctx.fill();
 
-            ctx.fillStyle = ha(col, 0.3);
-            ctx.fillRect(a.sx - bodyW / 2 + 2, bodyY + bodyH * 0.4, bodyW - 4, 1);
+            ctx.fillStyle = ha(col, 0.45);
+            ctx.beginPath(); ctx.roundRect(hX - (bW + 3) / 2, bY, bW + 3, 4, 2); ctx.fill();
 
-            const shoulderW = bodyW + 4;
-            ctx.fillStyle = ha(col, 0.5);
-            ctx.beginPath();
-            ctx.roundRect(a.sx - shoulderW / 2, bodyY, shoulderW, 5, 2);
-            ctx.fill();
+            if (isWalking && !noMo.current) {
+                const legPhase = Math.sin(a.walkT * 18 * Math.PI);
+                const facingRight = a.deskX > a.loungeX ? (a.state === 'walk_to_desk' ? 1 : -1) : (a.state === 'walk_to_desk' ? -1 : 1);
+                [-1, 1].forEach(side => {
+                    const lOff = side * legPhase * 3;
+                    ctx.fillStyle = ha(col, 0.35);
+                    ctx.fillRect(hX + side * 2.5 - 1.5, bY + bH2, 3, 8 + lOff * facingRight * side * 0.3);
+                    ctx.fillStyle = '#1a1520';
+                    ctx.beginPath(); ctx.ellipse(hX + side * 2.5, bY + bH2 + 8 + lOff * facingRight * side * 0.3, 2.5, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+                });
 
-            const armLen = bodyH * 0.7;
-            const armW = 4;
-            const armAngle = a.working ? Math.sin(t * 4 + a.phase) * 0.15 : 0;
-            [-1, 1].forEach(side => {
-                ctx.save();
-                ctx.translate(a.sx + side * (bodyW / 2 + 1), bodyY + 4);
-                ctx.rotate(armAngle * side + 0.3 * side);
-                ctx.fillStyle = ha(col, 0.45);
-                ctx.beginPath();
-                ctx.roundRect(-armW / 2, 0, armW, armLen, 2);
-                ctx.fill();
+                [-1, 1].forEach(side => {
+                    const aOff = -side * legPhase * 0.25;
+                    ctx.save();
+                    ctx.translate(hX + side * (bW / 2), bY + 3);
+                    ctx.rotate(aOff);
+                    ctx.fillStyle = ha(col, 0.4);
+                    ctx.beginPath(); ctx.roundRect(-2, 0, 4, bH2 * 0.65, 2); ctx.fill();
+                    ctx.restore();
+                });
+            } else {
+                [-1, 1].forEach(side => {
+                    ctx.save();
+                    ctx.translate(hX + side * (bW / 2), bY + 3);
+                    ctx.rotate(a.state === 'working' ? (Math.sin(t * 3.5 + a.phase + side) * 0.12) : 0);
+                    ctx.fillStyle = ha(col, 0.4);
+                    ctx.beginPath(); ctx.roundRect(-2, 0, 4, bH2 * 0.6, 2); ctx.fill();
+                    const skinG = ctx.createRadialGradient(0, bH2 * 0.6, 0, 0, bH2 * 0.6, 3);
+                    skinG.addColorStop(0, '#e8c4a8'); skinG.addColorStop(1, '#c4986e');
+                    ctx.fillStyle = skinG;
+                    ctx.beginPath(); ctx.arc(0, bH2 * 0.6, 3, 0, Math.PI * 2); ctx.fill();
+                    ctx.restore();
+                });
+            }
 
-                const skinGrad = ctx.createRadialGradient(0, armLen, 0, 0, armLen, 3.5);
-                skinGrad.addColorStop(0, '#e8c4a8');
-                skinGrad.addColorStop(1, '#c4986e');
-                ctx.fillStyle = skinGrad;
-                ctx.beginPath();
-                ctx.arc(0, armLen, 3.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            });
-
-            const headGrad = ctx.createRadialGradient(a.sx - 1, headY - 2, 0, a.sx, headY, headR);
-            headGrad.addColorStop(0, '#f2dcc8');
-            headGrad.addColorStop(0.6, '#d4a984');
-            headGrad.addColorStop(1, '#b88a6c');
-            ctx.fillStyle = headGrad;
-            ctx.beginPath();
-            ctx.arc(a.sx, headY, headR, 0, Math.PI * 2);
-            ctx.fill();
+            const hdG = ctx.createRadialGradient(hX - 1, hY - 1, 0, hX, hY, hR);
+            hdG.addColorStop(0, '#f2dcc8'); hdG.addColorStop(0.6, '#d4a984'); hdG.addColorStop(1, '#b88a6c');
+            ctx.fillStyle = hdG;
+            ctx.beginPath(); ctx.arc(hX, hY, hR, 0, Math.PI * 2); ctx.fill();
 
             ctx.fillStyle = '#1a1520';
-            const hairStyle = Math.floor(a.phase * 3) % 3;
-            if (hairStyle === 0) {
+            const hs = Math.floor(a.phase * 3) % 3;
+            if (hs === 0) {
                 ctx.beginPath();
-                ctx.arc(a.sx, headY - 2, headR + 1, Math.PI + 0.3, Math.PI * 2 - 0.3);
-                ctx.quadraticCurveTo(a.sx + headR + 3, headY - 2, a.sx + headR, headY + 2);
-                ctx.quadraticCurveTo(a.sx, headY - headR - 2, a.sx - headR, headY + 2);
+                ctx.arc(hX, hY - 2, hR + 1, Math.PI + 0.3, Math.PI * 2 - 0.3);
+                ctx.quadraticCurveTo(hX + hR + 2, hY - 2, hX + hR, hY + 1);
+                ctx.quadraticCurveTo(hX, hY - hR - 2, hX - hR, hY + 1);
                 ctx.fill();
-            } else if (hairStyle === 1) {
+            } else if (hs === 1) {
                 ctx.beginPath();
-                ctx.ellipse(a.sx, headY - headR * 0.4, headR + 1.5, headR * 0.7, 0, Math.PI, Math.PI * 2);
+                ctx.ellipse(hX, hY - hR * 0.35, hR + 1.5, hR * 0.65, 0, Math.PI, Math.PI * 2);
                 ctx.fill();
             } else {
                 ctx.beginPath();
-                ctx.ellipse(a.sx, headY - headR * 0.3, headR + 2, headR * 0.65, 0, Math.PI + 0.5, Math.PI * 2 - 0.5);
+                ctx.ellipse(hX, hY - hR * 0.3, hR + 1.5, hR * 0.6, 0, Math.PI + 0.4, Math.PI * 2 - 0.4);
                 ctx.fill();
-                ctx.fillRect(a.sx - headR - 1, headY - headR * 0.3, 3, headR);
-                ctx.fillRect(a.sx + headR - 1, headY - headR * 0.3, 3, headR);
+                ctx.fillRect(hX - hR - 1, hY - hR * 0.3, 2.5, hR * 0.8);
+                ctx.fillRect(hX + hR - 1, hY - hR * 0.3, 2.5, hR * 0.8);
             }
 
-            const eyeY = headY + 1;
-            const eyeOff = headR * 0.3;
+            const eY = hY + 0.5, eO = hR * 0.28;
             ctx.fillStyle = '#1a1520';
-            ctx.fillRect(a.sx - eyeOff - 2, eyeY, 3, 2);
-            ctx.fillRect(a.sx + eyeOff - 1, eyeY, 3, 2);
-
+            ctx.fillRect(hX - eO - 1.5, eY, 2.5, 2);
+            ctx.fillRect(hX + eO - 1, eY, 2.5, 2);
             ctx.fillStyle = 'white';
             ctx.beginPath();
-            ctx.arc(a.sx - eyeOff - 0.5, eyeY + 0.5, 0.6, 0, Math.PI * 2);
-            ctx.arc(a.sx + eyeOff + 0.5, eyeY + 0.5, 0.6, 0, Math.PI * 2);
+            ctx.arc(hX - eO - 0.2, eY + 0.5, 0.5, 0, Math.PI * 2);
+            ctx.arc(hX + eO + 0.3, eY + 0.5, 0.5, 0, Math.PI * 2);
             ctx.fill();
 
-            if (a.working && !noMotion.current && Math.sin(t * 8 + a.phase) > 0.8) {
-                ctx.fillStyle = ha(col, 0.4);
+            if (a.state === 'working' && !noMo.current && Math.sin(t * 7 + a.phase) > 0.85) {
+                ctx.fillStyle = ha(col, 0.35);
                 ctx.font = '500 6px Inter, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('···', a.sx, headY - headR - 3);
+                ctx.fillText('···', hX, hY - hR - 2);
+                ctx.textAlign = 'start';
             }
 
             if (isOrch) {
-                ctx.strokeStyle = ha(col, 0.4);
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(a.sx, headY, headR + 4, 0, Math.PI * 2);
-                ctx.stroke();
-
+                ctx.strokeStyle = ha(col, 0.35); ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.arc(hX, hY, hR + 4, 0, Math.PI * 2); ctx.stroke();
                 ctx.fillStyle = col;
                 ctx.beginPath();
-                ctx.moveTo(a.sx, headY - headR - 7);
-                ctx.lineTo(a.sx - 5, headY - headR - 1);
-                ctx.lineTo(a.sx + 5, headY - headR - 1);
-                ctx.closePath();
-                ctx.fill();
+                ctx.moveTo(hX, hY - hR - 6);
+                ctx.lineTo(hX - 4.5, hY - hR - 0.5);
+                ctx.lineTo(hX + 4.5, hY - hR - 0.5);
+                ctx.closePath(); ctx.fill();
+                ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.globalAlpha = 0.12;
+                ctx.beginPath(); ctx.arc(hX, hY, hR + 8, 0, Math.PI * 2);
+                ctx.fillStyle = col; ctx.fill(); ctx.restore();
             }
 
-            if (a.working) {
+            if (a.state === 'working') {
                 ctx.fillStyle = '#22c55e';
-                ctx.beginPath();
-                ctx.arc(a.sx + headR + 3, headY - headR + 1, 3.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = '#050505';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 5px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('✓', a.sx + headR + 3, headY - headR + 3);
+                ctx.beginPath(); ctx.arc(hX + hR + 2, hY - hR + 1, 3, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#050505'; ctx.lineWidth = 1; ctx.stroke();
+                ctx.fillStyle = 'white'; ctx.font = 'bold 4px Inter, sans-serif';
+                ctx.textAlign = 'center'; ctx.fillText('✓', hX + hR + 2, hY - hR + 2.5); ctx.textAlign = 'start';
             }
 
             ctx.textAlign = 'center';
-            ctx.font = `bold ${isOrch ? 11 : 10}px Inter, sans-serif`;
-            ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.9 : 0.65})`;
-            ctx.fillText(a.name, a.sx, headY - headR - (isOrch ? 14 : 8));
-
-            ctx.font = `500 ${isOrch ? 8 : 7}px Inter, sans-serif`;
-            ctx.fillStyle = ha(col, 0.65);
-            ctx.fillText(a.role, a.sx, headY - headR - (isOrch ? 24 : 17));
-
+            ctx.font = `bold ${isOrch ? 10 : 9}px Inter, sans-serif`;
+            ctx.fillStyle = `rgba(255,255,255,${isOrch ? 0.85 : 0.55})`;
+            ctx.fillText(a.name, hX, hY - hR - (isOrch ? 12 : 6));
+            ctx.font = `500 ${isOrch ? 7 : 6}px Inter, sans-serif`;
+            ctx.fillStyle = ha(col, 0.55);
+            ctx.fillText(a.role, hX, hY - hR - (isOrch ? 21 : 14));
             ctx.textAlign = 'start';
         };
 
         const drawParticle = (p: Particle, t: number) => {
             const x = p.fx + (p.tx - p.fx) * p.p;
-            const arc = -60 * Math.sin(p.p * Math.PI);
+            const arc = -55 * Math.sin(p.p * Math.PI);
             const y = p.fy + (p.ty - p.fy) * p.p + arc;
-            const r = 4 + Math.sin(t * 6 + p.idx) * 1.5;
-
-            ctx.save();
-            ctx.shadowColor = p.col;
-            ctx.shadowBlur = 22;
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fillStyle = p.col;
-            ctx.fill();
-            ctx.restore();
-
-            ctx.beginPath();
-            ctx.arc(x, y, r * 3, 0, Math.PI * 2);
-            ctx.fillStyle = ha(p.col, 0.06);
-            ctx.fill();
-
-            for (let i = 1; i <= 5; i++) {
-                const tp = Math.max(0, p.p - i * 0.02);
+            const r = 3.5 + Math.sin(t * 6 + p.idx) * 1.2;
+            ctx.save(); ctx.shadowColor = p.col; ctx.shadowBlur = 18;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = p.col; ctx.fill(); ctx.restore();
+            ctx.beginPath(); ctx.arc(x, y, r * 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = ha(p.col, 0.06); ctx.fill();
+            for (let i = 1; i <= 4; i++) {
+                const tp = Math.max(0, p.p - i * 0.025);
                 const tx2 = p.fx + (p.tx - p.fx) * tp;
-                const ty2 = p.fy + (p.ty - p.fy) * tp - 60 * Math.sin(tp * Math.PI);
-                ctx.beginPath();
-                ctx.arc(tx2, ty2, r * (1 - i / 6) * 0.5, 0, Math.PI * 2);
-                ctx.fillStyle = ha(p.col, 0.1 * (1 - i / 6));
-                ctx.fill();
+                const ty2 = p.fy + (p.ty - p.fy) * tp - 55 * Math.sin(tp * Math.PI);
+                ctx.beginPath(); ctx.arc(tx2, ty2, r * (1 - i / 5) * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = ha(p.col, 0.08 * (1 - i / 5)); ctx.fill();
             }
         };
 
-        const drawConnections = (agentList: Agent[], orch: Agent, col: string) => {
-            agentList.forEach(a => {
-                if (a === orch) return;
+        const drawConnections = (agList: Agent[], orch: Agent, col: string) => {
+            agList.forEach(a => {
+                if (a === orch || a.state === 'idle') return;
                 ctx.beginPath();
-                ctx.moveTo(orch.sx, orch.sy);
-                ctx.quadraticCurveTo((orch.sx + a.sx) / 2, (orch.sy + a.sy) / 2 - 15, a.sx, a.sy);
-                ctx.strokeStyle = ha(col, a.working ? 0.1 : 0.03);
-                ctx.lineWidth = 0.8;
-                ctx.setLineDash([3, 5]);
-                ctx.stroke();
-                ctx.setLineDash([]);
+                ctx.moveTo(orch.x, orch.y);
+                const mx = (orch.x + a.x) / 2, my = (orch.y + a.y) / 2 - 12;
+                ctx.quadraticCurveTo(mx, my, a.x, a.y);
+                ctx.strokeStyle = ha(col, a.state === 'working' ? 0.1 : 0.04);
+                ctx.lineWidth = 0.6;
+                ctx.setLineDash([3, 5]); ctx.stroke(); ctx.setLineDash([]);
             });
         };
 
@@ -757,70 +799,159 @@ export const IsometricOffice = ({ niche, activeNiche, currentStage }: IsometricO
             const t = clk.current;
             const W = cv.width / dpr;
             const H = cv.height / dpr;
+            const cp = (t % CYCLE) / CYCLE;
 
             ctx.clearRect(0, 0, W, H);
 
-            drawRoom(W, H, niche.color, t);
+            const wallBot = H * 0.30;
+            const floorBot = H * 0.93;
+            const fH = floorBot - wallBot;
+            const lL = W * 0.56, lR = W * 0.93;
 
-            const agentList = ags.current;
-            const orch = agentList[0];
-            if (orch) drawConnections(agentList, orch, niche.color);
+            drawRoom(W, H, niche.color, t, cp);
 
-            const sorted = [...agentList].sort((a, b) => a.sy - b.sy);
+            const arcadeX = lL + (lR - lL) * 0.15;
+            const arcadeY = wallBot + fH * 0.50;
+            drawArcade(arcadeX, arcadeY, niche.color, t);
 
-            sorted.forEach(a => {
-                const isO = a === orch;
-                drawChair(a.sx, a.sy, niche.color, isO);
-                drawWorkstation(a.sx, a.sy, niche.color, isO, a.working, t, a.phase);
-                drawPerson(a, niche.color, isO, t);
-            });
+            const couchX = lL + (lR - lL) * 0.55;
+            const couchY = wallBot + fH * 0.72;
+            drawCouch(couchX, couchY, niche.color);
 
-            if (!noMotion.current) {
-                const cycle = 7;
-                const cp = (t % cycle) / cycle;
+            const vendX = lL + (lR - lL) * 0.88;
+            const vendY = wallBot + fH * 0.48;
+            drawVending(vendX, vendY, niche.color, t);
 
-                if (orch) {
-                    agentList.forEach((a, i) => {
-                        if (i === 0) return;
-                        const trig = (a.delay / 1000) / cycle;
-                        if (cp >= trig && cp < trig + 0.18 && !a.working) {
-                            a.working = true; a.progress = 0;
-                            pts.current.push({
-                                fx: orch.sx, fy: orch.sy - 30,
-                                tx: a.sx, ty: a.sy - 20,
-                                p: 0, spd: 1.4 + Math.random() * 0.4,
-                                idx: i, ret: false, col: niche.color,
-                            });
+            const coffeeX = lL + (lR - lL) * 0.45;
+            const coffeeY = wallBot + fH * 0.45;
+            drawCoffeeTable(coffeeX, coffeeY, niche.color, t);
+
+            const agList = ags.current;
+            const orch = agList[0];
+
+            if (!noMo.current) {
+                agList.forEach((a, i) => {
+                    if (i === 0) { a.state = 'working'; return; }
+                    const wd = a.walkDelay;
+
+                    if (cp < PHASE_IDLE_END) {
+                        a.state = 'idle';
+                        a.x = a.loungeX; a.y = a.loungeY;
+                        a.walkT = 0; a.workProgress = 0;
+                    } else if (cp >= PHASE_ALERT_END && cp < PHASE_WALK_TO) {
+                        const walkStart = PHASE_ALERT_END + wd;
+                        const walkDur = 0.10;
+                        const rawT = clamp01((cp - walkStart) / walkDur);
+                        if (rawT > 0 && rawT < 1) {
+                            a.state = 'walk_to_desk';
+                            a.walkT = rawT;
+                            const e = easeIO(rawT);
+                            a.x = lerp(a.loungeX, a.deskX, e);
+                            a.y = lerp(a.loungeY, a.deskY, e);
+                        } else if (rawT >= 1) {
+                            a.state = 'working';
+                            a.x = a.deskX; a.y = a.deskY;
+                        } else {
+                            a.state = 'idle';
+                            a.x = a.loungeX; a.y = a.loungeY;
                         }
-                        if (a.working) a.progress = Math.min(1, a.progress + dt * 0.35);
-                        const ret = trig + 0.28;
-                        if (cp >= ret && cp < ret + 0.1 && a.working && a.progress > 0.2) {
-                            if (!pts.current.some(p => p.idx === i && p.ret)) {
+                    } else if (cp >= PHASE_WALK_TO && cp < PHASE_WORK_END) {
+                        a.state = 'working';
+                        a.x = a.deskX; a.y = a.deskY;
+                        a.workProgress = Math.min(1, a.workProgress + dt * 0.3);
+                    } else if (cp >= PHASE_RESULT_END && cp < PHASE_WALK_BACK) {
+                        const walkStart = PHASE_RESULT_END + wd;
+                        const walkDur = 0.10;
+                        const rawT = clamp01((cp - walkStart) / walkDur);
+                        if (rawT > 0 && rawT < 1) {
+                            a.state = 'walk_back';
+                            a.walkT = rawT;
+                            const e = easeIO(rawT);
+                            a.x = lerp(a.deskX, a.loungeX, e);
+                            a.y = lerp(a.deskY, a.loungeY, e);
+                        } else if (rawT >= 1) {
+                            a.state = 'idle';
+                            a.x = a.loungeX; a.y = a.loungeY;
+                        } else {
+                            a.state = 'working';
+                            a.x = a.deskX; a.y = a.deskY;
+                        }
+                    } else if (cp >= PHASE_WALK_BACK) {
+                        a.state = 'idle';
+                        a.x = a.loungeX; a.y = a.loungeY;
+                    } else if (cp >= PHASE_WORK_END && cp < PHASE_RESULT_END) {
+                        a.state = 'working';
+                        a.x = a.deskX; a.y = a.deskY;
+                    }
+                });
+
+                if (orch && cp >= PHASE_ALERT_END && cp < PHASE_WALK_TO) {
+                    agList.forEach((a, i) => {
+                        if (i === 0) return;
+                        const trigT = PHASE_ALERT_END + a.walkDelay + 0.01;
+                        if (cp >= trigT && cp < trigT + 0.02) {
+                            if (!pts.current.some(p => p.idx === i && !p.ret)) {
                                 pts.current.push({
-                                    fx: a.sx, fy: a.sy - 20,
-                                    tx: orch.sx, ty: orch.sy - 30,
-                                    p: 0, spd: 1.6, idx: i, ret: true, col: '#22c55e',
+                                    fx: orch.x, fy: orch.y - 25,
+                                    tx: a.x, ty: a.y - 15,
+                                    p: 0, spd: 2.0, idx: i, ret: false, col: niche.color,
                                 });
                             }
                         }
-                        if (cp < 0.03) { a.working = false; a.progress = 0; }
                     });
                 }
 
-                pts.current = pts.current.filter(p => {
-                    p.p += dt * p.spd;
-                    if (p.p >= 1) return false;
-                    drawParticle(p, t);
-                    return true;
-                });
+                if (orch && cp >= PHASE_WORK_END && cp < PHASE_RESULT_END) {
+                    agList.forEach((a, i) => {
+                        if (i === 0) return;
+                        const retT = PHASE_WORK_END + a.walkDelay + 0.005;
+                        if (cp >= retT && cp < retT + 0.015) {
+                            if (!pts.current.some(p => p.idx === i && p.ret)) {
+                                pts.current.push({
+                                    fx: a.x, fy: a.y - 15,
+                                    tx: orch.x, ty: orch.y - 25,
+                                    p: 0, spd: 2.2, idx: i, ret: true, col: '#22c55e',
+                                });
+                            }
+                        }
+                    });
+                }
             } else {
-                agentList.forEach((a, i) => { if (i > 0) a.working = true; });
+                agList.forEach((a, i) => {
+                    if (i === 0) { a.state = 'working'; return; }
+                    a.state = 'working'; a.x = a.deskX; a.y = a.deskY;
+                });
             }
 
-            ctx.font = '500 10px Inter, sans-serif';
+            if (orch) drawConnections(agList, orch, niche.color);
+
+            const sorted = [...agList].sort((a, b) => a.y - b.y);
+            sorted.forEach(a => {
+                const isO = a === orch;
+                const isWalking = a.state === 'walk_to_desk' || a.state === 'walk_back';
+                if (!isWalking && a.state !== 'idle') {
+                    drawChair(a.x, a.y, niche.color, isO);
+                    drawDesk(a.x, a.y, niche.color, isO, a.state === 'working', t, a.phase);
+                }
+                drawPerson(a, niche.color, isO, t, isWalking);
+            });
+
+            pts.current = pts.current.filter(p => {
+                p.p += dt * p.spd;
+                if (p.p >= 1) return false;
+                drawParticle(p, t); return true;
+            });
+
+            ctx.font = '500 9px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillStyle = 'rgba(255,255,255,0.12)';
-            ctx.fillText(`${agentList.length} AI-агентов · ${niche.name}`, W / 2, H - 8);
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            const stateLabel = cp < PHASE_IDLE_END || cp >= PHASE_WALK_BACK ? 'Ожидание'
+                : cp < PHASE_ALERT_END ? '⚡ Входящий запрос'
+                : cp < PHASE_WALK_TO ? 'Распределение задач'
+                : cp < PHASE_WORK_END ? 'Обработка'
+                : cp < PHASE_RESULT_END ? '✓ Результаты'
+                : 'Возвращение';
+            ctx.fillText(`${agList.length} агентов · ${stateLabel}`, W / 2, H - 6);
             ctx.textAlign = 'start';
 
             afRef.current = requestAnimationFrame(animate);
