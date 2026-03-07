@@ -6,7 +6,7 @@ export const TestimonialsSection = () => {
     const revealRef = useFlipReveal({ stagger: 0.12 });
 
     return (
-        <section className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
+        <section id="testimonials" className="relative w-full py-20 sm:py-28 md:py-36 px-5 sm:px-8">
             <div ref={revealRef} className="max-w-6xl mx-auto relative">
                 <div data-reveal className="max-w-xl mb-12 sm:mb-16">
                     <span className="section-label">

@@ -12,7 +12,7 @@ export const FaqSection = () => {
   };
 
   return (
-    <section className="relative py-20 sm:py-28 px-4">
+    <section id="faq" className="relative py-20 sm:py-28 px-4">
       <div className="max-w-3xl mx-auto" ref={sectionRef}>
         <div className="text-center mb-12 sm:mb-16" data-reveal>
           <span className="section-label justify-center">

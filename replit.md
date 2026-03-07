@@ -84,7 +84,7 @@ src/
       faq-section.tsx                - Accordion FAQ (ARIA expanded/controls)
       integrations-marquee.tsx       - Scrolling integration badges
       cta-banner.tsx                 - Multi-channel CTA (Telegram/Email/Callback tabs)
-      footer-section.tsx             - Contact CTA + footer
+      footer-section.tsx             - Full premium footer: CTA, 4-column grid (brand+socials, nav, company, contacts), tech stack badges, legal bar
       telegram-fab.tsx               - Floating Telegram button
 ```
 
@@ -133,8 +133,9 @@ npm start      # Express server only (requires dist/)
 - Typography (2026 standards): font-optical-sizing: auto, text-rendering: optimizeLegibility, font-synthesis: none, font-feature-settings: kern/liga/calt, text-wrap: balance (headings) + pretty (paragraphs), hanging-punctuation: first last, tabular-nums on pricing/stats, standardized tracking-[0.12em] on all uppercase labels
 - Glassmorphism: backdrop-blur(8px) desktop, rgba(8,8,12,0.92) solid on mobile
 - Section labels: uppercase, tracking-[0.12em], with line decoration
+- Social links: Instagram (instagram.com/web4tg), TikTok (tiktok.com/@web4tg), YouTube (youtube.com/@WEB4TG)
 - All external links: https://t.me/w4tg_bot
-- Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact, #footer
+- Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact, #testimonials, #guarantees, #faq, #footer
 
 ## Animation System
 - Preloader: GSAP timeline — logo scale+fade → character stagger reveal → background fade-out (~2s)

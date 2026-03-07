@@ -28,7 +28,7 @@ export default function GuaranteesSection() {
   const sectionRef = useScaleReveal({ stagger: 0.12 });
 
   return (
-    <section className="py-20 sm:py-28 md:py-36 px-5 sm:px-8 relative" ref={sectionRef}>
+    <section id="guarantees" className="py-20 sm:py-28 md:py-36 px-5 sm:px-8 relative" ref={sectionRef}>
       <div className="max-w-6xl mx-auto">
         <div data-reveal>
           <span className="section-label">
