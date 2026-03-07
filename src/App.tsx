@@ -158,8 +158,8 @@ const App = () => {
             </a>
             <TubesBackground />
             <div className="noise-overlay" />
+            <ResponsiveHeroBanner />
             <main id="main-content" className="relative z-[2]">
-                <ResponsiveHeroBanner />
                 <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={ClientLogos} skeleton="marquee" />
                 <LazySection component={ServicesSection} skeleton="cards" />

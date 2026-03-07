@@ -35,7 +35,7 @@ public/
   og-image.png                       - Open Graph social sharing image (1200x630)
   sw.js                              - Service Worker (offline + stale-while-revalidate)
 src/
-  App.tsx                            - Main app (use client), Lenis init, Preloader, ScrollProgress, ErrorBoundary, mesh gradient dividers, SW registration
+  App.tsx                            - Main app (use client), Lenis init, Preloader, ScrollProgress, ErrorBoundary, mesh gradient dividers, SW registration. ResponsiveHeroBanner rendered OUTSIDE <main> to avoid z-index stacking context bug (header z-50 must be global, not trapped inside main's z-[2])
   index.css                          - Theme (CSS vars for accent color), animations, utility classes, glass-panel, gradient mesh, skeleton shimmer, mesh dividers, focus-visible styles
   fonts.css                          - Self-hosted @font-face declarations (Inter, Instrument Serif, Montserrat) — paths to /fonts/
   data/

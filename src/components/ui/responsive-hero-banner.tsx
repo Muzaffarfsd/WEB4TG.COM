@@ -393,7 +393,7 @@ const ResponsiveHeroBanner = () => {
         <>
             <StickyHeader />
 
-            <section ref={heroRef} className="relative w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
+            <section ref={heroRef} className="relative z-[2] w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
                 <GradientMesh />
 
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
