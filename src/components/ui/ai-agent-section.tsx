@@ -117,9 +117,7 @@ export const AiAgentSection = () => {
                         <span className="w-8 h-px bg-[#8B5CF6]/40 ml-3" />
                     </span>
                     <h2 className="text-[clamp(1.75rem,4.5vw,3.25rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
-                        Не один агент, а
-                        <br />
-                        <span className="italic gradient-text">команда до 20 AI-агентов</span>
+                        <span className="italic gradient-text">Команда AI-агентов</span>
                     </h2>
                     <p className="text-[clamp(0.875rem,1.5vw,1.05rem)] text-white/70 mt-4 sm:mt-5 font-sans font-light leading-relaxed max-w-2xl mx-auto">
                         Разрабатываем <span className="text-white/80 font-medium">мультиагентную систему под ваш бизнес за 14–21 день</span>. Оркестратор координирует до 20 специализированных агентов: продажи, поддержка, аналитика, логистика, CRM — каждый делает своё дело, вместе закрывают <span className="text-white/80 font-medium">89% задач без менеджеров</span>.

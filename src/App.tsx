@@ -154,8 +154,8 @@ const App = () => {
             <ResponsiveHeroBanner />
             <main id="main-content" className="relative z-[2]">
                 <LazySection component={ServicesSection} skeleton="cards" />
-                <LazySection component={AiAgentSection} skeleton="cards" />
                 <LazySection component={IphoneCarousel} skeleton="default" />
+                <LazySection component={AiAgentSection} skeleton="cards" />
                 <LazySection component={ProcessSection} skeleton="cards" />
                 <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={CaseStudies} skeleton="cards" />

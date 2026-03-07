@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
-import { useCountUp, useStickyNav } from '../../hooks/use-animations';
+import { useStickyNav } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
 const TelegramIcon = ({ className }: { className?: string }) => (
@@ -302,20 +302,6 @@ const StickyHeader = () => {
     );
 };
 
-const StatItem = ({ value, label }: { value: string; label: string }) => {
-    const { ref, display } = useCountUp(value);
-    return (
-        <div ref={ref} className="text-center py-5 sm:py-6 px-3">
-            <div data-count className="text-xl sm:text-2xl md:text-3xl font-semibold gradient-text font-sans tracking-tight tabular-nums">
-                {display}
-            </div>
-            <div className="text-[10px] sm:text-[11px] text-white/60 font-sans mt-1.5 uppercase tracking-[0.12em] leading-tight">
-                {label}
-            </div>
-        </div>
-    );
-};
-
 const GradientMesh = () => {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -325,13 +311,6 @@ const GradientMesh = () => {
         </div>
     );
 };
-
-const stats = [
-    { value: "50+", label: "проектов" },
-    { value: "127%", label: "рост продаж" },
-    { value: "<2с", label: "ответ AI" },
-    { value: "4.9", label: "рейтинг" },
-];
 
 const TrustBadge = ({ icon, text, className = '' }: { icon: 'shield' | 'refresh' | 'clock'; text: string; className?: string }) => {
     const icons = {
@@ -347,30 +326,6 @@ const TrustBadge = ({ icon, text, className = '' }: { icon: 'shield' | 'refresh'
     );
 };
 
-const DemandIndicator = () => {
-    const daysOut = useMemo(() => {
-        const now = new Date();
-        const weekStart = new Date(now.getFullYear(), 0, 1);
-        const weekNum = Math.floor((now.getTime() - weekStart.getTime()) / (7 * 86400000));
-        const seed = weekNum * 2654435761;
-        return ((seed >>> 0) % 3) + 3;
-    }, []);
-
-    return (
-        <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm">
-            <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-[0.12em]">
-                <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white/90" />
-                </span>
-                Live
-            </span>
-            <span className="text-[11px] sm:text-[13px] font-medium text-white/80 font-sans">
-                Ближайший старт: через {daysOut} дн
-            </span>
-        </div>
-    );
-};
 
 const ResponsiveHeroBanner = () => {
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
@@ -409,10 +364,6 @@ const ResponsiveHeroBanner = () => {
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
                         <div className="max-w-[820px] mx-auto text-center">
-                            <div className="hero-entrance-badge">
-                                <DemandIndicator />
-                            </div>
-
                             <h1>
                                 <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white hero-entrance-headline">
                                     Хватит кормить
@@ -423,8 +374,8 @@ const ResponsiveHeroBanner = () => {
                             </h1>
 
                             <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] hero-entrance-body text-white/70 max-w-[540px] mt-5 sm:mt-8 mx-auto font-sans font-light">
-                                Telegram Mini Apps для бизнеса за&nbsp;14&nbsp;дней.
-                                <span className="text-white/90"> 35%&nbsp;предоплата — начните продавать без&nbsp;комиссий маркетплейсов.</span>
+                                Ваш бизнес внутри Telegram —
+                                <span className="text-white/90"> там, где уже есть ваши клиенты.</span>
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center hero-entrance-cta">
@@ -454,13 +405,6 @@ const ResponsiveHeroBanner = () => {
                             </div>
                         </div>
 
-                        <div className="mt-12 sm:mt-20 max-w-2xl mx-auto hero-entrance-meta">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.08] glass-panel">
-                                {stats.map((stat, index) => (
-                                    <StatItem key={index} value={stat.value} label={stat.label} />
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
 

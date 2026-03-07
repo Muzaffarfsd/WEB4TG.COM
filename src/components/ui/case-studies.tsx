@@ -187,7 +187,7 @@ export default function CaseStudies() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 sm:py-28 md:py-36 px-5 sm:px-8 relative">
+    <section id="case-studies" ref={sectionRef} className="py-20 sm:py-28 md:py-36 px-5 sm:px-8 relative">
       <div className="max-w-6xl mx-auto">
         <div data-reveal>
           <div className="section-label">

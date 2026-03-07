@@ -72,8 +72,8 @@ src/
       telegram-fab.tsx               - Floating Telegram button
 ```
 
-## Section Order (App.tsx — 12 sections)
-Hero → Services → AiAgent → IphoneCarousel → Process → [mesh-divider] → CaseStudies → Testimonials → Pricing → [mesh-divider-alt] → FAQ → CtaBanner → ContactForm → Footer
+## Section Order (App.tsx — 12 sections, Apple-style visual-first flow)
+Hero → Services → IphoneCarousel (Portfolio) → AiAgent → Process → [mesh-divider] → CaseStudies → Testimonials → Pricing → [mesh-divider-alt] → FAQ → CtaBanner → ContactForm → Footer
 
 ## Removed Sections (Audit Block 3)
 ClientLogos, FeaturesSection, ComparisonTable, IntegrationsMarquee, GuaranteesSection — removed for page length optimization. 6 of 8 mesh dividers also removed.
@@ -133,6 +133,14 @@ npm start      # Next.js production server (uses PORT env var, defaults to 3000)
 - Section labels: uppercase, tracking-[0.12em], with line decoration
 - Social links: Instagram (instagram.com/web4tg), TikTok (tiktok.com/@web4tg), YouTube (youtube.com/@WEB4TG)
 - All external CTA links: https://t.me/w4tg_bot
+
+## Apple Marketing Patterns Applied
+- **Hero**: Emotional subtitle ("Ваш бизнес внутри Telegram"), no specs/pricing, no stats grid, no fake urgency
+- **Services**: Bento grid — 2 large hero cards (Shops + AI) + 6 smaller cards, short headline "Для любого бизнеса"
+- **Section order**: Visual proof (Portfolio) moved before AI Agent explanation
+- **Headlines**: All shortened to 3-5 words Apple-style
+- **CTA**: Single "Обсудить проект" button, no email/callback alternatives
+- **Stats**: Removed from hero (live in Case Studies section)
 
 ## Animation System (Standardized — Block 4)
 - **Easing**: `expo.out` across all hooks (replaced back.out, power4.out)
