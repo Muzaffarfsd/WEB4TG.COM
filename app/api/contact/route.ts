@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+const GMAIL_USER = process.env.GMAIL_USER || '';
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || GMAIL_USER;
 
 const rateLimitMap = new Map<string, number[]>();
 
@@ -36,7 +40,36 @@ function sanitize(str: unknown): string {
     .slice(0, 2000);
 }
 
+function sanitizePlain(str: unknown): string {
+  if (typeof str !== 'string') return '';
+  return str.slice(0, 2000);
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function sendEmailNotification(subject: string, htmlBody: string) {
+  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) return;
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: GMAIL_USER,
+        pass: GMAIL_APP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"WEB4TG Studio" <${GMAIL_USER}>`,
+      to: NOTIFICATION_EMAIL,
+      subject,
+      html: htmlBody,
+    });
+    console.log('[Email] Notification sent successfully');
+  } catch (err) {
+    console.error('[Email] Error:', (err as Error).message);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const ip =
@@ -62,6 +95,8 @@ export async function POST(request: NextRequest) {
 
   let safe: Record<string, string>;
   let tgText: string;
+  let emailSubject: string;
+  let emailHtml: string;
 
   if (type === 'email_capture') {
     if (!email || typeof email !== 'string' || !EMAIL_RE.test(email.trim())) {
@@ -72,6 +107,13 @@ export async function POST(request: NextRequest) {
     }
     safe = { type: 'email_capture', email: sanitize(email.trim()) };
     tgText = `📧 Email-подписка\n\n📧 Email: ${safe.email}`;
+    emailSubject = 'WEB4TG: Новая email-подписка';
+    emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 500px;">
+        <h2 style="color: #8B5CF6;">Email-подписка</h2>
+        <p><strong>Email:</strong> ${sanitizePlain(email.trim())}</p>
+      </div>
+    `;
     console.log('[Email Capture]', JSON.stringify(safe));
   } else if (type === 'callback_request') {
     if (!phone || typeof phone !== 'string' || !phone.trim()) {
@@ -82,6 +124,13 @@ export async function POST(request: NextRequest) {
     }
     safe = { type: 'callback_request', phone: sanitize(phone.trim()) };
     tgText = `📞 Запрос обратного звонка\n\n📱 Телефон: ${safe.phone}`;
+    emailSubject = 'WEB4TG: Запрос обратного звонка';
+    emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 500px;">
+        <h2 style="color: #8B5CF6;">Запрос обратного звонка</h2>
+        <p><strong>Телефон:</strong> ${sanitizePlain(phone.trim())}</p>
+      </div>
+    `;
     console.log('[Callback Request]', JSON.stringify(safe));
   } else {
     if (!name || typeof name !== 'string' || !(name as string).trim()) {
@@ -120,30 +169,52 @@ export async function POST(request: NextRequest) {
       description: sanitize((description as string).trim()),
     };
     tgText = `📩 Новая заявка с сайта\n\n👤 Имя: ${safe.name}\n📧 Email: ${safe.email}\n📱 Телефон: ${safe.phone}\n📝 Проект: ${safe.description}`;
+    emailSubject = `WEB4TG: Новая заявка от ${sanitizePlain((name as string).trim())}`;
+    emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 500px;">
+        <h2 style="color: #8B5CF6;">Новая заявка с сайта</h2>
+        <table style="border-collapse: collapse; width: 100%;">
+          <tr><td style="padding: 8px 12px; border-bottom: 1px solid #eee; color: #666;">Имя</td><td style="padding: 8px 12px; border-bottom: 1px solid #eee;">${sanitizePlain((name as string).trim())}</td></tr>
+          <tr><td style="padding: 8px 12px; border-bottom: 1px solid #eee; color: #666;">Email</td><td style="padding: 8px 12px; border-bottom: 1px solid #eee;"><a href="mailto:${sanitizePlain((email as string).trim())}">${sanitizePlain((email as string).trim())}</a></td></tr>
+          <tr><td style="padding: 8px 12px; border-bottom: 1px solid #eee; color: #666;">Телефон</td><td style="padding: 8px 12px; border-bottom: 1px solid #eee;">${sanitizePlain((phone as string).trim())}</td></tr>
+          <tr><td style="padding: 8px 12px; color: #666; vertical-align: top;">Проект</td><td style="padding: 8px 12px;">${sanitizePlain((description as string).trim())}</td></tr>
+        </table>
+      </div>
+    `;
     console.log('[Contact Form]', JSON.stringify(safe));
   }
 
+  const notifications: Promise<void>[] = [];
+
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
-    try {
-      const tgRes = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: tgText,
-            parse_mode: 'HTML',
-          }),
+    notifications.push(
+      (async () => {
+        try {
+          const tgRes = await fetch(
+            `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: tgText,
+                parse_mode: 'HTML',
+              }),
+            }
+          );
+          if (!tgRes.ok) {
+            console.error('[Telegram] Failed to send:', await tgRes.text());
+          }
+        } catch (err) {
+          console.error('[Telegram] Error:', (err as Error).message);
         }
-      );
-      if (!tgRes.ok) {
-        console.error('[Telegram] Failed to send:', await tgRes.text());
-      }
-    } catch (err) {
-      console.error('[Telegram] Error:', (err as Error).message);
-    }
+      })()
+    );
   }
+
+  notifications.push(sendEmailNotification(emailSubject, emailHtml));
+
+  await Promise.allSettled(notifications);
 
   return NextResponse.json({ success: true });
 }

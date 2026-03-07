@@ -81,11 +81,17 @@ src/
 ## Section Order (App.tsx)
 Hero → ClientLogos → [mesh-divider] → Services → [mesh-divider-alt] → AiAgent → IphoneCarousel → [mesh-divider-conic] → Process → [mesh-divider] → Features → [mesh-divider-alt] → CaseStudies → Testimonials → [mesh-divider-conic] → ComparisonTable → Pricing → [mesh-divider] → Guarantees → FAQ → IntegrationsMarquee → [mesh-divider-alt] → CtaBanner → ContactForm → Footer
 
+## Deployment
+- **Development**: Replit (port 5000 via `npm run dev`)
+- **Production**: Railway (port auto via `PORT` env var, `npm run start`)
+- **Railway config**: `nixpacks.toml` (Node.js 20, `npm ci && npm run build`, `npm run start`)
+- **Important**: On Railway, set env vars: `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `NOTIFICATION_EMAIL`, and optionally `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+
 ## Running
 ```bash
 npm run dev    # Next.js dev server on port 5000
 npm run build  # Next.js production build
-npm start      # Next.js production server on port 5000
+npm start      # Next.js production server (uses PORT env var, defaults to 3000)
 ```
 
 ## SEO (SSR via Next.js)
@@ -107,6 +113,7 @@ npm start      # Next.js production server on port 5000
 - **POST /api/contact** — Contact form submission
   - Body: `{ name, email, phone, description }`
   - Rate limited (5/min/IP), sanitized, validated
+  - Email notification via nodemailer/Gmail SMTP (env: GMAIL_USER, GMAIL_APP_PASSWORD, NOTIFICATION_EMAIL)
   - Optional Telegram Bot forwarding (env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
   - Supports types: 'email_capture', 'callback_request' from CTA banner
 
