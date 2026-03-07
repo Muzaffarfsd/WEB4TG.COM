@@ -55,7 +55,7 @@ src/
       magnetic-button.tsx            - GSAP spring-physics magnetic button
       contact-form.tsx               - Inline contact form (name, email, phone, description) + POST /api/contact
       tubes-background.tsx           - Iframe-isolated Three.js tubes
-      responsive-hero-banner.tsx     - Hero + glass sticky nav + useCharReveal
+      responsive-hero-banner.tsx     - Hero + glass sticky nav + fullscreen mobile menu (numbered items, stagger animation, blur overlay, burger morph, focus trap) + useCharReveal
       client-logos.tsx               - Two-row client logos marquee
       services-section.tsx           - Bento grid services + useCharReveal heading
       ai-agent-section.tsx           - Multi-agent AI showcase (ARIA tabs)

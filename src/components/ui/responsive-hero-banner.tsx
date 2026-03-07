@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { useCountUp, useStickyNav } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
@@ -15,11 +15,70 @@ const navLinks = [
     { label: "Контакты", href: "#contact" },
 ];
 
+const socialLinks = [
+    { href: "https://t.me/w4tg_bot", label: "Telegram" },
+    { href: "https://instagram.com/web4tg", label: "Instagram" },
+    { href: "https://tiktok.com/@web4tg", label: "TikTok" },
+    { href: "https://youtube.com/@WEB4TG", label: "YouTube" },
+];
+
+const BurgerIcon = ({ open }: { open: boolean }) => (
+    <div className="w-5 h-4 relative flex flex-col justify-between">
+        <span
+            className="block h-[1.5px] w-full bg-white/80 rounded-full origin-center transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+            style={{
+                transform: open ? 'translateY(7px) rotate(45deg)' : 'none',
+            }}
+        />
+        <span
+            className="block h-[1.5px] w-full bg-white/80 rounded-full transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+            style={{
+                opacity: open ? 0 : 1,
+                transform: open ? 'scaleX(0)' : 'scaleX(1)',
+            }}
+        />
+        <span
+            className="block h-[1.5px] w-full bg-white/80 rounded-full origin-center transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+            style={{
+                transform: open ? 'translateY(-7px) rotate(-45deg)' : 'none',
+            }}
+        />
+    </div>
+);
+
 const StickyHeader = () => {
     const scrolled = useStickyNav();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [menuMounted, setMenuMounted] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+    const openMenu = useCallback(() => {
+        setMobileMenuOpen(true);
+        setMenuMounted(true);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setMenuVisible(true);
+            });
+        });
+    }, []);
+
+    const closeMenu = useCallback(() => {
+        setMenuVisible(false);
+        setTimeout(() => {
+            setMenuMounted(false);
+            setMobileMenuOpen(false);
+        }, 750);
+    }, []);
+
+    const toggleMenu = useCallback(() => {
+        if (mobileMenuOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }, [mobileMenuOpen, closeMenu, openMenu]);
 
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -31,27 +90,38 @@ const StickyHeader = () => {
     }, [mobileMenuOpen]);
 
     useEffect(() => {
-        if (!mobileMenuOpen) return;
+        if (!mobileMenuOpen || !menuVisible) return;
 
         const menuEl = menuRef.current;
         if (!menuEl) return;
 
-        const focusables = menuEl.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
-        if (focusables.length > 0) focusables[0].focus();
+        const timer = setTimeout(() => {
+            const focusables = menuEl.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+            if (focusables.length > 0) focusables[0].focus();
+        }, 200);
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                setMobileMenuOpen(false);
+                closeMenu();
                 menuButtonRef.current?.focus();
                 return;
             }
-            if (e.key === 'Tab' && focusables.length > 0) {
+            if (e.key === 'Tab') {
+                const focusables = menuEl.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+                if (focusables.length === 0) return;
                 const first = focusables[0];
                 const last = focusables[focusables.length - 1];
-                if (e.shiftKey && document.activeElement === first) {
+                const active = document.activeElement;
+                const isInside = menuEl.contains(active);
+                if (!isInside) {
+                    e.preventDefault();
+                    first.focus();
+                    return;
+                }
+                if (e.shiftKey && active === first) {
                     e.preventDefault();
                     last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
+                } else if (!e.shiftKey && active === last) {
                     e.preventDefault();
                     first.focus();
                 }
@@ -59,14 +129,21 @@ const StickyHeader = () => {
         };
 
         document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [mobileMenuOpen]);
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [mobileMenuOpen, menuVisible, closeMenu]);
+
+    const handleNavClick = useCallback(() => {
+        closeMenu();
+    }, [closeMenu]);
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-[#08080c]/80 backdrop-blur-xl border-b border-white/[0.06]' : ''}`}>
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
                 <div className="flex items-center justify-between pt-safe-top h-[64px] sm:h-[72px]">
-                    <a href="#" className="flex items-center shrink-0">
+                    <a href="#" className="flex items-center shrink-0 relative z-[60]">
                         <span className="text-white font-bold text-[15px] sm:text-[17px] tracking-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                             WEB4TG <span className="font-medium text-white/70">STUDIO</span>
                         </span>
@@ -98,56 +175,110 @@ const StickyHeader = () => {
 
                     <button
                         ref={menuButtonRef}
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] active:bg-white/[0.08] transition-colors"
+                        onClick={toggleMenu}
+                        className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] active:bg-white/[0.08] transition-colors relative z-[60]"
                         aria-expanded={mobileMenuOpen}
                         aria-controls="mobile-menu"
-                        aria-label="Открыть меню навигации"
+                        aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню навигации"}
                     >
-                        {mobileMenuOpen ? (
-                            <X className="w-5 h-5 text-white/80" />
-                        ) : (
-                            <Menu className="w-5 h-5 text-white/80" />
-                        )}
+                        <BurgerIcon open={mobileMenuOpen} />
                     </button>
                 </div>
             </div>
 
-            {mobileMenuOpen && (
-                <>
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />
+            {menuMounted && (
+                <div
+                    ref={menuRef}
+                    id="mobile-menu"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Меню навигации"
+                    className="lg:hidden fixed inset-0 z-50 flex flex-col"
+                    style={{
+                        pointerEvents: menuVisible ? 'auto' : 'none',
+                    }}
+                >
                     <div
-                        ref={menuRef}
-                        id="mobile-menu"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-label="Меню навигации"
-                        className="lg:hidden relative z-50 mx-5 mt-2 rounded-2xl bg-[#0a0a0a]/98 border border-white/[0.06] backdrop-blur-2xl p-3 animate-fade-slide-in-1"
+                        className="absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)]"
+                        style={{
+                            backgroundColor: menuVisible ? 'rgba(5, 5, 5, 0.97)' : 'rgba(5, 5, 5, 0)',
+                            backdropFilter: menuVisible ? 'blur(40px) saturate(1.8)' : 'blur(0px)',
+                            WebkitBackdropFilter: menuVisible ? 'blur(40px) saturate(1.8)' : 'blur(0px)',
+                        }}
+                        onClick={closeMenu}
+                        aria-hidden="true"
+                    />
+
+                    <div
+                        className="absolute top-0 left-0 right-0 h-[200px] pointer-events-none transition-opacity duration-700"
+                        style={{ opacity: menuVisible ? 1 : 0 }}
                     >
-                        <nav className="flex flex-col gap-0.5" aria-label="Мобильная навигация">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] rounded-full bg-[#8B5CF6]/[0.06] blur-[80px]" />
+                    </div>
+
+                    <div className="relative z-10 flex flex-col h-full pt-[80px] pb-safe-bottom">
+                        <nav className="flex-1 flex flex-col justify-center px-8 sm:px-12 -mt-8" aria-label="Мобильная навигация">
                             {navLinks.map((link, index) => (
                                 <a
                                     key={index}
                                     href={link.href}
-                                    className="px-4 py-3.5 text-[15px] font-medium rounded-xl font-sans transition-colors active:bg-white/[0.05] text-white/90"
-                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="group flex items-baseline gap-4 sm:gap-5 py-3.5 sm:py-4 border-b border-white/[0.04] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] active:bg-white/[0.02]"
+                                    onClick={handleNavClick}
+                                    style={{
+                                        opacity: menuVisible ? 1 : 0,
+                                        transform: menuVisible ? 'translateX(0)' : 'translateX(-30px)',
+                                        transitionDelay: menuVisible ? `${index * 60 + 150}ms` : `${(navLinks.length - index) * 30}ms`,
+                                    }}
                                 >
-                                    {link.label}
+                                    <span className="text-[11px] sm:text-[12px] text-[#8B5CF6]/60 font-mono tabular-nums min-w-[20px]">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <span className="text-[clamp(1.75rem,5vw,2.5rem)] font-instrument-serif font-normal text-white/90 group-hover:text-white group-active:text-[#A78BFA] tracking-[-0.02em] transition-colors duration-300">
+                                        {link.label}
+                                    </span>
+                                    <ArrowRight
+                                        className="w-4 h-4 sm:w-5 sm:h-5 text-white/0 group-hover:text-white/40 ml-auto transition-all duration-300 translate-x-[-8px] group-hover:translate-x-0"
+                                    />
                                 </a>
                             ))}
+                        </nav>
+
+                        <div
+                            className="px-8 sm:px-12 pb-6 sm:pb-8 space-y-6 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+                            style={{
+                                opacity: menuVisible ? 1 : 0,
+                                transform: menuVisible ? 'translateY(0)' : 'translateY(20px)',
+                                transitionDelay: menuVisible ? `${navLinks.length * 60 + 200}ms` : '0ms',
+                            }}
+                        >
                             <a
                                 href="https://t.me/w4tg_bot"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="mt-2 btn-primary justify-center !text-[15px]"
-                                onClick={() => setMobileMenuOpen(false)}
+                                className="btn-primary justify-center w-full !text-[15px] !py-4 !rounded-2xl"
+                                onClick={handleNavClick}
                             >
                                 Начать проект
                                 <ArrowRight className="w-4 h-4" />
                             </a>
-                        </nav>
+
+                            <div className="flex items-center justify-center gap-5">
+                                {socialLinks.map((link) => (
+                                    <a
+                                        key={link.label}
+                                        href={link.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[12px] text-white/40 hover:text-white/80 font-sans transition-colors duration-300"
+                                        onClick={handleNavClick}
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                </>
+                </div>
             )}
         </header>
     );

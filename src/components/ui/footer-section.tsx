@@ -1,4 +1,4 @@
-import { ArrowRight, Send, MapPin, Clock, Mail, ExternalLink } from "lucide-react";
+import { ArrowRight, Send, Mail, ExternalLink } from "lucide-react";
 import { useClipReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';
 
@@ -185,14 +185,6 @@ export const FooterSection = () => {
                                         <Mail className="w-4 h-4 mt-0.5 shrink-0 text-[#8B5CF6]/60 group-hover:text-[#8B5CF6] transition-colors duration-300" />
                                         <span>hello@web4tg.com</span>
                                     </a>
-                                </li>
-                                <li className="flex items-start gap-3 text-[13px] sm:text-[14px] text-white/50">
-                                    <Clock className="w-4 h-4 mt-0.5 shrink-0 text-[#8B5CF6]/40" />
-                                    <span>Пн — Пт, 10:00 — 19:00 (MSK)</span>
-                                </li>
-                                <li className="flex items-start gap-3 text-[13px] sm:text-[14px] text-white/50">
-                                    <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[#8B5CF6]/40" />
-                                    <span>Россия · Удалённая команда</span>
                                 </li>
                             </ul>
                         </div>
