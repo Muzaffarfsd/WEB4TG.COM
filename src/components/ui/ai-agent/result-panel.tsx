@@ -56,7 +56,7 @@ export const ResultPanel = ({ niche, stage, activeNiche, currentStage, totalStag
                                 <card.icon className="w-3.5 h-3.5" style={{ color: card.color }} />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <div className="text-[9px] text-white/60 uppercase tracking-wider mb-0.5">{card.label}</div>
+                                <div className="text-[9px] text-white/60 uppercase tracking-[0.12em] mb-0.5">{card.label}</div>
                                 <div className="text-[13px] text-white/85 font-medium">{card.value}</div>
                                 {card.detail && <div className="text-[10px] text-white/60 mt-0.5 leading-snug">{card.detail}</div>}
                             </div>

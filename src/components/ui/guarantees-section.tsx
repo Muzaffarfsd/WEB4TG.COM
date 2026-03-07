@@ -57,7 +57,7 @@ export default function GuaranteesSection() {
                 <div className="w-11 h-11 rounded-xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-[#8B5CF6]/20 group-hover:border-[#8B5CF6]/40">
                   <item.icon className="w-5 h-5 text-[#8B5CF6] transition-colors duration-300 group-hover:text-[#A78BFA]" />
                 </div>
-                <h3 className="text-white font-semibold text-base sm:text-lg">{item.title}</h3>
+                <h3 className="text-white font-normal text-lg sm:text-xl font-instrument-serif tracking-tight">{item.title}</h3>
                 <p className="text-[13px] sm:text-[14px] text-white/70 leading-relaxed">
                   {item.description}
                 </p>

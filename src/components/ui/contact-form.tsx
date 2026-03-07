@@ -113,8 +113,8 @@ const ContactForm = () => {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <span className="section-label">Связаться</span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white leading-tight">
-            Обсудим <span className="font-instrument-serif italic text-[var(--accent-light)]">ваш проект</span>
+          <h2 className="text-[clamp(1.75rem,4.5vw,3.5rem)] font-normal font-instrument-serif gradient-text-white tracking-[-0.02em] leading-[1.1]">
+            Обсудим <span className="italic gradient-text">ваш проект</span>
           </h2>
           <p className="mt-4 text-[var(--text-300)] text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
             Оставьте заявку, и мы свяжемся с вами для обсуждения деталей

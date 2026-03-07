@@ -215,7 +215,7 @@ export default function CaseStudies() {
                       <study.icon className="w-5 h-5" style={{ color: study.accentColor }} />
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] block" style={{ color: study.accentColor }}>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] block" style={{ color: study.accentColor }}>
                         {study.category}
                       </span>
                       <h3 className="font-instrument-serif text-lg text-white leading-tight">

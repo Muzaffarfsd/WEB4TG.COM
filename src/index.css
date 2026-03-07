@@ -39,14 +39,28 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   overflow-x: hidden;
+  hanging-punctuation: first last;
+  font-optical-sizing: auto;
 }
 
 body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
   background-color: #050505;
   color: #fafafa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  text-rendering: optimizeLegibility;
+}
+
+p, li, blockquote {
+  text-wrap: pretty;
 }
 
 ::selection {
@@ -274,7 +288,7 @@ body {
   font-weight: 600;
   color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   font-family: "Inter", system-ui, sans-serif;
   margin-bottom: 1.25rem;
 }

@@ -6,7 +6,7 @@ export const FooterSection = () => {
     const revealRef = useClipReveal('up', { stagger: 0.1 });
 
     return (
-        <footer id="contact" className="relative w-full px-5 sm:px-8">
+        <footer id="footer" className="relative w-full px-5 sm:px-8">
             <div className="section-divider max-w-6xl mx-auto" />
 
             <div className="max-w-6xl mx-auto pt-20 sm:pt-28 md:pt-36 pb-8 sm:pb-12 relative">

@@ -224,7 +224,7 @@ export const VideoCarousel = () => {
                                     <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0a10]">
                                         <div className="flex flex-col items-center gap-4">
                                             <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-[#8B5CF6] animate-spin" />
-                                            <span className="text-[11px] text-white/60 font-sans uppercase tracking-wider">
+                                            <span className="text-[11px] text-white/60 font-sans uppercase tracking-[0.12em]">
                                                 {list.textLists[0]}
                                             </span>
                                         </div>

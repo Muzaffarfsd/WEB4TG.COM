@@ -59,7 +59,7 @@ export const ProcessSection = () => {
                                 <h3 className="text-lg sm:text-xl font-normal text-white font-instrument-serif tracking-tight">
                                     {step.title}
                                 </h3>
-                                <span className="text-[10px] sm:text-[11px] text-[#8B5CF6]/60 font-sans font-medium uppercase tracking-wider">
+                                <span className="text-[10px] sm:text-[11px] text-[#8B5CF6]/60 font-sans font-medium uppercase tracking-[0.12em]">
                                     {step.payment}
                                 </span>
 
@@ -73,7 +73,7 @@ export const ProcessSection = () => {
                                 </ul>
 
                                 <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.03] flex items-center justify-between">
-                                    <span className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-wider">{step.duration}</span>
+                                    <span className="text-[10px] sm:text-[11px] text-white/60 font-sans uppercase tracking-[0.12em]">{step.duration}</span>
                                     {step.number === "03" && (
                                         <a href="#pricing" className="text-[11px] sm:text-[12px] text-[#8B5CF6]/70 hover:text-[#8B5CF6] font-sans font-medium transition-colors duration-300">
                                             Смотреть тарифы →

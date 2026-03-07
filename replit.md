@@ -130,10 +130,11 @@ npm start      # Express server only (requires dist/)
   - Tailwind `@theme` vars: `--color-accent`, `--color-accent-dark`, `--color-accent-light`, `--color-accent-lighter`
 - Niche colors: Shop=#8B5CF6, Restaurant=#f59e0b, Beauty=#ec4899, Fitness=#22c55e
 - Fonts: Instrument Serif (headings), Inter (body), Montserrat (logo) — self-hosted
+- Typography (2026 standards): font-optical-sizing: auto, text-rendering: optimizeLegibility, font-synthesis: none, font-feature-settings: kern/liga/calt, text-wrap: balance (headings) + pretty (paragraphs), hanging-punctuation: first last, tabular-nums on pricing/stats, standardized tracking-[0.12em] on all uppercase labels
 - Glassmorphism: backdrop-blur(8px) desktop, rgba(8,8,12,0.92) solid on mobile
-- Section labels: uppercase, tracked, with line decoration
+- Section labels: uppercase, tracking-[0.12em], with line decoration
 - All external links: https://t.me/w4tg_bot
-- Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact
+- Section IDs: #services, #ai-agent, #highlights, #process, #pricing, #contact, #footer
 
 ## Animation System
 - Preloader: GSAP timeline — logo scale+fade → character stagger reveal → background fade-out (~2s)

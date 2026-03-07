@@ -157,7 +157,7 @@ const StatItem = ({ value, label }: { value: string; label: string }) => {
     const { ref, display } = useCountUp(value);
     return (
         <div ref={ref} className="text-center py-5 sm:py-6 px-3">
-            <div data-count className="text-xl sm:text-2xl md:text-3xl font-semibold gradient-text font-sans tracking-tight">
+            <div data-count className="text-xl sm:text-2xl md:text-3xl font-semibold gradient-text font-sans tracking-tight tabular-nums">
                 {display}
             </div>
             <div className="text-[10px] sm:text-[11px] text-white/60 font-sans mt-1.5 uppercase tracking-[0.12em] leading-tight">
@@ -195,7 +195,7 @@ const DemandIndicator = () => {
 
     return (
         <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
-            <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-[0.12em]">
                 <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-white/90" />
@@ -281,7 +281,7 @@ const ResponsiveHeroBanner = () => {
                             </div>
 
                             <div className="mt-8 sm:mt-12 animate-fade-slide-in-5 relative overflow-hidden max-w-[600px] mx-auto">
-                                <p className="text-[10px] sm:text-[11px] text-white/70 font-sans uppercase tracking-[0.15em] mb-3 sm:mb-4 text-center">
+                                <p className="text-[10px] sm:text-[11px] text-white/70 font-sans uppercase tracking-[0.12em] mb-3 sm:mb-4 text-center">
                                     Стек технологий
                                 </p>
                                 <div className="relative overflow-hidden">

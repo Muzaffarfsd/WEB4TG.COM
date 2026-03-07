@@ -327,7 +327,7 @@ export default function ComparisonTable() {
                   />
                 ))}
               </div>
-              <span className="text-white/30 font-mono text-xs tracking-wider">{slideNumber}/{totalSlides}</span>
+              <span className="text-white/30 font-mono text-xs tracking-[0.12em]">{slideNumber}/{totalSlides}</span>
             </div>
             <div className="flex items-center gap-1.5">
               {!reducedMotion && (
@@ -400,7 +400,7 @@ export default function ComparisonTable() {
               <div className="text-center pt-10 pb-4 relative z-10 px-4">
                 <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
                   <span className="text-base" aria-hidden="true">{slide.icon}</span>
-                  <span className="text-white/40 text-xs uppercase tracking-[0.15em] font-medium">{slide.subtitle}</span>
+                  <span className="text-white/40 text-xs uppercase tracking-[0.12em] font-medium">{slide.subtitle}</span>
                 </div>
                 <h3
                   className="font-instrument-serif text-white leading-[1.1]"
@@ -450,8 +450,8 @@ export default function ComparisonTable() {
                               <Crown className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                              <span className="text-[#C4B5FD] text-xs font-semibold tracking-wider block">WEB4TG</span>
-                              <span className="text-white/30 text-[10px] tracking-wider">STUDIO</span>
+                              <span className="text-[#C4B5FD] text-xs font-semibold tracking-[0.12em] block">WEB4TG</span>
+                              <span className="text-white/30 text-[10px] tracking-[0.12em]">STUDIO</span>
                             </div>
                           </div>
                           <div className="px-2.5 py-1 rounded-full bg-[#8B5CF6]/15 border border-[#8B5CF6]/25">
@@ -478,7 +478,7 @@ export default function ComparisonTable() {
 
                         <div className="mb-5">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-white/30 text-[11px] uppercase tracking-wider">Рейтинг</span>
+                            <span className="text-white/30 text-[11px] uppercase tracking-[0.12em]">Рейтинг</span>
                             <span
                               className="text-[#C4B5FD] text-sm font-bold font-mono transition-all duration-1000"
                               style={{ opacity: slideReady ? 1 : 0 }}

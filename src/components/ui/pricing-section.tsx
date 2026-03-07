@@ -53,7 +53,7 @@ export const PricingSection = () => {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 p-4 sm:p-6">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-3 font-sans uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-3 font-sans uppercase tracking-[0.12em]">
                             <Smartphone className="w-3 h-3" />
                             Telegram Mini App
                         </span>
@@ -72,7 +72,7 @@ export const PricingSection = () => {
                     <div className="flex flex-col lg:flex-row p-4 sm:p-6 pt-2 gap-6">
                         <div className="pb-2 lg:w-[30%] lg:pr-6">
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-4xl sm:text-5xl md:text-6xl font-semibold gradient-text font-sans tracking-tight">от 150К</span>
+                                <span className="text-4xl sm:text-5xl md:text-6xl font-semibold gradient-text font-sans tracking-tight tabular-nums">от 150К</span>
                                 <span className="text-sm sm:text-base text-white/60 font-sans">₽</span>
                             </div>
                             <p className="text-[11px] sm:text-[12px] text-white/60 mt-3 font-sans leading-relaxed">
@@ -108,7 +108,7 @@ export const PricingSection = () => {
                                 <div className="absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-[#8B5CF6]/40 to-transparent" />
                             )}
                             <div className="flex items-center gap-3 p-4 sm:p-5">
-                                <h4 className={`inline-flex items-center gap-1.5 text-[10px] font-semibold rounded-full py-1 px-3 font-sans uppercase tracking-wider m-0 ${
+                                <h4 className={`inline-flex items-center gap-1.5 text-[10px] font-semibold rounded-full py-1 px-3 font-sans uppercase tracking-[0.12em] m-0 ${
                                     plan.popular
                                         ? 'text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]'
                                         : 'text-white/70 bg-white/[0.06] border border-white/[0.08]'
@@ -117,7 +117,7 @@ export const PricingSection = () => {
                                     {plan.name}
                                 </h4>
                                 {plan.popular && (
-                                    <span className="hidden sm:inline-flex text-[9px] font-medium text-[#8B5CF6]/80 border border-[#8B5CF6]/20 bg-[#8B5CF6]/[0.06] rounded-full py-0.5 px-2 font-sans uppercase tracking-wider">
+                                    <span className="hidden sm:inline-flex text-[9px] font-medium text-[#8B5CF6]/80 border border-[#8B5CF6]/20 bg-[#8B5CF6]/[0.06] rounded-full py-0.5 px-2 font-sans uppercase tracking-[0.12em]">
                                         Популярный
                                     </span>
                                 )}
@@ -133,7 +133,7 @@ export const PricingSection = () => {
                                 </div>
                             </div>
                             <div className="flex items-baseline gap-1 px-4 sm:px-5 pb-2">
-                                <span className="text-3xl sm:text-4xl font-semibold gradient-text-white font-sans tracking-tight">{plan.price}</span>
+                                <span className="text-3xl sm:text-4xl font-semibold gradient-text-white font-sans tracking-tight tabular-nums">{plan.price}</span>
                                 <span className="text-[12px] text-white/60 font-sans">₽/мес</span>
                             </div>
                             <ul className="grid gap-3 p-4 sm:p-5 pt-2 text-[12px] sm:text-[13px]">
@@ -162,7 +162,7 @@ export const PricingSection = () => {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 p-4 sm:p-6">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-full py-1 px-3 font-sans uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-full py-1 px-3 font-sans uppercase tracking-[0.12em]">
                             <Bot className="w-3 h-3" />
                             Мультиагентный AI
                         </span>
@@ -181,7 +181,7 @@ export const PricingSection = () => {
                     <div className="flex flex-col lg:flex-row p-4 sm:p-6 pt-2 gap-6">
                         <div className="lg:w-[30%]">
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-4xl sm:text-5xl md:text-6xl font-semibold font-sans tracking-tight" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>от 200К</span>
+                                <span className="text-4xl sm:text-5xl md:text-6xl font-semibold font-sans tracking-tight tabular-nums" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>от 200К</span>
                                 <span className="text-sm sm:text-base text-white/60 font-sans">₽</span>
                             </div>
                             <p className="text-[11px] sm:text-[12px] text-white/60 mt-3 font-sans leading-relaxed">
