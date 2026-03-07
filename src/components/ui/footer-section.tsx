@@ -181,11 +181,11 @@ export const FooterSection = () => {
                                 </li>
                                 <li>
                                     <a
-                                        href="mailto:hello@web4tg.com"
+                                        href="mailto:web4tg@gmail.com"
                                         className="flex items-start gap-3 text-[13px] sm:text-[14px] text-white/60 hover:text-white transition-colors duration-300 group"
                                     >
                                         <Mail className="w-4 h-4 mt-0.5 shrink-0 text-[#8B5CF6]/60 group-hover:text-[#8B5CF6] transition-colors duration-300" />
-                                        <span>hello@web4tg.com</span>
+                                        <span>web4tg@gmail.com</span>
                                     </a>
                                 </li>
                             </ul>
