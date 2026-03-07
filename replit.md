@@ -72,11 +72,11 @@ src/
       telegram-fab.tsx               - Floating Telegram button
 ```
 
-## Section Order (App.tsx — 12 sections, Apple-style visual-first flow)
-Hero → Services → IphoneCarousel (Portfolio) → AiAgent → Process → [mesh-divider] → CaseStudies → Testimonials → Pricing → [mesh-divider-alt] → FAQ → CtaBanner → ContactForm → Footer
+## Section Order (App.tsx — 14 sections, Apple-style visual-first flow)
+Hero → Services → IntegrationsMarquee → IphoneCarousel (Portfolio) → AiAgent → Process → [mesh-divider] → CaseStudies → Testimonials → ClientLogos → Pricing → [mesh-divider-alt] → FAQ → CtaBanner → ContactForm → Footer
 
 ## Removed Sections (Audit Block 3)
-ClientLogos, FeaturesSection, ComparisonTable, IntegrationsMarquee, GuaranteesSection — removed for page length optimization. 6 of 8 mesh dividers also removed.
+FeaturesSection, ComparisonTable, GuaranteesSection — removed for page length optimization. 6 of 8 mesh dividers also removed. ClientLogos and IntegrationsMarquee restored.
 
 ## Pricing (Audit Block 5 — Redesigned)
 3 fixed packages replacing old 3-group layout (development + subscriptions + AI):

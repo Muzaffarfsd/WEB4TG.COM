@@ -16,6 +16,8 @@ const CaseStudies = lazy(() => import('./components/ui/case-studies'));
 const TestimonialsSection = lazy(() => import('./components/ui/testimonials-section').then(m => ({ default: m.TestimonialsSection })));
 const PricingSection = lazy(() => import('./components/ui/pricing-section').then(m => ({ default: m.PricingSection })));
 const FaqSection = lazy(() => import('./components/ui/faq-section').then(m => ({ default: m.FaqSection })));
+const ClientLogos = lazy(() => import('./components/ui/client-logos'));
+const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marquee'));
 const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
 const ContactForm = lazy(() => import('./components/ui/contact-form'));
 const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
@@ -154,12 +156,14 @@ const App = () => {
             <ResponsiveHeroBanner />
             <main id="main-content" className="relative z-[2]">
                 <LazySection component={ServicesSection} skeleton="cards" />
+                <LazySection component={IntegrationsMarquee} skeleton="marquee" />
                 <LazySection component={IphoneCarousel} skeleton="default" />
                 <LazySection component={AiAgentSection} skeleton="cards" />
                 <LazySection component={ProcessSection} skeleton="cards" />
                 <div className="mesh-divider" aria-hidden="true" />
                 <LazySection component={CaseStudies} skeleton="cards" />
                 <LazySection component={TestimonialsSection} skeleton="cards" />
+                <LazySection component={ClientLogos} skeleton="marquee" />
                 <LazySection component={PricingSection} skeleton="pricing" />
                 <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={FaqSection} skeleton="accordion" />
