@@ -7,21 +7,15 @@ import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
 import { TelegramFab } from './components/ui/telegram-fab';
 import { ScrollProgress } from './components/ui/scroll-progress';
 import { ErrorBoundary } from './components/ui/error-boundary';
-import { Preloader } from './components/ui/preloader';
 
-const ClientLogos = lazy(() => import('./components/ui/client-logos'));
 const ServicesSection = lazy(() => import('./components/ui/services-section').then(m => ({ default: m.ServicesSection })));
 const AiAgentSection = lazy(() => import('./components/ui/ai-agent-section').then(m => ({ default: m.AiAgentSection })));
 const IphoneCarousel = lazy(() => import('./components/ui/iphone-carousel').then(m => ({ default: m.IphoneCarousel })));
 const ProcessSection = lazy(() => import('./components/ui/process-section').then(m => ({ default: m.ProcessSection })));
-const FeaturesSection = lazy(() => import('./components/ui/features-section').then(m => ({ default: m.FeaturesSection })));
 const CaseStudies = lazy(() => import('./components/ui/case-studies'));
 const TestimonialsSection = lazy(() => import('./components/ui/testimonials-section').then(m => ({ default: m.TestimonialsSection })));
-const ComparisonTable = lazy(() => import('./components/ui/comparison-table'));
 const PricingSection = lazy(() => import('./components/ui/pricing-section').then(m => ({ default: m.PricingSection })));
-const GuaranteesSection = lazy(() => import('./components/ui/guarantees-section'));
 const FaqSection = lazy(() => import('./components/ui/faq-section').then(m => ({ default: m.FaqSection })));
-const IntegrationsMarquee = lazy(() => import('./components/ui/integrations-marquee'));
 const CtaBanner = lazy(() => import('./components/ui/cta-banner'));
 const ContactForm = lazy(() => import('./components/ui/contact-form'));
 const FooterSection = lazy(() => import('./components/ui/footer-section').then(m => ({ default: m.FooterSection })));
@@ -151,7 +145,6 @@ const App = () => {
 
     return (
         <>
-            <Preloader />
             <ScrollProgress />
             <a href="#main-content" className="skip-link">
                 Перейти к содержимому
@@ -160,28 +153,16 @@ const App = () => {
             <div className="noise-overlay" />
             <ResponsiveHeroBanner />
             <main id="main-content" className="relative z-[2]">
-                <div className="mesh-divider" aria-hidden="true" />
-                <LazySection component={ClientLogos} skeleton="marquee" />
                 <LazySection component={ServicesSection} skeleton="cards" />
-                <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={AiAgentSection} skeleton="cards" />
-                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
                 <LazySection component={IphoneCarousel} skeleton="default" />
                 <LazySection component={ProcessSection} skeleton="cards" />
                 <div className="mesh-divider" aria-hidden="true" />
-                <LazySection component={FeaturesSection} skeleton="cards" />
-                <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={CaseStudies} skeleton="cards" />
                 <LazySection component={TestimonialsSection} skeleton="cards" />
-                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
-                <LazySection component={ComparisonTable} skeleton="table" />
                 <LazySection component={PricingSection} skeleton="pricing" />
-                <div className="mesh-divider" aria-hidden="true" />
-                <LazySection component={GuaranteesSection} skeleton="cards" />
                 <div className="mesh-divider mesh-divider-alt" aria-hidden="true" />
                 <LazySection component={FaqSection} skeleton="accordion" />
-                <LazySection component={IntegrationsMarquee} skeleton="marquee" />
-                <div className="mesh-divider mesh-divider-conic" aria-hidden="true" />
                 <LazySection component={CtaBanner} skeleton="default" />
                 <LazySection component={ContactForm} skeleton="default" />
                 <LazySection component={FooterSection} skeleton="default" />

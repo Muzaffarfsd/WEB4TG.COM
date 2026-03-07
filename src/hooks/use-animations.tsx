@@ -66,7 +66,7 @@ export const useScrollReveal = (options?: {
                 opacity: 1,
                 y: 0,
                 filter: 'blur(0px)',
-                duration: options?.duration ?? 1.1,
+                duration: options?.duration ?? 0.8,
                 delay: options?.delay ?? 0,
                 stagger: options?.stagger ?? 0.1,
                 ease: 'expo.out',
@@ -195,9 +195,9 @@ export const useTextReveal = (options?: { delay?: number; useScroll?: boolean })
             opacity: 1,
             y: 0,
             clipPath: 'inset(0% 0% 0% 0%)',
-            duration: 1.2,
+            duration: 0.8,
             delay: options?.delay ?? 0.3,
-            ease: 'power4.out',
+            ease: 'expo.out',
         };
 
         if (options?.useScroll) {
@@ -226,11 +226,11 @@ export const useSlideReveal = (direction: 'left' | 'right' = 'left', options?: {
             return;
         }
 
-        const xVal = direction === 'left' ? -80 : 80;
+        const xVal = direction === 'left' ? -50 : 50;
         gsap.set(targets, {
             opacity: 0,
             x: xVal,
-            filter: 'blur(8px)',
+            filter: 'blur(6px)',
             willChange: 'transform, opacity, filter',
         });
 
@@ -238,7 +238,7 @@ export const useSlideReveal = (direction: 'left' | 'right' = 'left', options?: {
             opacity: 1,
             x: 0,
             filter: 'blur(0px)',
-            duration: options?.duration ?? 1.1,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.12,
             ease: 'expo.out',
             scrollTrigger: {
@@ -268,9 +268,9 @@ export const useScaleReveal = (options?: { duration?: number; stagger?: number; 
 
         gsap.set(targets, {
             opacity: 0,
-            scale: options?.scale ?? 0.8,
-            y: 30,
-            filter: 'blur(10px)',
+            scale: options?.scale ?? 0.9,
+            y: 20,
+            filter: 'blur(6px)',
             willChange: 'transform, opacity, filter',
         });
 
@@ -279,9 +279,9 @@ export const useScaleReveal = (options?: { duration?: number; stagger?: number; 
             scale: 1,
             y: 0,
             filter: 'blur(0px)',
-            duration: options?.duration ?? 0.9,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.08,
-            ease: 'back.out(1.7)',
+            ease: 'expo.out',
             scrollTrigger: {
                 trigger: ref.current,
                 start: 'top 85%',
@@ -366,7 +366,7 @@ export const useFlipReveal = (options?: { duration?: number; stagger?: number })
             rotateX: 0,
             y: 0,
             filter: 'blur(0px)',
-            duration: options?.duration ?? 1.2,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.1,
             ease: 'expo.out',
             scrollTrigger: {
@@ -439,7 +439,7 @@ export const useCharReveal = (options?: { duration?: number; stagger?: number; s
             y: 0,
             rotateX: 0,
             filter: 'blur(0px)',
-            duration: options?.duration ?? 0.6,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.02,
             ease: 'expo.out',
             scrollTrigger: {
@@ -473,15 +473,15 @@ export const useDirectionalReveal = (options?: { duration?: number; stagger?: nu
             return;
         }
 
-        const dist = options?.distance ?? 100;
+        const dist = options?.distance ?? 60;
         targets.forEach((el, i) => {
             const fromLeft = i % 2 === 0;
             gsap.set(el, {
                 opacity: 0,
                 x: fromLeft ? -dist : dist,
-                y: 20,
-                rotate: fromLeft ? -2 : 2,
-                filter: 'blur(10px)',
+                y: 16,
+                rotate: fromLeft ? -1.5 : 1.5,
+                filter: 'blur(6px)',
                 willChange: 'transform, opacity, filter',
             });
         });
@@ -493,7 +493,7 @@ export const useDirectionalReveal = (options?: { duration?: number; stagger?: nu
                 y: 0,
                 rotate: 0,
                 filter: 'blur(0px)',
-                duration: options?.duration ?? 1.1,
+                duration: options?.duration ?? 0.8,
                 delay: i * (options?.stagger ?? 0.12),
                 ease: 'expo.out',
                 scrollTrigger: {
@@ -537,7 +537,7 @@ export const useClipReveal = (direction: 'up' | 'down' | 'left' | 'right' = 'up'
         gsap.to(targets, {
             opacity: 1,
             clipPath: 'inset(0% 0% 0% 0%)',
-            duration: options?.duration ?? 1.2,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.1,
             ease: 'expo.out',
             scrollTrigger: {
@@ -567,10 +567,10 @@ export const useRotateReveal = (options?: { duration?: number; stagger?: number 
 
         gsap.set(targets, {
             opacity: 0,
-            rotate: -3,
-            y: 60,
-            scale: 0.93,
-            filter: 'blur(8px)',
+            rotate: -1.5,
+            y: 40,
+            scale: 0.96,
+            filter: 'blur(6px)',
             transformOrigin: 'left bottom',
             willChange: 'transform, opacity, filter',
         });
@@ -581,7 +581,7 @@ export const useRotateReveal = (options?: { duration?: number; stagger?: number 
             y: 0,
             scale: 1,
             filter: 'blur(0px)',
-            duration: options?.duration ?? 1.1,
+            duration: options?.duration ?? 0.8,
             stagger: options?.stagger ?? 0.1,
             ease: 'expo.out',
             scrollTrigger: {
@@ -618,9 +618,9 @@ export const useScrubReveal = (options?: {
 
         gsap.set(targets, {
             opacity: 0,
-            y: options?.y ?? 80,
-            scale: options?.scale ?? 0.92,
-            filter: `blur(${options?.blur ?? 15}px)`,
+            y: options?.y ?? 50,
+            scale: options?.scale ?? 0.95,
+            filter: `blur(${options?.blur ?? 8}px)`,
             rotate: options?.rotate ?? 0,
             willChange: 'transform, opacity, filter',
         });
@@ -693,7 +693,7 @@ export const useWordReveal = (options?: { stagger?: number; start?: string }) =>
             opacity: 1,
             y: '0%',
             filter: 'blur(0px)',
-            duration: 0.7,
+            duration: 0.8,
             stagger: options?.stagger ?? 0.04,
             ease: 'expo.out',
             scrollTrigger: {

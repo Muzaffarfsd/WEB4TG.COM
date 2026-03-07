@@ -232,24 +232,48 @@ p, li, blockquote {
   100% { transform: translateX(-50%); }
 }
 
+.hero-entrance-headline {
+  animation: heroClipReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.hero-entrance-headline-2 {
+  animation: heroClipReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.hero-entrance-badge {
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+.hero-entrance-body {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+.hero-entrance-cta {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both;
+}
+
+.hero-entrance-meta {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+}
+
 .animate-fade-slide-in-1 {
-  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  animation: heroClipReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
 
 .animate-fade-slide-in-2 {
-  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  animation: heroClipReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
 .animate-fade-slide-in-3 {
-  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
 
 .animate-fade-slide-in-4 {
-  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both;
 }
 
 .animate-fade-slide-in-5 {
-  animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
 }
 
 .animate-float {
@@ -413,6 +437,32 @@ section {
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroClipReveal {
+  from {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
 }
 
 @keyframes messageAppear {

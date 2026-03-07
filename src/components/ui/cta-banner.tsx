@@ -1,41 +1,41 @@
 'use client';
 
 import { useState } from 'react';
-import { Zap, ArrowRight, Clock, ShieldCheck, FileText, Send, Mail, Phone } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, FileText, Mail, Phone } from 'lucide-react';
 import { useScaleReveal } from '../../hooks/use-animations';
 
 export default function CtaBanner() {
-  const sectionRef = useScaleReveal({ stagger: 0.1, scale: 0.9 });
+  const sectionRef = useScaleReveal({ stagger: 0.1, scale: 0.95 });
+  const [showAlt, setShowAlt] = useState<'email' | 'callback' | null>(null);
   const [email, setEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [callbackPhone, setCallbackPhone] = useState('');
   const [callbackSubmitted, setCallbackSubmitted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'telegram' | 'email' | 'callback'>('telegram');
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     try {
-      await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, type: 'email_capture' }),
       });
+      if (res.ok) setEmailSubmitted(true);
     } catch {}
-    setEmailSubmitted(true);
   };
 
   const handleCallbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!callbackPhone) return;
     try {
-      await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: callbackPhone, type: 'callback_request' }),
       });
+      if (res.ok) setCallbackSubmitted(true);
     } catch {}
-    setCallbackSubmitted(true);
   };
 
   return (
@@ -45,147 +45,105 @@ export default function CtaBanner() {
       </div>
 
       <div className="relative max-w-6xl mx-auto text-center">
-        <div
-          data-reveal
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-500/20 bg-violet-500/5 mb-6"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500" />
-          </span>
-          <span className="text-[12px] sm:text-[13px] text-violet-300/80 font-medium tracking-wide">
-            Принимаем 3 проекта в месяц
-          </span>
-        </div>
-
         <h2
           data-reveal
           className="font-instrument-serif gradient-text-white"
           style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3.5rem)', lineHeight: 1.15 }}
         >
-          Пока вы думаете,
+          Готовы обсудить
           <br />
-          <em className="gradient-text">конкуренты уже запустили</em>
+          <em className="gradient-text">ваш проект?</em>
         </h2>
 
         <p
           data-reveal
           className="mt-5 text-[13px] sm:text-[14px] text-white/70 max-w-md mx-auto leading-relaxed"
         >
-          Каждый день без Mini App — это упущенные клиенты и продажи. Узнайте, что мы можем сделать для вас.
+          Расскажите о задаче — подготовим оценку с дедлайнами за один рабочий день. Без обязательств.
         </p>
 
-        <div data-reveal className="mt-8 flex items-center justify-center gap-2">
-          <button
-            onClick={() => setActiveTab('telegram')}
-            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] sm:text-[13px] font-medium transition-all duration-300 border ${
-              activeTab === 'telegram'
-                ? 'bg-violet-500/15 border-violet-500/30 text-violet-300'
-                : 'border-white/[0.06] text-white/50 hover:text-white/70 hover:border-white/10'
-            }`}
+        <div data-reveal className="mt-8">
+          <a
+            href="https://t.me/w4tg_bot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary text-base px-8 py-4"
           >
-            <Send className="w-3.5 h-3.5" />
-            Telegram
-          </button>
+            Написать в Telegram
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+
+        <div data-reveal className="mt-6 flex items-center justify-center gap-4 text-[12px] text-white/40">
           <button
-            onClick={() => setActiveTab('email')}
-            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] sm:text-[13px] font-medium transition-all duration-300 border ${
-              activeTab === 'email'
-                ? 'bg-violet-500/15 border-violet-500/30 text-violet-300'
-                : 'border-white/[0.06] text-white/50 hover:text-white/70 hover:border-white/10'
-            }`}
+            onClick={() => setShowAlt(showAlt === 'email' ? null : 'email')}
+            className={`inline-flex items-center gap-1.5 transition-colors ${showAlt === 'email' ? 'text-violet-400' : 'hover:text-white/60'}`}
           >
             <Mail className="w-3.5 h-3.5" />
-            Email
+            Написать на email
           </button>
+          <span className="w-px h-3 bg-white/10" />
           <button
-            onClick={() => setActiveTab('callback')}
-            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] sm:text-[13px] font-medium transition-all duration-300 border ${
-              activeTab === 'callback'
-                ? 'bg-violet-500/15 border-violet-500/30 text-violet-300'
-                : 'border-white/[0.06] text-white/50 hover:text-white/70 hover:border-white/10'
-            }`}
+            onClick={() => setShowAlt(showAlt === 'callback' ? null : 'callback')}
+            className={`inline-flex items-center gap-1.5 transition-colors ${showAlt === 'callback' ? 'text-violet-400' : 'hover:text-white/60'}`}
           >
             <Phone className="w-3.5 h-3.5" />
-            Звонок
+            Заказать звонок
           </button>
         </div>
 
-        <div data-reveal className="mt-6">
-          {activeTab === 'telegram' && (
-            <a
-              href="https://t.me/w4tg_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary text-base px-8 py-4"
-            >
-              <Zap className="w-4 h-4" />
-              Получить бесплатную оценку
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          )}
+        {showAlt === 'email' && (
+          <div data-reveal className="mt-6 max-w-sm mx-auto">
+            {emailSubmitted ? (
+              <div className="text-emerald-400 text-[14px] font-medium py-4">
+                Спасибо! Мы свяжемся с вами по email.
+              </div>
+            ) : (
+              <form onSubmit={handleEmailSubmit} className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[14px] placeholder:text-white/30 outline-none focus:border-violet-500/40 transition-colors"
+                />
+                <button type="submit" className="btn-primary px-6 py-3 text-[14px]">
+                  Отправить
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
-          {activeTab === 'email' && (
-            <div className="max-w-sm mx-auto">
-              {emailSubmitted ? (
-                <div className="text-emerald-400 text-[14px] font-medium py-4">
-                  ✓ Спасибо! Мы свяжемся с вами по email.
-                </div>
-              ) : (
-                <form onSubmit={handleEmailSubmit} className="flex gap-2">
-                  <input
-                    type="email"
-                    required
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[14px] placeholder:text-white/30 outline-none focus:border-violet-500/40 transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    className="btn-primary px-6 py-3 text-[14px]"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Отправить
-                  </button>
-                </form>
-              )}
-            </div>
-          )}
+        {showAlt === 'callback' && (
+          <div data-reveal className="mt-6 max-w-sm mx-auto">
+            {callbackSubmitted ? (
+              <div className="text-emerald-400 text-[14px] font-medium py-4">
+                Спасибо! Мы перезвоним вам в ближайшее время.
+              </div>
+            ) : (
+              <form onSubmit={handleCallbackSubmit} className="flex gap-2">
+                <input
+                  type="tel"
+                  required
+                  placeholder="+7 (999) 123-45-67"
+                  value={callbackPhone}
+                  onChange={(e) => setCallbackPhone(e.target.value)}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[14px] placeholder:text-white/30 outline-none focus:border-violet-500/40 transition-colors"
+                />
+                <button type="submit" className="btn-primary px-6 py-3 text-[14px]">
+                  Перезвоните
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
-          {activeTab === 'callback' && (
-            <div className="max-w-sm mx-auto">
-              {callbackSubmitted ? (
-                <div className="text-emerald-400 text-[14px] font-medium py-4">
-                  ✓ Спасибо! Мы перезвоним вам в ближайшее время.
-                </div>
-              ) : (
-                <form onSubmit={handleCallbackSubmit} className="flex gap-2">
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+7 (999) 123-45-67"
-                    value={callbackPhone}
-                    onChange={(e) => setCallbackPhone(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[14px] placeholder:text-white/30 outline-none focus:border-violet-500/40 transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    className="btn-primary px-6 py-3 text-[14px]"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Перезвоните
-                  </button>
-                </form>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div data-reveal className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] sm:text-[13px] text-white/60">
+        <div data-reveal className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] sm:text-[13px] text-white/50">
           <span className="inline-flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-violet-400/60" />
-            Оценка за 15 минут
+            Ответим за 2 часа
           </span>
           <span className="inline-flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-violet-400/60" />
@@ -193,7 +151,7 @@ export default function CtaBanner() {
           </span>
           <span className="inline-flex items-center gap-1.5">
             <FileText className="w-3.5 h-3.5 text-violet-400/60" />
-            NDA
+            NDA по умолчанию
           </span>
         </div>
       </div>

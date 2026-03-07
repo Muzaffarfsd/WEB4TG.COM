@@ -21,10 +21,6 @@ const YouTubeIcon = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
 );
 
-const techItems = [
-    "React 19", "TypeScript", "Vite", "Tailwind CSS", "Telegram Bot API", "Stripe", "ЮKassa", "AI-бот", "PWA", "PostgreSQL", "Redis", "framer-motion"
-];
-
 const navLinks = [
     { label: "Услуги", href: "#services" },
     { label: "Портфолио", href: "#highlights" },
@@ -337,6 +333,20 @@ const stats = [
     { value: "4.9", label: "рейтинг" },
 ];
 
+const TrustBadge = ({ icon, text, className = '' }: { icon: 'shield' | 'refresh' | 'clock'; text: string; className?: string }) => {
+    const icons = {
+        shield: <svg className="w-3 h-3 text-[#8B5CF6]/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+        refresh: <svg className="w-3 h-3 text-[#8B5CF6]/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>,
+        clock: <svg className="w-3 h-3 text-[#8B5CF6]/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+    };
+    return (
+        <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white/50 font-sans tracking-wide ${className}`}>
+            {icons[icon]}
+            {text}
+        </span>
+    );
+};
+
 const DemandIndicator = () => {
     const daysOut = useMemo(() => {
         const now = new Date();
@@ -347,7 +357,7 @@ const DemandIndicator = () => {
     }, []);
 
     return (
-        <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm animate-fade-slide-in-1">
+        <div className="mb-5 sm:mb-8 inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-white/[0.03] px-1.5 py-1.5 pr-3 sm:pr-4 border border-white/[0.06] backdrop-blur-sm">
             <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full py-1 px-2 sm:px-2.5 font-sans uppercase tracking-[0.12em]">
                 <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
@@ -399,62 +409,52 @@ const ResponsiveHeroBanner = () => {
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
                         <div className="max-w-[820px] mx-auto text-center">
-                            <DemandIndicator />
+                            <div className="hero-entrance-badge">
+                                <DemandIndicator />
+                            </div>
 
-                            <h1 className="animate-fade-slide-in-1">
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white">
+                            <h1>
+                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white hero-entrance-headline">
                                     Хватит кормить
                                 </span>
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic">
+                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic hero-entrance-headline-2">
                                     посредников
                                 </span>
                             </h1>
 
-                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] animate-fade-slide-in-3 text-white/70 max-w-[500px] mt-5 sm:mt-8 mx-auto font-sans font-light">
-                                Telegram Mini Apps мирового класса.
-                                <span className="text-white/90"> Ваш бренд, ваши продажи — без комиссий.</span>
+                            <p className="text-[clamp(0.875rem,2vw,1.15rem)] leading-[1.6] hero-entrance-body text-white/70 max-w-[540px] mt-5 sm:mt-8 mx-auto font-sans font-light">
+                                Telegram Mini Apps для бизнеса за&nbsp;14&nbsp;дней.
+                                <span className="text-white/90"> 35%&nbsp;предоплата — начните продавать без&nbsp;комиссий маркетплейсов.</span>
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center animate-fade-slide-in-4">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-7 sm:mt-10 items-center justify-center hero-entrance-cta">
                                 <MagneticButton
                                     href="https://t.me/w4tg_bot"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn-primary font-sans w-full sm:w-auto justify-center"
                                 >
-                                    Обсудить проект
+                                    Написать в Telegram
                                     <ArrowRight className="w-4 h-4" />
                                 </MagneticButton>
                                 <MagneticButton
                                     href="#highlights"
                                     className="btn-secondary font-sans w-full sm:w-auto justify-center"
                                 >
-                                    Смотреть работы
+                                    Смотреть кейсы
                                 </MagneticButton>
                             </div>
 
-                            <div className="mt-8 sm:mt-12 animate-fade-slide-in-5 relative overflow-hidden max-w-[600px] mx-auto">
-                                <p className="text-[10px] sm:text-[11px] text-white/70 font-sans uppercase tracking-[0.12em] mb-3 sm:mb-4 text-center">
-                                    Стек технологий
-                                </p>
-                                <div className="relative overflow-hidden">
-                                    <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
-                                    <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
-                                    <div className="flex animate-marquee whitespace-nowrap">
-                                        {[...techItems, ...techItems].map((tech, index) => (
-                                            <span
-                                                key={index}
-                                                className="inline-flex items-center px-3 py-1.5 mx-1 text-[11px] sm:text-[12px] font-medium text-white/60 bg-[#0a0a10]/80 border border-white/[0.06] rounded-full font-sans whitespace-nowrap"
-                                            >
-                                                {tech}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
+                            <div className="mt-5 sm:mt-6 flex items-center justify-center gap-3 sm:gap-5 hero-entrance-meta">
+                                <TrustBadge icon="shield" text="NDA по умолчанию" />
+                                <span className="w-px h-3 bg-white/10" aria-hidden="true" />
+                                <TrustBadge icon="refresh" text="Возврат предоплаты" />
+                                <span className="w-px h-3 bg-white/10 hidden sm:block" aria-hidden="true" />
+                                <TrustBadge icon="clock" text="Поддержка 24/7" className="hidden sm:flex" />
                             </div>
                         </div>
 
-                        <div className="mt-12 sm:mt-20 max-w-2xl mx-auto animate-fade-slide-in-5">
+                        <div className="mt-12 sm:mt-20 max-w-2xl mx-auto hero-entrance-meta">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.08] glass-panel">
                                 {stats.map((stat, index) => (
                                     <StatItem key={index} value={stat.value} label={stat.label} />
@@ -465,7 +465,7 @@ const ResponsiveHeroBanner = () => {
                 </div>
 
                 {!scrolledPastHero && (
-                    <div className="relative z-10 flex justify-center pb-2 sm:pb-3 animate-fade-slide-in-5">
+                    <div className="relative z-10 flex justify-center pb-2 sm:pb-3 hero-entrance-meta">
                         <div className="scroll-indicator flex flex-col items-center gap-1 text-white/60">
                             <ChevronDown className="w-5 h-5 animate-bounce-slow" />
                         </div>
