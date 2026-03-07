@@ -38,3 +38,9 @@ deploymentTarget = "autoscale"
 run = ["npm", "run", "start"]
 build = ["npm", "run", "build"]
 publicDir = "dist"
+
+[userenv]
+
+[userenv.shared]
+GMAIL_USER = "web4tg@gmail.com"
+NOTIFICATION_EMAIL = "web4tg@gmail.com"
