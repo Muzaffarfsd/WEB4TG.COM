@@ -1,72 +1,68 @@
-import { MessageSquare, Brain, Zap, BarChart3 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-
-export const appDevelopmentFeatures = [
-  "Дизайн интерфейса премиум-класса",
-  "Полная интеграция с Telegram Bot API",
-  "Платежи: Stripe, ЮKassa, Apple Pay, СБП",
-  "Каталог, корзина, заказы, CRM",
-  "Push-уведомления (95% открытие)",
-  "PWA — работает офлайн",
-];
-
-export interface SubscriptionPlan {
+export interface PricingPackage {
   name: string;
+  badge: string;
   price: string;
+  period: string;
+  description: string;
   popular: boolean;
   features: string[];
+  support: string;
+  cta: string;
 }
 
-export const subscriptionPlans: SubscriptionPlan[] = [
+export const pricingPackages: PricingPackage[] = [
   {
-    name: "Минимальный",
-    price: "9 900",
+    name: 'Старт',
+    badge: 'Для запуска',
+    price: '150 000',
+    period: '₽',
+    description: 'Базовое приложение за 7 дней. Идеально для тестирования канала продаж в Telegram.',
     popular: false,
     features: [
-      "Хостинг (99.9% uptime)",
-      "Мелкие правки и фиксы",
-      "Поддержка по email",
-      "Бэкапы — раз в месяц",
+      'Каталог до 100 товаров/услуг',
+      'Корзина и оформление заказа',
+      'Оплата: ЮKassa, СБП',
+      'Push-уведомления',
+      'Адаптивный дизайн',
+      'Хостинг и бэкапы (раз в месяц)',
     ],
+    support: 'Поддержка по email · 9 900 ₽/мес',
+    cta: 'Начать проект',
   },
   {
-    name: "Стандартный",
-    price: "14 900",
+    name: 'Бизнес',
+    badge: 'Популярный',
+    price: '300 000',
+    period: '₽',
+    description: 'Полнофункциональное приложение за 14 дней. Для бизнеса, готового масштабироваться.',
     popular: true,
     features: [
-      "Ответ за 2 часа в рабочее время",
-      "Бесплатные обновления и доработки",
-      "Бэкапы — раз в неделю",
-      "Аналитика, отчёты, мониторинг",
+      'Безлимитный каталог + фильтры и поиск',
+      'Stripe, ЮKassa, Apple Pay, Google Pay, СБП',
+      'CRM: заказы, клиенты, аналитика',
+      'Программа лояльности и промокоды',
+      'Интеграция с 1С, AmoCRM, Bitrix24',
+      'Приоритетная поддержка (ответ за 2ч)',
     ],
+    support: 'Обновления + бэкапы раз в неделю · 14 900 ₽/мес',
+    cta: 'Выбрать Бизнес',
   },
   {
-    name: "Премиум",
-    price: "24 900",
+    name: 'Премиум',
+    badge: 'Максимум',
+    price: '500 000',
+    period: '₽',
+    description: 'Приложение + мультиагентная AI-система за 15 дней. Полная автоматизация продаж.',
     popular: false,
     features: [
-      "Персональный менеджер проекта",
-      "Бизнес-консалтинг и стратегия",
-      "Ежедневные бэкапы + мониторинг",
-      "Приоритет в очереди разработки",
+      'Всё из пакета «Бизнес»',
+      'До 20 AI-агентов: продажи, поддержка, аналитика',
+      'Голосовой ассистент (ElevenLabs)',
+      'Автоквалификация лидов и propensity score',
+      'Персональный менеджер проекта',
+      'Ежедневные бэкапы + мониторинг 24/7',
     ],
+    support: 'Бизнес-консалтинг + AI-подписка · 24 900 ₽/мес',
+    cta: 'Обсудить Премиум',
   },
-];
-
-export interface AiFeature {
-  icon: LucideIcon;
-  text: string;
-}
-
-export const aiAgentFeatures: AiFeature[] = [
-  { icon: MessageSquare, text: "До 20 агентов: продажи, поддержка, аналитика, логистика — параллельно 24/7" },
-  { icon: Brain, text: "Оркестратор координирует команду агентов, каждый специализирован под свою задачу" },
-  { icon: Zap, text: "17 AI-инструментов: корзина, оплата, CRM, бронирование, голос" },
-  { icon: BarChart3, text: "Аналитика: конверсия, LTV, propensity score в реальном времени" },
-];
-
-export const aiAgentStats = [
-  { value: '73%', label: 'диалогов → продажа' },
-  { value: '0.3с', label: 'время ответа' },
-  { value: '96.8%', label: 'конверсия оплаты' },
 ];

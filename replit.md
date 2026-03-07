@@ -78,6 +78,13 @@ Hero → Services → AiAgent → IphoneCarousel → Process → [mesh-divider] 
 ## Removed Sections (Audit Block 3)
 ClientLogos, FeaturesSection, ComparisonTable, IntegrationsMarquee, GuaranteesSection — removed for page length optimization. 6 of 8 mesh dividers also removed.
 
+## Pricing (Audit Block 5 — Redesigned)
+3 fixed packages replacing old 3-group layout (development + subscriptions + AI):
+- **Старт** (150K₽): Basic TMA, 7 days, support 9,900₽/mo
+- **Бизнес** (300K₽, popular): Full-featured TMA, 14 days, support 14,900₽/mo
+- **Премиум** (500K₽): TMA + multi-agent AI, 15 days, support 24,900₽/mo
+Data: `src/data/pricing.ts` (PricingPackage interface). All CTAs → t.me/w4tg_bot.
+
 ## Deployment
 - **Development**: Replit (port 5000 via `npm run dev`)
 - **Production**: Railway (port auto via `PORT` env var, `npm run start`)
