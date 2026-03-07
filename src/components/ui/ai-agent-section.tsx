@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSlideReveal } from '../../hooks/use-animations';
 import {

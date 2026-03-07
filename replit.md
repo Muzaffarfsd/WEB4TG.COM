@@ -5,24 +5,29 @@ WEB4TG Studio website — premium agency for Telegram Mini Apps development. Ful
 
 ## Architecture
 - **Runtime**: Node.js 20
-- **Framework**: React 19 + Vite 7 (Rolldown bundler)
-- **Styling**: Tailwind CSS 4 + tw-animate-css
-- **Animations**: GSAP + @gsap/react + ScrollTrigger (tree-shaken imports), framer-motion (peer dep)
+- **Framework**: Next.js 16 (App Router, SSR) + React 19
+- **Styling**: Tailwind CSS 4 + @tailwindcss/postcss + tw-animate-css
+- **Animations**: GSAP + @gsap/react + ScrollTrigger (tree-shaken imports), framer-motion
 - **Smooth Scroll**: Lenis (disabled when prefers-reduced-motion)
 - **Icons**: lucide-react
 - **Language**: TypeScript
-- **Port**: 5000 (Express server with compression, security headers, serving built static files)
-- **Entry point**: `src/main.tsx`
-- **Fonts**: Self-hosted (Inter, Instrument Serif, Montserrat) in `src/fonts/`
-- **Compression**: Brotli + Gzip pre-compressed via vite-plugin-compression2, fallback to runtime compression
+- **Port**: 5000 (Next.js dev/start server)
+- **Fonts**: Self-hosted (Inter, Instrument Serif, Montserrat) in `public/fonts/`
 - **Service Worker**: `public/sw.js` — offline caching, stale-while-revalidate
 
 ## Project Structure
 ```
-index.html                           - HTML entry (OG/Twitter meta, JSON-LD schemas, critical CSS inline, lang=ru)
-vite.config.ts                       - Vite build (manualChunks, Brotli+Gzip compression plugins)
-server.js                            - Express server: pre-compressed serving, CSP + security headers, rate limiting, /api/contact, immutable asset caching
+next.config.ts                       - Next.js config (security headers, CSP, allowedDevOrigins)
+postcss.config.mjs                   - PostCSS config for Tailwind CSS 4
+tsconfig.json                        - TypeScript config (Next.js App Router)
+app/
+  layout.tsx                         - Root layout (metadata, JSON-LD, CSS imports, lang=ru)
+  page.tsx                           - Home page (renders App component)
+  api/
+    contact/
+      route.ts                       - Contact form API (rate limiting, sanitization, Telegram forwarding)
 public/
+  fonts/                             - Self-hosted woff2 font files (cyrillic + latin subsets)
   favicon.svg                        - SVG favicon (violet W4 monogram)
   manifest.json                      - PWA web manifest
   robots.txt                         - Robots + sitemap reference
@@ -30,11 +35,9 @@ public/
   og-image.png                       - Open Graph social sharing image (1200x630)
   sw.js                              - Service Worker (offline + stale-while-revalidate)
 src/
-  main.tsx                           - React root mount + SW registration
-  App.tsx                            - Main app, Lenis init (disabled w/ reduced-motion), Preloader, CustomCursor, ScrollProgress, ScrollNarrative, SoundProvider, SoundToggle, ErrorBoundary, mesh gradient dividers
-  index.css                          - Theme (CSS vars for accent color), animations, utility classes, glass-panel, gradient mesh, skeleton shimmer, mesh dividers, focus-visible styles, scroll narrative styles
-  fonts.css                          - Self-hosted @font-face declarations (Inter, Instrument Serif, Montserrat)
-  fonts/                             - Local woff2 font files (cyrillic + latin subsets)
+  App.tsx                            - Main app (use client), Lenis init, Preloader, ScrollProgress, ErrorBoundary, mesh gradient dividers, SW registration
+  index.css                          - Theme (CSS vars for accent color), animations, utility classes, glass-panel, gradient mesh, skeleton shimmer, mesh dividers, focus-visible styles
+  fonts.css                          - Self-hosted @font-face declarations (Inter, Instrument Serif, Montserrat) — paths to /fonts/
   data/
     pricing.ts                       - Pricing data (development, subscriptions, AI systems)
     services.ts                      - Services data (8 industry cards)
@@ -45,7 +48,7 @@ src/
     use-animations.tsx               - useScrollReveal, useCountUp, useParallax, useTextReveal, useCharReveal, useStickyNav, useSlideReveal, useScaleReveal, useStaggerGrid, useFlipReveal
     use-sound.tsx                    - SoundManager (Web Audio API), SoundProvider, useSound hook, programmatic tones
   components/
-    ui/
+    ui/                              - All components marked "use client" for Next.js App Router
       error-boundary.tsx             - React ErrorBoundary with graceful fallback UI
       preloader.tsx                  - GSAP-animated preloader
       custom-cursor.tsx              - Dot + ring cursor follower
@@ -59,20 +62,7 @@ src/
       client-logos.tsx               - Two-row client logos marquee
       services-section.tsx           - Bento grid services + useCharReveal heading
       ai-agent-section.tsx           - Multi-agent AI showcase (ARIA tabs)
-      ai-agent/
-        data.ts                      - Niche data with agentTeam arrays
-        isometric-office.tsx         - Main canvas component: mouse parallax, FPS monitoring, agent tooltips, code particles, adaptive LOD
-        office-config.ts             - Constants (ROOM_LEFT_PCT etc.), interfaces (Agent, Drone, Roomba, Toast, OfficeCat, CodeParticle), LOD/FPS helpers
-        office-agents.ts             - Agent movement logic + buildLayout
-        office-renderer.ts           - Barrel re-export from submodules
-        draw-environment.ts          - Static layer + room dynamic (ambient occlusion, ceiling lights, windows, screens)
-        draw-furniture.ts            - Desks, arcade (detailed + player), couch, vending, coffee table (soft shadows)
-        draw-effects.ts              - Particles, connections, cables, drones, roombas, toasts, office cat, code particles
-        draw-ui.ts                   - Persons, whiteboard, clock, wifi router, neon sign
-        phone-mockup.tsx             - iPhone mockup with chat UI
-        propensity-bar.tsx           - Animated propensity bar
-        before-after-cards.tsx       - Before/after comparison cards
-        result-panel.tsx             - Hero metric + result cards panel
+      ai-agent/                      - AI agent sub-components (isometric office, phone mockup, etc.)
       iphone-carousel.tsx            - GSAP video carousel (ARIA carousel)
       process-section.tsx            - 3-step process glassmorphic cards
       features-section.tsx           - Technical features grid + useCharReveal heading
@@ -93,30 +83,27 @@ Hero → ClientLogos → [mesh-divider] → Services → [mesh-divider-alt] → 
 
 ## Running
 ```bash
-npm run dev    # builds and starts Express server
-npm run build  # Vite production build only
-npm start      # Express server only (requires dist/)
+npm run dev    # Next.js dev server on port 5000
+npm run build  # Next.js production build
+npm start      # Next.js production server on port 5000
 ```
 
-## SEO
-- Full OG/Twitter meta tags in index.html
+## SEO (SSR via Next.js)
+- Server-side rendering: full HTML delivered to crawlers on first request
+- Next.js Metadata API in app/layout.tsx (title, description, OG, Twitter)
 - JSON-LD: ProfessionalService + Organization + WebSite + WebPage + FAQPage + Service (8 services with Offer) + AggregateRating + Review (3 reviews)
 - Canonical: https://web4tg.com/
 - robots.txt + sitemap.xml in public/
 - OG image: public/og-image.png (1200x630)
 - Yandex verification: yandex_e603a085c27755fc.html
 
-## Security (server.js)
-- CSP: self + unsafe-inline + Cloudinary (media) + unpkg/jsdelivr (Three.js CDN) + mc.yandex.ru (analytics)
+## Security (next.config.ts headers)
+- CSP: self + unsafe-inline + unsafe-eval (Next.js dev) + Cloudinary (media) + unpkg/jsdelivr (Three.js CDN) + mc.yandex.ru (analytics)
 - No Google Fonts in CSP (fonts are self-hosted)
-- X-Content-Type-Options, X-Frame-Options, HSTS (1 year), Referrer-Policy, Permissions-Policy
-- Rate limiting: max 5 requests/IP/minute on /api/contact
-- Input sanitization: XSS prevention (HTML entity escaping), 2000 char limit
-- Brotli + Gzip pre-compressed assets served first, runtime compression fallback
-- Immutable caching (1y) for hashed assets, no-cache for HTML
-- Iframe sandbox: allow-scripts only (no allow-same-origin)
+- X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy
+- poweredByHeader: false
 
-## API Endpoints
+## API Endpoints (app/api/)
 - **POST /api/contact** — Contact form submission
   - Body: `{ name, email, phone, description }`
   - Rate limited (5/min/IP), sanitized, validated
@@ -153,28 +140,13 @@ npm start      # Express server only (requires dist/)
 ## Performance
 - React.lazy + per-section Suspense with contextual skeleton fallbacks
 - ErrorBoundary wrapping every lazy section
-- Vendor chunks: react-vendor, gsap-vendor (tree-shaken), lenis-vendor
-- Critical CSS inlined in index.html
+- Critical CSS inlined via Next.js
 - Service Worker for offline caching
-- Build target: es2022
 - content-visibility: auto on sections
 - Three.js lazy-loads via requestIdleCallback
 - backdrop-filter removed on mobile (≤640px)
 - Self-hosted fonts with font-display: swap
-- Pre-built Brotli (.br) and Gzip (.gz) compressed assets
-
-### Canvas Office Optimizations
-- **OffscreenCanvas static cache**: wall, floor, bricks, tiles, grid rendered once
-- **LOD system**: 'high' (W≥700), 'medium' (400-699), 'low' (<400) — device-aware via navigator.deviceMemory/hardwareConcurrency
-- **FPS monitoring**: auto-downgrade LOD if FPS < 30 for 2+ seconds
-- **Mouse parallax**: subtle 1-2° scene tilt based on mouse position
-- **Agent tooltips**: hover shows name/role in glassmorphic tooltip
-- **Code particles**: flying code symbols near working agents
-- **Ambient occlusion**: darkened room corners and edges
-- **Soft shadows**: blur-filtered ellipses under furniture
-- **Modular rendering**: split into draw-environment, draw-furniture, draw-effects, draw-ui
-- **DPR capped at MAX_DPR=2**
-- **IntersectionObserver** pauses rAF when offscreen
+- Next.js automatic code splitting and compression
 
 ## Accessibility
 - Skip-to-content link (#main-content)

@@ -1,3 +1,5 @@
+'use client';
+
 import { Shield, RotateCcw, FileCheck, Infinity } from 'lucide-react';
 import { useScaleReveal } from '../../hooks/use-animations';
 

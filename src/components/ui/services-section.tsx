@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowUpRight } from "lucide-react";
 import { useScrubReveal, useWordReveal } from '../../hooks/use-animations';
 import { services } from '../../data/services';

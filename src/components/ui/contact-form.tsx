@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback, FormEvent } from 'react';
 
 interface FormData {

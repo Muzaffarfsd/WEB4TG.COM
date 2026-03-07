@@ -1,4 +1,6 @@
-import { useEffect, lazy, Suspense, ComponentType } from 'react';
+'use client';
+
+import { useEffect, lazy, Suspense, ComponentType, type ReactElement } from 'react';
 import Lenis from 'lenis';
 import { TubesBackground } from './components/ui/tubes-background';
 import ResponsiveHeroBanner from './components/ui/responsive-hero-banner';
@@ -105,7 +107,7 @@ const PricingSkeleton = () => (
 
 type SkeletonType = 'default' | 'cards' | 'table' | 'accordion' | 'marquee' | 'pricing';
 
-const skeletonMap: Record<SkeletonType, () => JSX.Element> = {
+const skeletonMap: Record<SkeletonType, () => ReactElement> = {
     default: DefaultSkeleton,
     cards: CardsSkeleton,
     table: TableSkeleton,
@@ -126,6 +128,12 @@ const LazySection = ({ component: Component, skeleton = 'default' }: { component
 };
 
 const App = () => {
+    useEffect(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    }, []);
+
     useEffect(() => {
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

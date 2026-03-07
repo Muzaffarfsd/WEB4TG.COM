@@ -1,3 +1,5 @@
+'use client';
+
 import { Check, ArrowRight, Sparkles, Bot, Smartphone, Brain } from "lucide-react";
 import { useDirectionalReveal } from '../../hooks/use-animations';
 import { appDevelopmentFeatures, subscriptionPlans, aiAgentFeatures, aiAgentStats } from '../../data/pricing';

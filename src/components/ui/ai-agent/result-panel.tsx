@@ -1,3 +1,5 @@
+'use client';
+
 import { Eye } from 'lucide-react';
 import type { NicheScenario, StageData } from './data';
 import { PropensityBar } from './propensity-bar';

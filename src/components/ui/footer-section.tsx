@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowRight, Send, Mail, ExternalLink } from "lucide-react";
 import { useClipReveal } from '../../hooks/use-animations';
 import { MagneticButton } from './magnetic-button';

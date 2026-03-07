@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState, useEffect } from 'react';
 import { useDirectionalReveal } from '../../hooks/use-animations';
 import { ShoppingBag, Dumbbell, Truck } from 'lucide-react';

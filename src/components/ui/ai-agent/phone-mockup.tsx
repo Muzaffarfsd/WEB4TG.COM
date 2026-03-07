@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send } from 'lucide-react';
 import type { ChatMessage, NicheScenario } from './data';

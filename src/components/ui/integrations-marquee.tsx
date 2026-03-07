@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState, useEffect } from 'react';
 import { useClipReveal } from '../../hooks/use-animations';
 import { integrations } from '../../data/integration-icons';

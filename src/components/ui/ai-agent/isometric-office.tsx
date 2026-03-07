@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useEffect, useCallback, useState } from 'react';
 import type { Agent, Particle, Drone, Roomba, Toast, OfficeCat, CodeParticle, IsometricOfficeProps } from './office-config';
 import type { LOD } from './office-config';

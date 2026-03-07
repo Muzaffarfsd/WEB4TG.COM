@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 
 const TelegramIcon = ({ className }: { className?: string }) => (

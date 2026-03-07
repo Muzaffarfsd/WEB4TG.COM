@@ -1,3 +1,5 @@
+'use client';
+
 import { Gauge, ArrowRight } from 'lucide-react';
 
 export const PropensityBar = ({ value, color, prevValue }: { value: number; color: string; prevValue?: number }) => (

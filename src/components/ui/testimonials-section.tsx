@@ -1,3 +1,5 @@
+'use client';
+
 import { Star, BadgeCheck, Globe } from "lucide-react";
 import { useFlipReveal } from '../../hooks/use-animations';
 import { testimonials } from '../../data/testimonials';

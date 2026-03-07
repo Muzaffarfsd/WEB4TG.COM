@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 
 const STORAGE_KEY = 'web4tg-sound-muted';

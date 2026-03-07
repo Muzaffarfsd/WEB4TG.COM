@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { useCountUp, useStickyNav } from '../../hooks/use-animations';

@@ -1,3 +1,5 @@
+'use client';
+
 import { XCircle, CheckCircle } from 'lucide-react';
 import type { NicheScenario } from './data';
 

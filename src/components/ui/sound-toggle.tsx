@@ -1,3 +1,5 @@
+'use client';
+
 import { useSound } from '../../hooks/use-sound';
 
 export function SoundToggle() {

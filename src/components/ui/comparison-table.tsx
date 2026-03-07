@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Check, X, Minus, ChevronLeft, ChevronRight, Play, Pause, Crown, Trophy } from 'lucide-react';
 import { useScrubReveal } from '../../hooks/use-animations';

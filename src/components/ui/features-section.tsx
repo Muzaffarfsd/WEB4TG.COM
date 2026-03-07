@@ -1,3 +1,5 @@
+'use client';
+
 import { CreditCard, BarChart3, MessageSquare, Bell, Heart, Star, Truck, Shield } from "lucide-react";
 import { useScrollReveal, useStaggerGrid, useWordReveal } from '../../hooks/use-animations';
 
