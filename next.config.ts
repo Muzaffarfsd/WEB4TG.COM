@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=()',
           },
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           {
             key: 'Content-Security-Policy',
             value: [
