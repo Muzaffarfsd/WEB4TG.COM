@@ -359,16 +359,6 @@ const ResponsiveHeroBanner = () => {
             <StickyHeader />
 
             <section ref={heroRef} className="relative z-[2] w-full min-h-[100svh] flex flex-col overflow-hidden isolate">
-                <div
-                    className="absolute inset-0 z-0"
-                    style={{
-                        backgroundImage: "url('/images/hero-bg.webp')",
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                    }}
-                    aria-hidden="true"
-                />
                 <GradientMesh />
 
                 <div className="relative z-10 flex-1 flex items-center pt-[64px] sm:pt-[72px]">

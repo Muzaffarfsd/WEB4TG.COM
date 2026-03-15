@@ -7,7 +7,7 @@ const IFRAME_HTML = `<!DOCTYPE html>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; connect-src https://cdn.jsdelivr.net; img-src data: blob:">
 <style>
 *{margin:0;padding:0;overflow:hidden}
-html,body{width:100%;height:100%;background:transparent}
+html,body{width:100%;height:100%;background:#000000}
 canvas{display:block;width:100%;height:100%}
 </style>
 </head><body>
@@ -41,7 +41,6 @@ try {
   var app = TubesCursor(canvas, {
     mouse: { disabled: true, lerp: 0 },
     cursor: { enabled: false },
-    background: 'transparent',
     tubes: {
       count: 5,
       radius: 0.07,
@@ -52,10 +51,6 @@ try {
       }
     }
   });
-  if (app && app.three && app.three.renderer) {
-    app.three.renderer.setClearColor(0x000000, 0);
-  }
-
   if (app && app.mouse) {
     ['x','y','lerpX','lerpY'].forEach(function(prop){
       try {
@@ -180,7 +175,7 @@ export function TubesBackground() {
           className="absolute inset-0 w-full h-full block border-0 pointer-events-none"
           style={{
             pointerEvents: 'none',
-            background: 'transparent',
+            background: '#000000',
             colorScheme: 'normal',
           }}
           sandbox="allow-scripts"
