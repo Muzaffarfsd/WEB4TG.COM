@@ -72,8 +72,8 @@ export default function ClientLogos() {
         </div>
 
         <div data-reveal className="relative flex flex-col gap-4">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-r from-[#050505] to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-l from-[#050505] to-transparent" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-r from-black to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-l from-black to-transparent" />
 
           <MarqueeRow paused={paused} />
           <MarqueeRow reverse paused={paused} />

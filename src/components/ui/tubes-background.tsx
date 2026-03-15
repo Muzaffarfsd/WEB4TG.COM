@@ -7,7 +7,7 @@ const IFRAME_HTML = `<!DOCTYPE html>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; connect-src https://cdn.jsdelivr.net; img-src data: blob:">
 <style>
 *{margin:0;padding:0;overflow:hidden}
-html,body{width:100%;height:100%;background:#050505}
+html,body{width:100%;height:100%;background:#000000}
 canvas{display:block;width:100%;height:100%}
 </style>
 </head><body>
@@ -176,7 +176,7 @@ export function TubesBackground() {
           className="absolute inset-0 w-full h-full block border-0 pointer-events-none"
           style={{
             pointerEvents: 'none',
-            background: '#050505',
+            background: '#000000',
             colorScheme: 'normal',
           }}
           sandbox="allow-scripts"

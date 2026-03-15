@@ -71,7 +71,7 @@ export const Preloader = ({ onComplete }: PreloaderProps) => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505]"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black"
     >
       <div ref={logoRef} className="mb-6">
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center">

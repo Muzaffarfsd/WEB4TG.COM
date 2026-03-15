@@ -28,8 +28,8 @@ export default function IntegrationsMarquee() {
       </div>
 
       <div ref={observerRef} className="relative" data-reveal>
-        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-r from-[#050505] to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-l from-[#050505] to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-r from-black to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-l from-black to-transparent" />
 
         <div className="overflow-hidden">
           <div className="flex" style={{ width: 'max-content', animation: 'marquee 30s linear infinite', animationPlayState: paused ? 'paused' : 'running' }}>
