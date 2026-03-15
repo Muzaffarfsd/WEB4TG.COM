@@ -154,7 +154,7 @@ const App = () => {
             <TubesBackground />
             <div className="noise-overlay" />
             <ResponsiveHeroBanner />
-            <main id="main-content" className="relative z-[2]">
+            <main id="main-content" className="relative z-[2] bg-black">
                 <LazySection component={ServicesSection} skeleton="cards" />
                 <LazySection component={IntegrationsMarquee} skeleton="marquee" />
                 <LazySection component={IphoneCarousel} skeleton="default" />
