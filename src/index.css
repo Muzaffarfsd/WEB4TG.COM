@@ -3,7 +3,7 @@
 @import "tw-animate-css";
 
 @theme inline {
-  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --color-background: #050505;
   --color-foreground: #fafafa;
@@ -302,7 +302,7 @@ p, li, blockquote {
 }
 
 .font-instrument-serif {
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: "Cormorant Garamond", Georgia, serif;
 }
 
 .section-label {

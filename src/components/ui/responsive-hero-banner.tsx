@@ -365,10 +365,10 @@ const ResponsiveHeroBanner = () => {
                     <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-0">
                         <div className="max-w-[820px] mx-auto text-center">
                             <h1>
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] gradient-text-white hero-entrance-headline">
+                                <span className="block text-[clamp(3rem,10vw,7.5rem)] leading-[0.9] font-normal font-instrument-serif tracking-[-0.02em] gradient-text-white hero-entrance-headline">
                                     Хватит кормить
                                 </span>
-                                <span className="block text-[clamp(2.2rem,8vw,5.5rem)] leading-[0.92] font-normal font-instrument-serif tracking-[-0.035em] mt-1 gradient-text italic hero-entrance-headline-2">
+                                <span className="block text-[clamp(3rem,10vw,7.5rem)] leading-[0.9] font-normal font-instrument-serif tracking-[-0.02em] mt-1 gradient-text italic hero-entrance-headline-2">
                                     посредников
                                 </span>
                             </h1>
