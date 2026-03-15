@@ -4,7 +4,7 @@
 
 @theme inline {
   --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Geist", "Inter", system-ui, sans-serif;
   --color-background: #050505;
   --color-foreground: #fafafa;
   --color-input: rgba(255,255,255,0.06);
@@ -303,6 +303,7 @@ p, li, blockquote {
 
 .font-instrument-serif {
   font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
 }
 
 .section-label {
@@ -313,7 +314,7 @@ p, li, blockquote {
   color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
   margin-bottom: 1.25rem;
 }
 
@@ -676,7 +677,7 @@ select:focus-visible,
   color: #fff;
   font-size: 14px;
   font-weight: 600;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
   border-radius: 0 0 12px 12px;
   text-decoration: none;
   transition: top 0.2s ease;

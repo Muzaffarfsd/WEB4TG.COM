@@ -12,7 +12,7 @@ WEB4TG Studio website — premium agency for Telegram Mini Apps development. Ful
 - **Icons**: lucide-react
 - **Language**: TypeScript
 - **Port**: 5000 (Next.js dev/start server)
-- **Fonts**: Self-hosted (Inter, Cormorant Garamond, Montserrat) in `public/fonts/`
+- **Fonts**: Self-hosted (Geist Sans, Cormorant Garamond, Montserrat) in `public/fonts/`
 - **Service Worker**: `public/sw.js` — offline caching, stale-while-revalidate
 
 ## Project Structure
@@ -37,7 +37,7 @@ public/
 src/
   App.tsx                            - Main app (use client), Lenis init, ScrollProgress, ErrorBoundary, mesh gradient dividers, SW registration. ResponsiveHeroBanner rendered OUTSIDE <main> to avoid z-index stacking context bug (header z-50 must be global, not trapped inside main's z-[2])
   index.css                          - Theme (CSS vars for accent color), animations, utility classes, glass-panel, gradient mesh, skeleton shimmer, mesh dividers, focus-visible styles, heroClipReveal + heroFadeUp keyframes
-  fonts.css                          - Self-hosted @font-face declarations (Inter, Cormorant Garamond, Montserrat) — paths to /fonts/
+  fonts.css                          - Self-hosted @font-face declarations (Geist Sans, Cormorant Garamond, Montserrat) — paths to /fonts/
   data/
     pricing.ts                       - Pricing data (development, subscriptions, AI systems)
     services.ts                      - Services data (8 industry cards)
@@ -127,7 +127,7 @@ npm start      # Next.js production server (uses PORT env var, defaults to 3000)
   - `:root` vars: `--accent` (#8B5CF6), `--accent-dark` (#7C3AED), `--accent-light` (#A78BFA), `--accent-lighter` (#C4B5FD)
   - Tailwind `@theme` vars: `--color-accent`, `--color-accent-dark`, `--color-accent-light`, `--color-accent-lighter`
 - Niche colors: Shop=#8B5CF6, Restaurant=#f59e0b, Beauty=#ec4899, Fitness=#22c55e
-- Fonts: Cormorant Garamond (headings, full Cyrillic support), Inter (body), Montserrat (logo) — self-hosted. Replaced Instrument Serif which had NO Cyrillic support (was falling back to Georgia).
+- Fonts: Cormorant Garamond 500 (headings, full Cyrillic, weight 500 for dark theme visibility), Geist Sans (body, Vercel's font with Cyrillic since v1.7.0), Montserrat (logo) — self-hosted. Inter kept as fallback. Replaced Instrument Serif (no Cyrillic) and upgraded Inter to Geist Sans.
 - Typography (2026 standards): font-optical-sizing: auto, text-rendering: optimizeLegibility, font-synthesis: none, font-feature-settings: kern/liga/calt, text-wrap: balance (headings) + pretty (paragraphs), hanging-punctuation: first last, tabular-nums on pricing/stats, standardized tracking-[0.12em] on all uppercase labels
 - Glassmorphism: backdrop-blur(8px) desktop, rgba(8,8,12,0.92) solid on mobile
 - Section labels: uppercase, tracking-[0.12em], with line decoration
